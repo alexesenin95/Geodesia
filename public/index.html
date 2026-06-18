@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./vendor/react.production.min.js"></script>
+<script src="./vendor/react-dom.production.min.js"></script>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -27,7 +29,6 @@
   @keyframes introOut{0%{opacity:1;transform:translateY(0)}82%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-46px)}}
   @keyframes revealUp{0%{clip-path:inset(0 0 100% 0)}100%{clip-path:inset(0 0 0 0)}}
 </style>
-<script src="image-slot.js"></script>
 </helmet>
 
 <div ref="{{ rootRef }}" style="position:relative;min-height:100vh;background:#fff">
@@ -175,7 +176,7 @@
       </section>
       <section style="padding:0 clamp(18px,3.4vw,40px) clamp(40px,6vh,72px)">
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:clamp(30px,4vw,72px);align-items:start">
-          <div style="width:100%;aspect-ratio:4/5;background:#ececec"><image-slot id="team-collective" shape="rect" placeholder="Фото коллектива" style="display:block;width:100%;height:100%"></image-slot></div>
+          <div style="width:100%;aspect-ratio:4/5;background:#ececec;background-image:{{ aboutImageBg }};background-size:cover;background-position:center"></div>
           <div style="min-width:0">
             <div data-reveal style="font-size:13px;font-weight:600;letter-spacing:.04em;color:#888;margin-bottom:18px">О бюро</div>
             <p data-reveal style="margin:0;font-size:clamp(20px,2.3vw,32px);font-weight:500;letter-spacing:-.01em;line-height:1.35;text-wrap:pretty">{{ aboutText1 }}</p>
@@ -193,7 +194,7 @@
         <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(34px,3.4vw,56px) clamp(24px,3vw,48px)">
           <sc-for list="{{ manifest }}" as="m" hint-placeholder-count="6">
             <div data-reveal>
-              <image-slot id="{{ m.slotId }}" shape="rect" placeholder="Иконка" style="display:block;width:72px;height:72px;border:1px solid #d8d6cf;background:#f3f2ee"></image-slot>
+              <div style="width:72px;height:72px;border:1px solid #d8d6cf;background:#f3f2ee;background-image:{{ m.iconBg }};background-size:contain;background-repeat:no-repeat;background-position:center"></div>
               <div style="margin-top:18px;font-size:13px;font-weight:600;color:#999;font-variant-numeric:tabular-nums">{{ m.n }}</div>
               <h3 style="margin:8px 0 0;font-size:clamp(20px,2vw,27px);font-weight:600;letter-spacing:-.02em;line-height:1.12">{{ m.t }}</h3>
               <p style="margin:11px 0 0;font-size:15px;line-height:1.6;color:#555;max-width:34ch">{{ m.d }}</p>
@@ -535,6 +536,10 @@
                   <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Email</span><input name="email" defaultValue="{{ set_email }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
                   <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Email (сотрудничество)</span><input name="inquiry" defaultValue="{{ set_inquiry }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
                 </div>
+                <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Фото бюро (страница «О нас»)</span>
+                  <sc-if value="{{ hasAboutImage }}" hint-placeholder-val="{{ false }}"><div style="position:relative;width:200px;aspect-ratio:4/5;background:#f3f2ee;background-image:{{ aboutImageBg }};background-size:cover;background-position:center;margin-bottom:6px"><button type="button" onClick="{{ removeAboutImage }}" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.6);color:#fff;border:none;cursor:pointer;font-size:13px;width:26px;height:26px">✕</button></div></sc-if>
+                  <input type="file" accept="image/*" onChange="{{ uploadAboutImage }}" style="font-size:13px"/>
+                </label>
                 <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:4px"><button type="submit" style="background:#111;color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;padding:13px 26px">Сохранить</button><button type="button" onClick="{{ resetData }}" style="background:none;color:#b0573f;border:1px solid #e3c4bc;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;padding:13px 26px">Сбросить весь контент</button></div>
               </form>
             </sc-if>
@@ -552,6 +557,28 @@
                 <sc-if value="{{ f.isText }}" hint-placeholder-val="{{ true }}"><input value="{{ f.value }}" onChange="{{ f.onChange }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></sc-if>
                 <sc-if value="{{ f.isTextarea }}" hint-placeholder-val="{{ false }}"><textarea value="{{ f.value }}" onChange="{{ f.onChange }}" rows="4" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none;resize:vertical"></textarea></sc-if>
                 <sc-if value="{{ f.isEnum }}" hint-placeholder-val="{{ false }}"><select value="{{ f.value }}" onChange="{{ f.onChange }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none;background:#fff"><sc-for list="{{ f.options }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></sc-if>
+                <sc-if value="{{ f.isImage }}" hint-placeholder-val="{{ false }}">
+                  <div>
+                    <sc-if value="{{ f.hasValue }}" hint-placeholder-val="{{ false }}">
+                      <div style="position:relative;width:100%;aspect-ratio:3/2;background:#f3f2ee;background-image:{{ f.bg }};background-size:cover;background-position:center;margin-bottom:8px">
+                        <button type="button" onClick="{{ f.onRemove }}" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.6);color:#fff;border:none;cursor:pointer;font-size:13px;width:26px;height:26px">✕</button>
+                      </div>
+                    </sc-if>
+                    <input type="file" accept="image/*" onChange="{{ f.onUpload }}" style="font-size:13px"/>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ f.isImages }}" hint-placeholder-val="{{ false }}">
+                  <div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:8px;margin-bottom:8px">
+                      <sc-for list="{{ f.items }}" as="im" hint-placeholder-count="3">
+                        <div style="position:relative;width:100%;aspect-ratio:1;background:#f3f2ee;background-image:{{ im.bg }};background-size:cover;background-position:center">
+                          <button type="button" onClick="{{ im.onRemove }}" style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,.6);color:#fff;border:none;cursor:pointer;font-size:11px;width:20px;height:20px">✕</button>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <input type="file" accept="image/*" multiple onChange="{{ f.onUpload }}" style="font-size:13px"/>
+                  </div>
+                </sc-if>
               </label>
             </sc-for>
           </div>
@@ -647,13 +674,12 @@ class Component extends DCLogic {
         servicesTitle:'Что мы делаем',
         krtTitle:'Площадки для инвестиций и развития',
         address:'ул. Комсомольская, 10а\nВолгоград, 400066', phone:'+7 (8442) 32-54-94', email:'info@vyaz-vlg.ru', inquiry:'inquiry@vyaz-vlg.ru' } };
-    let data=null; try{ const raw=localStorage.getItem('vyaz_cms'); if(raw) data=JSON.parse(raw); }catch(e){}
-    if(!data) data=JSON.parse(JSON.stringify(SEED));
-    ['projects','team','manifest','services','krt','news'].forEach(k=>{ if(!Array.isArray(data[k])) data[k]=JSON.parse(JSON.stringify(SEED[k])); });
-    if(!data.settings) data.settings=JSON.parse(JSON.stringify(SEED.settings));
+    let data=JSON.parse(JSON.stringify(SEED));
+    let token=null; try{ token=localStorage.getItem('vyaz_token')||null; }catch(e){}
+    this._token=token;
     this._SEED=SEED;
     this.state = { page:'home', menuOpen:false, pageKey:0, activeIdx:0, intro:!seen, projFilter:'all', projectId:null, krtId:0, slideIdx:0, navDark:false,
-      data, adminAuthed:false, adminSection:'projects', editing:null, adminError:'', toast:'' };
+      data, adminAuthed:!!token, adminSection:'projects', editing:null, adminError:'', toast:'' };
     this.rootRef = React.createRef();
     this.navBarRef = React.createRef();
     this.navRef = React.createRef();
@@ -671,6 +697,7 @@ class Component extends DCLogic {
     }catch(e){}
   }
   componentDidMount(){
+    this.loadContent();
     if(this.state.intro){
       try{ document.documentElement.style.overflow='hidden'; }catch(e){}
       this._introT=setTimeout(()=>{ this.setState({intro:false}); try{ document.documentElement.style.overflow=''; sessionStorage.setItem('vyaz_intro','1'); }catch(e){} }, 3600);
@@ -688,12 +715,23 @@ class Component extends DCLogic {
     if(logo) logo.style.filter = dark?'none':'invert(1) brightness(2)'; }
   _onScroll(){ const y=window.pageYOffset||0; const bar=this.navBarRef.current; if(bar) bar.style.opacity=y>48?'1':'0';
     const lightHero=(this.state.page==='home'); this.applyNav(!lightHero || y>48); }
-  persist(){ try{ localStorage.setItem('vyaz_cms', JSON.stringify(this.state.data)); }catch(e){} }
+  _authHeaders(extra){ const h=extra?Object.assign({},extra):{}; if(this._token) h['Authorization']='Bearer '+this._token; return h; }
+  loadContent(){ fetch('/api/content').then(r=>r.ok?r.json():null).then(d=>{ if(d&&typeof d==='object'){ ['projects','team','manifest','services','krt','news'].forEach(k=>{ if(!Array.isArray(d[k])) d[k]=JSON.parse(JSON.stringify(this._SEED[k])); }); if(!d.settings) d.settings=JSON.parse(JSON.stringify(this._SEED.settings)); this.setState({data:d}); } }).catch(()=>{}); }
+  persist(){ fetch('/api/content',{method:'PUT',headers:this._authHeaders({'Content-Type':'application/json'}),body:JSON.stringify(this.state.data)}).then(r=>{ if(r.status===401){ this._token=null; try{localStorage.removeItem('vyaz_token');}catch(e){} this.setState({adminAuthed:false}); this.flash('Сессия истекла, войдите снова'); } else if(!r.ok){ this.flash('Ошибка сохранения'); } }).catch(()=>this.flash('Нет связи с сервером')); }
+  uploadFile(file){ const fd=new FormData(); fd.append('file',file); return fetch('/api/upload',{method:'POST',headers:this._authHeaders(),body:fd}).then(r=>{ if(!r.ok) throw new Error('upload'); return r.json(); }); }
+  fieldUpload(k,fileList,multi){ const files=Array.prototype.slice.call(fileList||[]); if(!files.length) return;
+    if(multi){ const cur=((this.state.editing&&this.state.editing.draft[k])||[]).slice(); Promise.all(files.map(f=>this.uploadFile(f))).then(rs=>{ rs.forEach(r=>{ if(r&&r.url) cur.push(r.url); }); this.setField(k,cur); this.flash('Загружено'); }).catch(()=>this.flash('Ошибка загрузки')); }
+    else { this.uploadFile(files[0]).then(r=>{ if(r&&r.url){ this.setField(k,r.url); this.flash('Загружено'); } }).catch(()=>this.flash('Ошибка загрузки')); } }
+  removeImageAt(k,idx){ const cur=((this.state.editing&&this.state.editing.draft[k])||[]).slice(); cur.splice(idx,1); this.setField(k,cur); }
+  uploadAboutImage(e){ const f=e&&e.target&&e.target.files&&e.target.files[0]; if(!f) return; this.uploadFile(f).then(r=>{ if(r&&r.url){ const data=Object.assign({},this.state.data); data.settings=Object.assign({},data.settings,{aboutImage:r.url}); this.setState({data},()=>{ this.persist(); this.flash('Фото загружено'); }); } }).catch(()=>this.flash('Ошибка загрузки')); }
+  removeAboutImage(){ const data=Object.assign({},this.state.data); data.settings=Object.assign({},data.settings,{aboutImage:''}); this.setState({data},()=>{ this.persist(); }); }
   flash(msg){ this.setState({toast:msg}); clearTimeout(this._toastT); this._toastT=setTimeout(()=>this.setState({toast:''}),2000); }
   adminLogin(e){ if(e&&e.preventDefault)e.preventDefault(); const fd=e&&e.target?new FormData(e.target):null;
     const u=(fd&&fd.get('u')||'').trim(), p=(fd&&fd.get('p')||'').trim();
-    if(u==='admin'&&p==='vyaz'){ this.setState({adminAuthed:true,adminError:''}); } else { this.setState({adminError:'Неверный логин или пароль. Демо: admin / vyaz'}); } }
-  adminLogout(){ this.setState({adminAuthed:false,editing:null}); }
+    fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})})
+      .then(r=>r.ok?r.json():Promise.reject(r)).then(d=>{ this._token=d.token; try{localStorage.setItem('vyaz_token',d.token);}catch(e){} this.setState({adminAuthed:true,adminError:''}); })
+      .catch(()=>this.setState({adminError:'Неверный логин или пароль'})); }
+  adminLogout(){ this._token=null; try{localStorage.removeItem('vyaz_token');}catch(e){} this.setState({adminAuthed:false,editing:null}); }
   adminBlank(sec){ const t=Date.now();
     if(sec==='projects') return {id:'p'+t,title:'',cat:'Парки',group:'place',year:String(new Date().getFullYear()),loc:'',desc:''};
     if(sec==='news') return {id:'n'+t,title:'',date:new Date().toISOString().slice(0,10).replace(/-/g,'.')};
@@ -719,10 +757,12 @@ class Component extends DCLogic {
     const st=this.state;
     const d=st.data;
     const PROJECTS=d.projects, NEWS=d.news, SERVICES=d.services, KRT=d.krt, TEAM=d.team, MANIFEST=d.manifest, SETTINGS=d.settings;
+    const imgU=u=>(u?'url("'+u+'")':null);
+    const img1=arr=>(Array.isArray(arr)&&arr.length?'url("'+arr[0]+'")':null);
     const mk=(page,label)=>({label,onClick:()=>this.go(page)});
     const menuItems=[mk('projects','Проекты'),mk('krt','КРТ'),mk('services','Услуги'),mk('studio','О нас'),mk('contact','Контакты')];
     const projects = PROJECTS.map((p,i)=>Object.assign({},p,{
-      bg:tone(i),
+      bg:img1(p.images)||tone(i),
       activeOpacity: i===st.activeIdx?1:0,
       activeScale: i===st.activeIdx?1.04:1,
       nameColor: i===st.activeIdx?'#111':'#9a9a9a',
@@ -735,7 +775,7 @@ class Component extends DCLogic {
     const act=PROJECTS[st.activeIdx]||PROJECTS[0];
     const flt=st.projFilter;
     const filtered=PROJECTS.filter(p=>flt==='all'||p.group===flt);
-    const allProjects=filtered.map((p,i)=>Object.assign({},p,{bg:tone(PROJECTS.indexOf(p)),isFull:i<2,isHalf:i>=2,open:()=>this.go('project',p.id)}));
+    const allProjects=filtered.map((p,i)=>Object.assign({},p,{bg:img1(p.images)||tone(PROJECTS.indexOf(p)),isFull:i<2,isHalf:i>=2,open:()=>this.go('project',p.id)}));
     const filterCols=FILTERS.map(f=>({col:f.col,key:f.key,items:f.items,
       colColor: st.projFilter===f.key?'#111':'#111',
       colUnderline: st.projFilter===f.key?'underline':'none',
@@ -747,39 +787,44 @@ class Component extends DCLogic {
     offices[0]={city:'Волгоград',lines:SETTINGS.address,tel:SETTINGS.phone};
     const isNews=st.page==='news';
     // КРТ grouped by district
-    const kmap={}; KRT.forEach((it,i)=>{ (kmap[it.district]=kmap[it.district]||[]).push(Object.assign({},it,{bg:tone(i+3),open:()=>this.go('krtitem',i)})); });
+    const kmap={}; KRT.forEach((it,i)=>{ (kmap[it.district]=kmap[it.district]||[]).push(Object.assign({},it,{bg:img1(it.images)||tone(i+3),open:()=>this.go('krtitem',i)})); });
     const krtGroups=Object.keys(kmap).map(d=>({district:d,items:kmap[d]}));
     const krtTotal=KRT.length;
     // КРТ detail
     let kcur=KRT[st.krtId]||KRT[0]||{};
     const kbaseIdx=KRT.indexOf(kcur);
-    const kSlides=['d','a','e','c'].map((t,k)=>({bg:TONES[t],shownOpacity:k===st.slideIdx?1:0,dotColor:k===st.slideIdx?'#111':'#cfcfcf',onDot:()=>this.setState({slideIdx:k})}));
-    const kN=4;
+    const kimgs=(kcur.images&&kcur.images.length)?kcur.images:null;
+    const kSlideSrc=kimgs||['d','a','e','c'];
+    const kN=kSlideSrc.length;
+    const kIdx=((st.slideIdx%kN)+kN)%kN;
+    const kSlides=kSlideSrc.map((t,k)=>({bg:kimgs?('url("'+t+'")'):TONES[t],shownOpacity:k===kIdx?1:0,dotColor:k===kIdx?'#111':'#cfcfcf',onDot:()=>this.setState({slideIdx:k})}));
     const currentKrt=Object.assign({},kcur,{
-      bg:tone(kbaseIdx+3), slides:kSlides, slideNum:(st.slideIdx+1)+' / '+kN,
+      bg:img1(kcur.images)||tone(kbaseIdx+3), slides:kSlides, slideNum:(kIdx+1)+' / '+kN,
       desc: kcur.desc || ('Свободная площадка '+(kcur.area||'')+' в '+(kcur.district||'')+' районе, готовая к проработке концепции комплексного развития территории — жилой, общественной или смешанной функции.'),
       prevSlide:()=>this.setState(s=>({slideIdx:(s.slideIdx-1+kN)%kN})),
       nextSlide:()=>this.setState(s=>({slideIdx:(s.slideIdx+1)%kN})),
       download:()=>this.downloadProject({id:'krt-'+kbaseIdx,title:kcur.name,loc:kcur.district+' район',year:kcur.area,cat:'Комплексное развитие территорий',desc:kcur.desc||''})
     });
-    const krtRelated=KRT.filter((x,i)=>i!==kbaseIdx).slice(0,3).map((x)=>{ const gi=KRT.indexOf(x); return Object.assign({},x,{bg:tone(gi+3),open:()=>this.go('krtitem',gi)}); });
+    const krtRelated=KRT.filter((x,i)=>i!==kbaseIdx).slice(0,3).map((x)=>{ const gi=KRT.indexOf(x); return Object.assign({},x,{bg:img1(x.images)||tone(gi+3),open:()=>this.go('krtitem',gi)}); });
     // team
-    const team=TEAM.map((t,i)=>Object.assign({},t,{bg:tone(i)}));
+    const team=TEAM.map((t,i)=>Object.assign({},t,{bg:imgU(t.image)||tone(i)}));
     // project detail
     let cur=PROJECTS.find(p=>p.id===st.projectId)||PROJECTS[0];
     const baseIdx=PROJECTS.indexOf(cur);
-    const slideTones=['a','c','d','e'];
-    const slides=slideTones.map((t,k)=>({bg:TONES[t], shownOpacity:k===st.slideIdx?1:0, dotColor:k===st.slideIdx?'#111':'#cfcfcf', onDot:()=>this.setState({slideIdx:k})}));
-    const nSlides=slideTones.length;
+    const pimgs=(cur&&cur.images&&cur.images.length)?cur.images:null;
+    const pSlideSrc=pimgs||['a','c','d','e'];
+    const nSlides=pSlideSrc.length;
+    const pIdx=((st.slideIdx%nSlides)+nSlides)%nSlides;
+    const slides=pSlideSrc.map((t,k)=>({bg:pimgs?('url("'+t+'")'):TONES[t], shownOpacity:k===pIdx?1:0, dotColor:k===pIdx?'#111':'#cfcfcf', onDot:()=>this.setState({slideIdx:k})}));
     const currentProject=Object.assign({},cur,{
-      bg:tone(baseIdx), slides,
-      slideNum:(st.slideIdx+1)+' / '+nSlides,
+      bg:img1(cur.images)||tone(baseIdx), slides,
+      slideNum:(pIdx+1)+' / '+nSlides,
       prevSlide:()=>this.setState(s=>({slideIdx:(s.slideIdx-1+nSlides)%nSlides})),
       nextSlide:()=>this.setState(s=>({slideIdx:(s.slideIdx+1)%nSlides})),
       download:()=>this.downloadProject(cur)
     });
-    const relProjects=PROJECTS.filter(p=>p.id!==cur.id).slice(0,3).map((p)=>Object.assign({},p,{bg:tone(PROJECTS.indexOf(p)),open:()=>this.go('project',p.id)}));
-    const news=NEWS.map((n,i)=>Object.assign({},n,{bg:tone(i+2),dateFmt:n.date}));
+    const relProjects=PROJECTS.filter(p=>p.id!==cur.id).slice(0,3).map((p)=>Object.assign({},p,{bg:img1(p.images)||tone(PROJECTS.indexOf(p)),open:()=>this.go('project',p.id)}));
+    const news=NEWS.map((n,i)=>Object.assign({},n,{bg:imgU(n.image)||tone(i+2),dateFmt:n.date}));
 
     // ---- ADMIN ----
     const SECS=[['projects','Проекты'],['news','Новости'],['services','Услуги'],['krt','КРТ'],['team','Команда'],['manifest','Манифест'],['settings','Настройки']];
@@ -793,20 +838,27 @@ class Component extends DCLogic {
       onEdit:()=>this.editAt(curSec,idx), onDelete:()=>this.deleteAt(curSec,idx),
       onUp:()=>this.moveAt(curSec,idx,-1), onDown:()=>this.moveAt(curSec,idx,1)}));
     const FIELDS={
-      projects:[['title','Название','text'],['cat','Категория','text'],['group','Группа','enum'],['year','Год','text'],['loc','Локация','text'],['desc','Описание','textarea']],
-      news:[['title','Заголовок','text'],['date','Дата (ГГГГ.ММ.ДД)','text']],
+      projects:[['title','Название','text'],['cat','Категория','text'],['group','Группа','enum'],['year','Год','text'],['loc','Локация','text'],['desc','Описание','textarea'],['images','Изображения (галерея)','images']],
+      news:[['title','Заголовок','text'],['date','Дата (ГГГГ.ММ.ДД)','text'],['image','Изображение','image']],
       services:[['t','Название','text'],['d','Описание','textarea']],
-      krt:[['name','Название','text'],['district','Район','text'],['area','Площадь','text']],
-      team:[['name','Имя','text'],['role','Роль','text']],
-      manifest:[['n','Номер','text'],['t','Заголовок','text'],['d','Описание','textarea']]
+      krt:[['name','Название','text'],['district','Район','text'],['area','Площадь','text'],['images','Изображения (галерея)','images']],
+      team:[['name','Имя','text'],['role','Роль','text'],['image','Фото','image']],
+      manifest:[['n','Номер','text'],['t','Заголовок','text'],['d','Описание','textarea'],['icon','Иконка (SVG/PNG)','image']]
     };
     const GROUPS=[['frame','Направления'],['place','Места'],['life','Среда']];
     let editing=null;
     if(st.editing){ const e=st.editing; const conf=FIELDS[e.sec]||[];
       const fields=conf.map(c=>{ const k=c[0],label=c[1],type=c[2];
-        return {key:k,label,type,value:e.draft[k]!==undefined?e.draft[k]:'',
+        const raw=e.draft[k];
+        const arr=Array.isArray(raw)?raw:[];
+        return {key:k,label,type,value:(raw!==undefined&&!Array.isArray(raw))?raw:'',
           isText:type==='text',isTextarea:type==='textarea',isEnum:type==='enum',
+          isImage:type==='image',isImages:type==='images',
+          hasValue:type==='image'&&!!raw,
+          bg:(type==='image'&&raw)?('url("'+raw+'")'):'none',
+          items:type==='images'?arr.map((u,idx)=>({url:u,bg:'url("'+u+'")',onRemove:()=>this.removeImageAt(k,idx)})):[],
           options:type==='enum'?GROUPS.map(g=>({value:g[0],label:g[1],sel:e.draft[k]===g[0]})):[],
+          onUpload:(ev)=>this.fieldUpload(k, ev.target.files, type==='images'),
           onChange:(ev)=>this.setField(k, ev.target.value)}; });
       editing={sec:e.sec,isNew:e.isNew,fields,title:(e.isNew?'Добавить':'Изменить'),onSave:()=>this.saveItem(),onCancel:()=>this.closeEditor()}; }
     const sset=d.settings;
@@ -816,7 +868,9 @@ class Component extends DCLogic {
       isHome:st.page==='home', isProjects:st.page==='projects'||st.page==='news', isStudio:st.page==='studio', isContact:st.page==='contact', isPositions:st.page==='positions',
       isKrt:st.page==='krt', isProject:st.page==='project', isServices:st.page==='services', isKrtItem:st.page==='krtitem',
       krtGroups, krtTotal, team, currentProject, relProjects, currentKrt, krtRelated,
-      manifest:MANIFEST.map((m,i)=>Object.assign({},m,{slotId:'manifest-'+(m.n||(i+1))})),
+      manifest:MANIFEST.map((m,i)=>Object.assign({},m,{slotId:'manifest-'+(m.n||(i+1)),iconBg:(m.icon?'url("'+m.icon+'")':'none')})),
+      aboutImageBg:(SETTINGS.aboutImage?'url("'+SETTINGS.aboutImage+'")':'none'), hasAboutImage:!!SETTINGS.aboutImage,
+      uploadAboutImage:(e)=>this.uploadAboutImage(e), removeAboutImage:()=>this.removeAboutImage(),
       services:SERVICES.map((s,i)=>Object.assign({},s,{num:String(i+1).padStart(2,'0')})),
       aboutTitle:SETTINGS.aboutTitle, aboutText1:SETTINGS.aboutText1, aboutText2:SETTINGS.aboutText2,
       servicesTitle:SETTINGS.servicesTitle, krtTitle:SETTINGS.krtTitle,
