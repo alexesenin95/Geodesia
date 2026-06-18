@@ -225,17 +225,25 @@
         <h1 style="margin:0;max-width:18ch;font-size:clamp(30px,5vw,72px);font-weight:500;letter-spacing:-.03em;line-height:1.06">Давайте создадим пространство вместе</h1>
       </section>
       <section style="padding:0 clamp(18px,3.4vw,40px) clamp(60px,9vh,120px)">
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:clamp(30px,4vw,64px)">
-          <sc-for list="{{ offices }}" as="o" hint-placeholder-count="2">
-            <div data-reveal>
-              <div style="font-size:13px;font-weight:600;letter-spacing:.04em;margin-bottom:12px">{{ o.city }}</div>
-              <div style="font-size:16px;line-height:1.7;color:#555;white-space:pre-line">{{ o.lines }}</div>
-              <div style="margin-top:10px;font-size:16px;color:#111">{{ o.tel }}</div>
+        <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:clamp(30px,4vw,72px);align-items:start">
+          <div data-reveal style="min-width:0">
+            <sc-for list="{{ contacts }}" as="c" hint-placeholder-count="5">
+              <div style="border-top:1px solid #e0e0e0;padding:clamp(16px,2.4vh,22px) 0">
+                <div style="font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#999;margin-bottom:8px">{{ c.label }}</div>
+                <sc-if value="{{ c.isLink }}" hint-placeholder-val="{{ false }}">
+                  <a href="{{ c.href }}" target="_blank" style="font-size:clamp(17px,1.7vw,22px);font-weight:500;letter-spacing:-.01em;color:#111;border-bottom:1px solid #111;padding-bottom:2px" style-hover="opacity:.55">{{ c.value }}</a>
+                </sc-if>
+                <sc-if value="{{ c.isText }}" hint-placeholder-val="{{ true }}">
+                  <div style="font-size:clamp(16px,1.6vw,20px);line-height:1.55;color:#333;white-space:pre-line">{{ c.value }}</div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+          <div data-reveal style="min-width:0">
+            <div style="position:relative;width:100%;aspect-ratio:16/11;overflow:hidden;background:#ececec;border:1px solid #e0e0e0;filter:grayscale(1) contrast(1.05);transition:filter .5s ease" style-hover="filter:grayscale(0)">
+              <iframe src="{{ mapSrc }}" width="100%" height="100%" frameborder="0" loading="lazy" style="border:0;display:block;width:100%;height:100%"></iframe>
             </div>
-          </sc-for>
-          <div data-reveal>
-            <div style="font-size:13px;font-weight:600;letter-spacing:.04em;margin-bottom:12px">Сотрудничество</div>
-            <a href="mailto:inquiry@vyaz-vlg.ru" style="font-size:clamp(18px,2vw,26px);font-weight:500;letter-spacing:-.01em;border-bottom:1px solid #111;padding-bottom:2px" style-hover="opacity:.6">inquiry@vyaz-vlg.ru</a>
+            <div style="margin-top:12px;font-size:13px;color:#888;white-space:pre-line">{{ mapAddress }}</div>
           </div>
         </div>
       </section>
@@ -535,7 +543,10 @@
                   <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Телефон</span><input name="phone" defaultValue="{{ set_phone }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
                   <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Email</span><input name="email" defaultValue="{{ set_email }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
                   <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Email (сотрудничество)</span><input name="inquiry" defaultValue="{{ set_inquiry }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
+                  <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Telegram (@имя или ссылка)</span><input name="telegram" defaultValue="{{ set_telegram }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
+                  <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">MAX (имя или ссылка)</span><input name="max" defaultValue="{{ set_max }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
                 </div>
+                <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Карта — адрес для поиска или ссылка-вставка (Яндекс.Карты → «Поделиться»)</span><input name="mapQuery" defaultValue="{{ set_mapQuery }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
                 <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Фото бюро (страница «О нас»)</span>
                   <sc-if value="{{ hasAboutImage }}" hint-placeholder-val="{{ false }}"><div style="position:relative;width:200px;aspect-ratio:4/5;background:#f3f2ee;background-image:{{ aboutImageBg }};background-size:cover;background-position:center;margin-bottom:6px"><button type="button" onClick="{{ removeAboutImage }}" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.6);color:#fff;border:none;cursor:pointer;font-size:13px;width:26px;height:26px">✕</button></div></sc-if>
                   <input type="file" accept="image/*" onChange="{{ uploadAboutImage }}" style="font-size:13px"/>
@@ -750,7 +761,7 @@ class Component extends DCLogic {
   deleteAt(sec,idx){ const data=Object.assign({},this.state.data); const arr=data[sec].slice(); arr.splice(idx,1); data[sec]=arr; this.setState({data},()=>{ this.persist(); this.flash('Удалено'); }); }
   moveAt(sec,idx,dir){ const data=Object.assign({},this.state.data); const arr=data[sec].slice(); const j=idx+dir; if(j<0||j>=arr.length) return; const t=arr[idx]; arr[idx]=arr[j]; arr[j]=t; data[sec]=arr; this.setState({data},()=>this.persist()); }
   saveSettings(e){ if(e&&e.preventDefault)e.preventDefault(); const fd=new FormData(e.target); const data=Object.assign({},this.state.data); const s=Object.assign({},data.settings);
-    ['aboutTitle','heroTitle','servicesTitle','krtTitle','aboutText1','aboutText2','address','phone','email','inquiry'].forEach(k=>{ if(fd.get(k)!==null) s[k]=fd.get(k); }); data.settings=s;
+    ['aboutTitle','heroTitle','servicesTitle','krtTitle','aboutText1','aboutText2','address','phone','email','inquiry','telegram','max','mapQuery'].forEach(k=>{ if(fd.get(k)!==null) s[k]=fd.get(k); }); data.settings=s;
     this.setState({data},()=>{ this.persist(); this.flash('Настройки сохранены'); }); }
   resetData(){ if(typeof confirm==='function'&&!confirm('Сбросить весь контент к исходному?')) return; const data=JSON.parse(JSON.stringify(this._SEED)); this.setState({data,editing:null},()=>{ this.persist(); this.flash('Сброшено'); }); }
   renderVals(){
@@ -780,11 +791,23 @@ class Component extends DCLogic {
       colColor: st.projFilter===f.key?'#111':'#111',
       colUnderline: st.projFilter===f.key?'underline':'none',
       onCol:()=>this.setState({projFilter:f.key})}));
-    const offices=[
-      {city:'Волгоград',lines:'ул. Комсомольская, 10а\nВолгоград, 400066',tel:'+7 (8442) 32-54-94'},
-      {city:'Почта',lines:SETTINGS.email+'\n'+SETTINGS.inquiry,tel:''}
-    ];
-    offices[0]={city:'Волгоград',lines:SETTINGS.address,tel:SETTINGS.phone};
+    const offices=[{city:'Волгоград',lines:SETTINGS.address,tel:SETTINGS.phone}];
+    // ---- Contacts (editable in admin) ----
+    const isUrl=s=>/^https?:\/\//i.test(s);
+    const stripUrl=s=>s.replace(/^https?:\/\/(www\.)?/i,'').replace(/\/$/,'');
+    const telVal=(SETTINGS.phone||'').trim();
+    const tgRaw=(SETTINGS.telegram||'').trim();
+    const maxRaw=(SETTINGS.max||'').trim();
+    const contacts=[
+      {label:'Адрес', value:(SETTINGS.address||'').trim(), isText:true, isLink:false, href:''},
+      {label:'Телефон', value:telVal, isText:false, isLink:!!telVal, href:'tel:'+telVal.replace(/[^+\d]/g,'')},
+      {label:'Почта', value:(SETTINGS.email||'').trim(), isText:false, isLink:!!(SETTINGS.email||'').trim(), href:'mailto:'+(SETTINGS.email||'').trim()},
+      {label:'Telegram', value:(tgRaw?(isUrl(tgRaw)?stripUrl(tgRaw):'@'+tgRaw.replace(/^@/,'')):''), isText:false, isLink:!!tgRaw, href:(tgRaw?(isUrl(tgRaw)?tgRaw:'https://t.me/'+tgRaw.replace(/^@/,'')):'')},
+      {label:'MAX', value:(maxRaw?(isUrl(maxRaw)?stripUrl(maxRaw):maxRaw.replace(/^@/,'')):''), isText:false, isLink:!!maxRaw, href:(maxRaw?(isUrl(maxRaw)?maxRaw:'https://max.ru/'+maxRaw.replace(/^@/,'')):'')}
+    ].filter(c=>c.value);
+    const mq=(SETTINGS.mapQuery||'').trim();
+    const mapSrc = isUrl(mq) ? mq : ('https://yandex.ru/map-widget/v1/?text='+encodeURIComponent(mq||(SETTINGS.address||'').replace(/\n/g,', '))+'&z=16');
+    const mapAddress=(SETTINGS.address||'').trim();
     const isNews=st.page==='news';
     // КРТ grouped by district
     const kmap={}; KRT.forEach((it,i)=>{ (kmap[it.district]=kmap[it.district]||[]).push(Object.assign({},it,{bg:img1(it.images)||tone(i+3),open:()=>this.go('krtitem',i)})); });
@@ -885,6 +908,8 @@ class Component extends DCLogic {
       saveSettings:(e)=>this.saveSettings(e), resetData:()=>this.resetData(),
       set_aboutTitle:sset.aboutTitle,set_heroTitle:sset.heroTitle,set_servicesTitle:sset.servicesTitle,set_krtTitle:sset.krtTitle,
       set_aboutText1:sset.aboutText1,set_aboutText2:sset.aboutText2,set_address:sset.address,set_phone:sset.phone,set_email:sset.email,set_inquiry:sset.inquiry,
+      set_telegram:sset.telegram,set_max:sset.max,set_mapQuery:sset.mapQuery,
+      contacts, mapSrc, mapAddress,
       openMenu:()=>this.setState({menuOpen:true}), closeMenu:()=>this.setState({menuOpen:false}),
       goHome:()=>this.go('home'), goProjects:()=>this.go('projects'), goNews:()=>this.go('news'), goContact:()=>this.go('contact'), goPositions:()=>this.go('positions'),
       menuItems, projects, news, allProjects, filterCols, offices, isNews, isProjectsGrid:!isNews, projectsTitle: isNews?'Новости':SETTINGS.heroTitle,

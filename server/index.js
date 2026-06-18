@@ -29,13 +29,17 @@ for (const dir of [DATA_DIR, UPLOADS_DIR]) {
 
 // ---- Content store (atomic JSON file) -------------------------------------
 function loadContent() {
+  const seed = JSON.parse(fs.readFileSync(SEED_FILE, 'utf8'));
+  let data;
   try {
-    return JSON.parse(fs.readFileSync(CONTENT_FILE, 'utf8'));
+    data = JSON.parse(fs.readFileSync(CONTENT_FILE, 'utf8'));
   } catch (e) {
-    const seed = JSON.parse(fs.readFileSync(SEED_FILE, 'utf8'));
     saveContent(seed);
     return seed;
   }
+  // Backfill any settings keys added after this store was first created.
+  data.settings = Object.assign({}, seed.settings, data.settings || {});
+  return data;
 }
 function saveContent(data) {
   const tmp = CONTENT_FILE + '.tmp';
