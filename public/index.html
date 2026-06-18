@@ -66,7 +66,7 @@
     <!-- FULL-SCREEN PROJECTS HERO -->
     <section style="position:relative;height:100vh;min-height:580px;overflow:hidden;background:#1a1a1a">
       <sc-for list="{{ projects }}" as="p" hint-placeholder-count="5">
-        <div style="position:absolute;inset:0;background-image:{{ p.bg }};background-size:cover;background-position:center;opacity:{{ p.activeOpacity }};transform:scale({{ p.activeScale }});transition:opacity .8s ease,transform 2.4s cubic-bezier(.16,1,.3,1)"></div>
+        <div style="position:absolute;inset:0;background-image:{{ p.bg }};background-size:cover;background-position:center;opacity:{{ p.activeOpacity }};transform:scale({{ p.activeScale }});transition:opacity 1.1s ease,transform 7s ease-out;will-change:transform,opacity"></div>
       </sc-for>
       <div style="position:absolute;inset:0;background:linear-gradient(95deg,rgba(0,0,0,.45),rgba(0,0,0,.05) 46%,rgba(0,0,0,0) 70%)"></div>
       <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.28),rgba(0,0,0,0) 30%)"></div>
@@ -801,9 +801,10 @@ class Component extends DCLogic {
     this.initReveal();
     window.addEventListener('scroll', this._onScroll, {passive:true});
     this._onScroll();
+    this._heroT=setInterval(()=>{ if(this.state.page!=='home'||this.state.intro) return; const n=((this.state.data&&this.state.data.projects)||[]).length; if(n>1) this.setState(s=>({activeIdx:(s.activeIdx+1)%n})); }, 5000);
   }
   componentDidUpdate(p){ if(p.pageKey!==this.state.pageKey){ this.initReveal(); this._onScroll(); } this._onScroll(); }
-  componentWillUnmount(){ window.removeEventListener('scroll', this._onScroll); if(this._io) this._io.disconnect(); if(this._introT) clearTimeout(this._introT); }
+  componentWillUnmount(){ window.removeEventListener('scroll', this._onScroll); if(this._io) this._io.disconnect(); if(this._introT) clearTimeout(this._introT); if(this._heroT) clearInterval(this._heroT); }
   initReveal(){ requestAnimationFrame(()=>{ const r=this.rootRef.current; if(!r) return; r.querySelectorAll('[data-reveal]').forEach(el=>{ if(el.dataset.s) return; el.dataset.s='1'; el.style.opacity='0'; el.style.transform='translateY(22px)'; el.style.transition='opacity .9s cubic-bezier(.16,1,.3,1),transform 1s cubic-bezier(.16,1,.3,1)'; this._io.observe(el); }); }); }
   applyNav(dark){ const nav=this.navRef.current, logo=this.logoRef.current; const c=dark?'#111':'#fff';
     if(nav){ nav.style.setProperty('color',c,'important'); nav.querySelectorAll('a').forEach(a=>a.style.setProperty('color',c,'important')); }
@@ -861,7 +862,7 @@ class Component extends DCLogic {
     const projects = PROJECTS.map((p,i)=>Object.assign({},p,{
       bg:img1(p.images)||tone(i),
       activeOpacity: i===st.activeIdx?1:0,
-      activeScale: i===st.activeIdx?1.04:1,
+      activeScale: i===st.activeIdx?1.13:1,
       nameColor: i===st.activeIdx?'#111':'#9a9a9a',
       heroColor: i===st.activeIdx?'#fff':'rgba(255,255,255,.42)',
       viewOpacity: i===st.activeIdx?1:0, viewShift: i===st.activeIdx?'0px':'-10px',

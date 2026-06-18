@@ -82,6 +82,28 @@ function runMigrations(data, seed) {
     data._migrations.orgNames1 = true;
     changed = true;
   }
+  // Add Сквер Строителей; retitle Металлургов as a park; refresh Симбирцева text.
+  if (!data._migrations.projects3) {
+    const byId = {};
+    (seed.projects || []).forEach(p => { byId[p.id] = p; });
+    const have = new Set((data.projects || []).map(p => p.id));
+    if (byId.stroiteley && !have.has('stroiteley')) {
+      data.projects = data.projects || [];
+      data.projects.push(JSON.parse(JSON.stringify(byId.stroiteley)));
+    }
+    (data.projects || []).forEach(p => {
+      if (p.id === 'metallurgov' && p.title === 'Проспект Металлургов' && byId.metallurgov) {
+        p.title = byId.metallurgov.title;
+        p.cat = byId.metallurgov.cat;
+        p.desc = byId.metallurgov.desc;
+      }
+      if (p.id === 'simbirtseva' && byId.simbirtseva && /Камерный сквер/.test(p.desc || '')) {
+        p.desc = byId.simbirtseva.desc;
+      }
+    });
+    data._migrations.projects3 = true;
+    changed = true;
+  }
   return changed;
 }
 function saveContent(data) {
