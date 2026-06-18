@@ -39,7 +39,28 @@ function loadContent() {
   }
   // Backfill any settings keys added after this store was first created.
   data.settings = Object.assign({}, seed.settings, data.settings || {});
+  if (runMigrations(data, seed)) saveContent(data);
   return data;
+}
+
+// One-time data migrations, guarded by flags so they never undo later edits.
+function runMigrations(data, seed) {
+  data._migrations = data._migrations || {};
+  let changed = false;
+  // Seed initial project photos into projects that still have none.
+  if (!data._migrations.seedProjectPhotos1) {
+    const byId = {};
+    (seed.projects || []).forEach(p => { byId[p.id] = p; });
+    (data.projects || []).forEach(p => {
+      const sp = byId[p.id];
+      if (sp && Array.isArray(sp.images) && sp.images.length && (!Array.isArray(p.images) || !p.images.length)) {
+        p.images = sp.images.slice();
+      }
+    });
+    data._migrations.seedProjectPhotos1 = true;
+    changed = true;
+  }
+  return changed;
 }
 function saveContent(data) {
   const tmp = CONTENT_FILE + '.tmp';
