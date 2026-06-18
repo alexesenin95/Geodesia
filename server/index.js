@@ -60,6 +60,19 @@ function runMigrations(data, seed) {
     data._migrations.seedProjectPhotos1 = true;
     changed = true;
   }
+  // Append projects added after the store was created (by id), if missing.
+  if (!data._migrations.addProjects2) {
+    const have = new Set((data.projects || []).map(p => p.id));
+    ['metallurgov', 'simbirtseva'].forEach(id => {
+      const sp = (seed.projects || []).find(p => p.id === id);
+      if (sp && !have.has(id)) {
+        data.projects = data.projects || [];
+        data.projects.push(JSON.parse(JSON.stringify(sp)));
+      }
+    });
+    data._migrations.addProjects2 = true;
+    changed = true;
+  }
   return changed;
 }
 function saveContent(data) {
