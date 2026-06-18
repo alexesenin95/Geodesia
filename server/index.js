@@ -73,6 +73,15 @@ function runMigrations(data, seed) {
     data._migrations.addProjects2 = true;
     changed = true;
   }
+  // Correct the organisation name set by earlier versions.
+  if (!data._migrations.orgNames1) {
+    const s = data.settings || (data.settings = {});
+    if (s.aboutTitle && /стратегическог/i.test(s.aboutTitle)) {
+      s.aboutTitle = 'Центр компетенций по вопросам городской среды Волгограда';
+    }
+    data._migrations.orgNames1 = true;
+    changed = true;
+  }
   return changed;
 }
 function saveContent(data) {
@@ -97,7 +106,16 @@ function auth(req, res, next) {
 }
 
 // ---- Uploads ---------------------------------------------------------------
-const ALLOWED = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/avif']);
+const ALLOWED = new Set([
+  // images
+  'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/avif',
+  // documents (project materials)
+  'application/pdf', 'application/zip', 'application/x-zip-compressed',
+  'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'text/plain'
+]);
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, UPLOADS_DIR),
   filename: (req, file, cb) => {
@@ -107,7 +125,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({
   storage,
-  limits: { fileSize: 12 * 1024 * 1024 },
+  limits: { fileSize: 50 * 1024 * 1024 },
   fileFilter: (req, file, cb) => cb(null, ALLOWED.has(file.mimetype))
 });
 
@@ -137,7 +155,7 @@ app.put('/api/content', auth, (req, res) => {
 
 app.post('/api/upload', auth, upload.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Файл не принят (формат или размер)' });
-  res.json({ url: '/uploads/' + req.file.filename });
+  res.json({ url: '/uploads/' + req.file.filename, name: req.file.originalname });
 });
 
 // Static files

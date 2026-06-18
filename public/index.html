@@ -88,7 +88,7 @@
       <h2 style="margin:0 0 clamp(20px,3vh,32px);font-size:15px;font-weight:600;letter-spacing:.01em">Новости</h2>
       <div style="border-top:1px solid #e0e0e0">
         <sc-for list="{{ news }}" as="n" hint-placeholder-count="4">
-          <a data-reveal onClick="{{ goNews }}" style="display:grid;grid-template-columns:clamp(180px,22vw,300px) 1fr;gap:clamp(20px,4vw,72px);align-items:center;padding:clamp(22px,3vh,38px) 0;border-bottom:1px solid #e0e0e0;cursor:pointer">
+          <a data-reveal onClick="{{ n.open }}" style="display:grid;grid-template-columns:clamp(180px,22vw,300px) 1fr;gap:clamp(20px,4vw,72px);align-items:center;padding:clamp(22px,3vh,38px) 0;border-bottom:1px solid #e0e0e0;cursor:pointer">
             <div style="position:relative;width:100%;aspect-ratio:3/2;overflow:hidden;background:#eee">
               <div style="position:absolute;inset:0;background-image:{{ n.bg }};background-size:cover;background-position:center;transition:transform 1.2s cubic-bezier(.16,1,.3,1)" style-hover="transform:scale(1.05)"></div>
             </div>
@@ -113,7 +113,7 @@
         <section style="padding:0 clamp(18px,3.4vw,40px) clamp(60px,9vh,120px)">
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:clamp(28px,3vw,48px)">
             <sc-for list="{{ news }}" as="n" hint-placeholder-count="4">
-              <a data-reveal style="cursor:pointer;display:block">
+              <a data-reveal onClick="{{ n.open }}" style="cursor:pointer;display:block">
                 <div style="position:relative;width:100%;aspect-ratio:3/2;overflow:hidden;background:#eee">
                   <div style="position:absolute;inset:0;background-image:{{ n.bg }};background-size:cover;background-position:center;transition:transform 1.2s cubic-bezier(.16,1,.3,1)" style-hover="transform:scale(1.05)"></div>
                 </div>
@@ -225,7 +225,7 @@
         <h1 style="margin:0;max-width:18ch;font-size:clamp(30px,5vw,72px);font-weight:500;letter-spacing:-.03em;line-height:1.06">Давайте создадим пространство вместе</h1>
       </section>
       <section style="padding:0 clamp(18px,3.4vw,40px) clamp(60px,9vh,120px)">
-        <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:clamp(30px,4vw,72px);align-items:start">
+        <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(30px,4vw,72px);align-items:start">
           <div data-reveal style="min-width:0">
             <sc-for list="{{ contacts }}" as="c" hint-placeholder-count="5">
               <div style="border-top:1px solid #e0e0e0;padding:clamp(16px,2.4vh,22px) 0">
@@ -239,9 +239,13 @@
               </div>
             </sc-for>
           </div>
-          <div data-reveal style="min-width:0">
-            <div style="position:relative;width:100%;aspect-ratio:16/11;overflow:hidden;background:#ececec;border:1px solid #e0e0e0;filter:grayscale(1) contrast(1.05);transition:filter .5s ease" style-hover="filter:grayscale(0)">
-              <iframe src="{{ mapSrc }}" width="100%" height="100%" frameborder="0" loading="lazy" style="border:0;display:block;width:100%;height:100%"></iframe>
+          <div data-reveal style="min-width:0;display:flex;flex-direction:column;align-items:flex-start">
+            <div style="position:relative;width:100%;max-width:460px;aspect-ratio:4/3;overflow:hidden;background:#ececec;border:1px solid #e0e0e0">
+              <iframe src="{{ mapSrc }}" width="100%" height="100%" frameborder="0" loading="lazy" style="border:0;display:block;width:100%;height:100%;filter:grayscale(1) contrast(1.04)"></iframe>
+              <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-100%);pointer-events:none;display:flex;flex-direction:column;align-items:center">
+                <div style="background:#111;color:#fff;font-size:12px;font-weight:600;letter-spacing:.02em;padding:6px 12px;white-space:nowrap;box-shadow:0 6px 16px rgba(0,0,0,.28)">Мы здесь</div>
+                <div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid #111"></div>
+              </div>
             </div>
             <div style="margin-top:12px;font-size:13px;color:#888;white-space:pre-line">{{ mapAddress }}</div>
           </div>
@@ -343,7 +347,7 @@
             <div style="font-size:13px;color:#888;margin-bottom:10px">Комплексное развитие территорий · {{ currentKrt.area }}</div>
             <h1 style="margin:0;max-width:18ch;font-size:clamp(30px,5vw,66px);font-weight:500;letter-spacing:-.03em;line-height:1.04">{{ currentKrt.name }}</h1>
           </div>
-          <button onClick="{{ currentKrt.download }}" style="background:#111;color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;padding:14px 26px;white-space:nowrap" style-hover="opacity:.82">↓ Выгрузить</button>
+          <sc-if value="{{ currentKrt.hasFiles }}" hint-placeholder-val="{{ false }}"><a href="{{ currentKrt.fileUrl }}" target="_blank" style="background:#111;color:#fff;cursor:pointer;font-size:14px;font-weight:600;padding:14px 26px;white-space:nowrap" style-hover="opacity:.82">↓ Материалы</a></sc-if>
         </div>
       </section>
       <section style="padding:clamp(28px,4vh,48px) clamp(18px,3.4vw,40px) 0">
@@ -370,6 +374,13 @@
             <div><div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:.06em">Район</div><div style="font-size:16px;margin-top:5px">{{ currentKrt.district }}</div></div>
             <div><div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:.06em">Площадь</div><div style="font-size:16px;margin-top:5px">{{ currentKrt.area }}</div></div>
             <div><div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:.06em">Статус</div><div style="font-size:16px;margin-top:5px">Свободна</div></div>
+            <sc-if value="{{ currentKrt.hasFiles }}" hint-placeholder-val="{{ false }}">
+              <div><div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:.06em">Материалы</div>
+                <div style="margin-top:8px;display:flex;flex-direction:column;gap:8px">
+                  <sc-for list="{{ currentKrt.files }}" as="fl" hint-placeholder-count="1"><a href="{{ fl.url }}" target="_blank" style="font-size:15px;color:#111;border-bottom:1px solid #111;padding-bottom:2px;width:fit-content" style-hover="opacity:.6">↓ {{ fl.name }}</a></sc-for>
+                </div>
+              </div>
+            </sc-if>
           </div>
           <div style="grid-column:span 2;min-width:0">
             <p data-reveal style="margin:0;font-size:clamp(20px,2.4vw,34px);font-weight:500;letter-spacing:-.01em;line-height:1.32;text-wrap:pretty">{{ currentKrt.desc }}</p>
@@ -404,7 +415,7 @@
             <div style="font-size:13px;color:#888;margin-bottom:10px">{{ currentProject.cat }} · {{ currentProject.year }}</div>
             <h1 style="margin:0;max-width:18ch;font-size:clamp(30px,5vw,66px);font-weight:500;letter-spacing:-.03em;line-height:1.04">{{ currentProject.title }}</h1>
           </div>
-          <button onClick="{{ currentProject.download }}" style="background:#111;color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;padding:14px 26px;white-space:nowrap" style-hover="opacity:.82">↓ Выгрузить</button>
+          <sc-if value="{{ currentProject.hasFiles }}" hint-placeholder-val="{{ false }}"><a href="{{ currentProject.fileUrl }}" target="_blank" style="background:#111;color:#fff;cursor:pointer;font-size:14px;font-weight:600;padding:14px 26px;white-space:nowrap" style-hover="opacity:.82">↓ Материалы</a></sc-if>
         </div>
       </section>
 
@@ -433,6 +444,13 @@
             <div><div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:.06em">Локация</div><div style="font-size:16px;margin-top:5px">{{ currentProject.loc }}</div></div>
             <div><div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:.06em">Категория</div><div style="font-size:16px;margin-top:5px">{{ currentProject.cat }}</div></div>
             <div><div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:.06em">Год</div><div style="font-size:16px;margin-top:5px">{{ currentProject.year }}</div></div>
+            <sc-if value="{{ currentProject.hasFiles }}" hint-placeholder-val="{{ false }}">
+              <div><div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:.06em">Материалы</div>
+                <div style="margin-top:8px;display:flex;flex-direction:column;gap:8px">
+                  <sc-for list="{{ currentProject.files }}" as="fl" hint-placeholder-count="1"><a href="{{ fl.url }}" target="_blank" style="font-size:15px;color:#111;border-bottom:1px solid #111;padding-bottom:2px;width:fit-content" style-hover="opacity:.6">↓ {{ fl.name }}</a></sc-for>
+                </div>
+              </div>
+            </sc-if>
           </div>
           <div style="grid-column:span 2;min-width:0">
             <p data-reveal style="margin:0;font-size:clamp(20px,2.4vw,34px);font-weight:500;letter-spacing:-.01em;line-height:1.32;text-wrap:pretty">{{ currentProject.desc }}</p>
@@ -457,6 +475,49 @@
     </div>
     </sc-if>
 
+    <sc-if value="{{ isNewsItem }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <section style="padding:clamp(96px,13vh,150px) clamp(18px,3.4vw,40px) 0">
+        <a onClick="{{ goNews }}" style="font-size:14px;color:#888;cursor:pointer" style-hover="color:#111">← Все новости</a>
+      </section>
+      <section style="padding:clamp(18px,3vh,28px) clamp(18px,3.4vw,40px) 0">
+        <div style="max-width:900px">
+          <div style="font-size:13px;font-weight:600;letter-spacing:.04em;color:#999">{{ currentNews.dateFmt }}</div>
+          <h1 style="margin:12px 0 0;font-size:clamp(28px,4.6vw,62px);font-weight:500;letter-spacing:-.03em;line-height:1.05;text-wrap:balance">{{ currentNews.title }}</h1>
+        </div>
+      </section>
+      <sc-if value="{{ currentNews.hasCover }}" hint-placeholder-val="{{ true }}">
+        <section style="padding:clamp(28px,4vh,48px) clamp(18px,3.4vw,40px) 0">
+          <div style="position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#eee;background-image:{{ currentNews.coverBg }};background-size:cover;background-position:center"></div>
+        </section>
+      </sc-if>
+      <section style="padding:clamp(40px,6vh,72px) clamp(18px,3.4vw,40px) clamp(30px,5vh,56px)">
+        <div style="max-width:760px;font-size:clamp(17px,1.5vw,20px);line-height:1.75;color:#2a2a2a;white-space:pre-line;text-wrap:pretty">{{ currentNews.body }}</div>
+      </section>
+      <sc-if value="{{ currentNews.hasGallery }}" hint-placeholder-val="{{ false }}">
+        <section style="padding:0 clamp(18px,3.4vw,40px) clamp(50px,8vh,100px)">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr));gap:clamp(12px,1.6vw,22px)">
+            <sc-for list="{{ currentNews.gallery }}" as="g" hint-placeholder-count="3">
+              <div style="position:relative;width:100%;aspect-ratio:3/2;overflow:hidden;background:#eee"><div style="position:absolute;inset:0;background-image:{{ g.bg }};background-size:cover;background-position:center;transition:transform 1.2s cubic-bezier(.16,1,.3,1)" style-hover="transform:scale(1.04)"></div></div>
+            </sc-for>
+          </div>
+        </section>
+      </sc-if>
+      <section style="padding:0 clamp(18px,3.4vw,40px) clamp(60px,9vh,120px);border-top:1px solid #e0e0e0;padding-top:clamp(40px,6vh,72px)">
+        <h2 style="margin:0 0 clamp(20px,3vh,32px);font-size:15px;font-weight:600;letter-spacing:.01em">Другие новости</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:clamp(24px,3vw,40px)">
+          <sc-for list="{{ relNews }}" as="n" hint-placeholder-count="3">
+            <a data-reveal onClick="{{ n.open }}" style="cursor:pointer;display:block">
+              <div style="position:relative;width:100%;aspect-ratio:3/2;overflow:hidden;background:#eee"><div style="position:absolute;inset:0;background-image:{{ n.bg }};background-size:cover;background-position:center;transition:transform 1.3s cubic-bezier(.16,1,.3,1)" style-hover="transform:scale(1.05)"></div></div>
+              <div style="margin-top:13px;font-size:13px;color:#999">{{ n.dateFmt }}</div>
+              <div style="margin-top:5px;font-size:19px;font-weight:500;letter-spacing:-.01em;line-height:1.25;text-wrap:pretty">{{ n.title }}</div>
+            </a>
+          </sc-for>
+        </div>
+      </section>
+    </div>
+    </sc-if>
+
   </main>
 
   <footer style="background:#111;color:#fff;padding:clamp(40px,6vh,64px) clamp(18px,3.4vw,40px) 32px">
@@ -470,10 +531,10 @@
       <div style="font-size:14px;line-height:1.7;color:rgba(255,255,255,.66)"><div style="color:#fff;margin-bottom:8px">Волгоград</div><span style="white-space:pre-line">{{ footAddress }}</span><br>{{ footPhone }}</div>
       <div style="font-size:14px;line-height:1.7;color:rgba(255,255,255,.66)"><div style="color:#fff;margin-bottom:8px">Связаться</div>{{ footEmail }}<br>{{ footInquiry }}</div>
       <div style="font-size:14px;line-height:1.7;color:rgba(255,255,255,.66)"><div style="color:#fff;margin-bottom:8px">Навигация</div><div style="display:flex;flex-direction:column;gap:4px"><sc-for list="{{ menuItems }}" as="m" hint-placeholder-count="4"><a onClick="{{ m.onClick }}" style="cursor:pointer" style-hover="color:#fff">{{ m.label }}</a></sc-for></div></div>
-      <div style="font-size:14px;line-height:1.7;color:rgba(255,255,255,.66)">Центр стратегического планирования Волгограда «ВЯЗ»</div>
+      <div style="font-size:14px;line-height:1.7;color:rgba(255,255,255,.66)">{{ footOrgFull }}</div>
     </div>
     <div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;padding-top:26px;font-size:13px;color:rgba(255,255,255,.5)">
-      <span>© 2026 МБУ «ВЯЗ»</span>
+      <span>© 2026 {{ footOrgShort }}</span>
       <div style="display:flex;gap:18px"><a onClick="{{ goAdmin }}" style="cursor:pointer" style-hover="color:#fff">Панель управления</a><a href="https://www.instagram.com" target="_blank" style="cursor:pointer" style-hover="color:#fff">Instagram</a></div>
     </div>
   </footer>
@@ -532,6 +593,8 @@
             </sc-if>
             <sc-if value="{{ adminIsSettings }}" hint-placeholder-val="{{ false }}">
               <form onSubmit="{{ saveSettings }}" style="max-width:680px;display:flex;flex-direction:column;gap:20px">
+                <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Полное название</span><input name="orgNameFull" defaultValue="{{ set_orgNameFull }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
+                <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Краткое название</span><input name="orgNameShort" defaultValue="{{ set_orgNameShort }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
                 <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Заголовок «О нас»</span><input name="aboutTitle" defaultValue="{{ set_aboutTitle }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
                 <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Заголовок на главной / проектах</span><input name="heroTitle" defaultValue="{{ set_heroTitle }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
                 <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Заголовок «Услуги»</span><input name="servicesTitle" defaultValue="{{ set_servicesTitle }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
@@ -580,14 +643,35 @@
                 </sc-if>
                 <sc-if value="{{ f.isImages }}" hint-placeholder-val="{{ false }}">
                   <div>
-                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:8px;margin-bottom:8px">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-bottom:8px">
                       <sc-for list="{{ f.items }}" as="im" hint-placeholder-count="3">
                         <div style="position:relative;width:100%;aspect-ratio:1;background:#f3f2ee;background-image:{{ im.bg }};background-size:cover;background-position:center">
                           <button type="button" onClick="{{ im.onRemove }}" style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,.6);color:#fff;border:none;cursor:pointer;font-size:11px;width:20px;height:20px">✕</button>
+                          <div style="position:absolute;left:0;right:0;bottom:0;display:flex">
+                            <button type="button" onClick="{{ im.onLeft }}" title="Левее" style="flex:1;background:rgba(0,0,0,.62);color:#fff;border:none;cursor:pointer;font-size:12px;padding:3px 0">◀</button>
+                            <button type="button" onClick="{{ im.onRight }}" title="Правее" style="flex:1;background:rgba(0,0,0,.62);color:#fff;border:none;border-left:1px solid rgba(255,255,255,.25);cursor:pointer;font-size:12px;padding:3px 0">▶</button>
+                          </div>
                         </div>
                       </sc-for>
                     </div>
                     <input type="file" accept="image/*" multiple onChange="{{ f.onUpload }}" style="font-size:13px"/>
+                    <div style="margin-top:5px;font-size:12px;color:#999">Первое фото — обложка. Порядок меняйте стрелками ◀ ▶.</div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ f.isFiles }}" hint-placeholder-val="{{ false }}">
+                  <div>
+                    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px">
+                      <sc-for list="{{ f.fileItems }}" as="fl" hint-placeholder-count="2">
+                        <div style="display:flex;align-items:center;gap:8px;border:1px solid #e0e0e0;padding:8px 10px">
+                          <span style="flex:1;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ fl.name }}</span>
+                          <button type="button" onClick="{{ fl.onUp }}" style="background:none;border:1px solid #ddd;cursor:pointer;font-size:12px;width:26px;height:26px;color:#666">↑</button>
+                          <button type="button" onClick="{{ fl.onDown }}" style="background:none;border:1px solid #ddd;cursor:pointer;font-size:12px;width:26px;height:26px;color:#666">↓</button>
+                          <button type="button" onClick="{{ fl.onRemove }}" style="background:none;border:1px solid #e3c4bc;cursor:pointer;font-size:12px;padding:0 10px;height:26px;color:#b0573f">Удалить</button>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <input type="file" multiple onChange="{{ f.onUpload }}" style="font-size:13px"/>
+                    <div style="margin-top:5px;font-size:12px;color:#999">PDF, DOCX, XLSX, ZIP и т.п. Появятся на странице проекта только после загрузки.</div>
                   </div>
                 </sc-if>
               </label>
@@ -730,10 +814,12 @@ class Component extends DCLogic {
   loadContent(){ fetch('/api/content').then(r=>r.ok?r.json():null).then(d=>{ if(d&&typeof d==='object'){ ['projects','team','manifest','services','krt','news'].forEach(k=>{ if(!Array.isArray(d[k])) d[k]=JSON.parse(JSON.stringify(this._SEED[k])); }); if(!d.settings) d.settings=JSON.parse(JSON.stringify(this._SEED.settings)); this.setState({data:d}); } }).catch(()=>{}); }
   persist(){ fetch('/api/content',{method:'PUT',headers:this._authHeaders({'Content-Type':'application/json'}),body:JSON.stringify(this.state.data)}).then(r=>{ if(r.status===401){ this._token=null; try{localStorage.removeItem('vyaz_token');}catch(e){} this.setState({adminAuthed:false}); this.flash('Сессия истекла, войдите снова'); } else if(!r.ok){ this.flash('Ошибка сохранения'); } }).catch(()=>this.flash('Нет связи с сервером')); }
   uploadFile(file){ const fd=new FormData(); fd.append('file',file); return fetch('/api/upload',{method:'POST',headers:this._authHeaders(),body:fd}).then(r=>{ if(!r.ok) throw new Error('upload'); return r.json(); }); }
-  fieldUpload(k,fileList,multi){ const files=Array.prototype.slice.call(fileList||[]); if(!files.length) return;
-    if(multi){ const cur=((this.state.editing&&this.state.editing.draft[k])||[]).slice(); Promise.all(files.map(f=>this.uploadFile(f))).then(rs=>{ rs.forEach(r=>{ if(r&&r.url) cur.push(r.url); }); this.setField(k,cur); this.flash('Загружено'); }).catch(()=>this.flash('Ошибка загрузки')); }
-    else { this.uploadFile(files[0]).then(r=>{ if(r&&r.url){ this.setField(k,r.url); this.flash('Загружено'); } }).catch(()=>this.flash('Ошибка загрузки')); } }
+  fieldUpload(k,fileList,type){ const files=Array.prototype.slice.call(fileList||[]); if(!files.length) return;
+    if(type==='image'){ this.uploadFile(files[0]).then(r=>{ if(r&&r.url){ this.setField(k,r.url); this.flash('Загружено'); } }).catch(()=>this.flash('Ошибка загрузки')); return; }
+    const cur=((this.state.editing&&this.state.editing.draft[k])||[]).slice();
+    Promise.all(files.map(f=>this.uploadFile(f))).then(rs=>{ rs.forEach(r=>{ if(r&&r.url){ cur.push(type==='files'?{url:r.url,name:r.name||r.url.split('/').pop()}:r.url); } }); this.setField(k,cur); this.flash('Загружено'); }).catch(()=>this.flash('Ошибка загрузки')); }
   removeImageAt(k,idx){ const cur=((this.state.editing&&this.state.editing.draft[k])||[]).slice(); cur.splice(idx,1); this.setField(k,cur); }
+  moveArr(k,idx,dir){ const cur=((this.state.editing&&this.state.editing.draft[k])||[]).slice(); const j=idx+dir; if(j<0||j>=cur.length) return; const t=cur[idx]; cur[idx]=cur[j]; cur[j]=t; this.setField(k,cur); }
   uploadAboutImage(e){ const f=e&&e.target&&e.target.files&&e.target.files[0]; if(!f) return; this.uploadFile(f).then(r=>{ if(r&&r.url){ const data=Object.assign({},this.state.data); data.settings=Object.assign({},data.settings,{aboutImage:r.url}); this.setState({data},()=>{ this.persist(); this.flash('Фото загружено'); }); } }).catch(()=>this.flash('Ошибка загрузки')); }
   removeAboutImage(){ const data=Object.assign({},this.state.data); data.settings=Object.assign({},data.settings,{aboutImage:''}); this.setState({data},()=>{ this.persist(); }); }
   flash(msg){ this.setState({toast:msg}); clearTimeout(this._toastT); this._toastT=setTimeout(()=>this.setState({toast:''}),2000); }
@@ -761,7 +847,7 @@ class Component extends DCLogic {
   deleteAt(sec,idx){ const data=Object.assign({},this.state.data); const arr=data[sec].slice(); arr.splice(idx,1); data[sec]=arr; this.setState({data},()=>{ this.persist(); this.flash('Удалено'); }); }
   moveAt(sec,idx,dir){ const data=Object.assign({},this.state.data); const arr=data[sec].slice(); const j=idx+dir; if(j<0||j>=arr.length) return; const t=arr[idx]; arr[idx]=arr[j]; arr[j]=t; data[sec]=arr; this.setState({data},()=>this.persist()); }
   saveSettings(e){ if(e&&e.preventDefault)e.preventDefault(); const fd=new FormData(e.target); const data=Object.assign({},this.state.data); const s=Object.assign({},data.settings);
-    ['aboutTitle','heroTitle','servicesTitle','krtTitle','aboutText1','aboutText2','address','phone','email','inquiry','telegram','max','mapQuery'].forEach(k=>{ if(fd.get(k)!==null) s[k]=fd.get(k); }); data.settings=s;
+    ['aboutTitle','heroTitle','servicesTitle','krtTitle','aboutText1','aboutText2','address','phone','email','inquiry','telegram','max','mapQuery','orgNameFull','orgNameShort'].forEach(k=>{ if(fd.get(k)!==null) s[k]=fd.get(k); }); data.settings=s;
     this.setState({data},()=>{ this.persist(); this.flash('Настройки сохранены'); }); }
   resetData(){ if(typeof confirm==='function'&&!confirm('Сбросить весь контент к исходному?')) return; const data=JSON.parse(JSON.stringify(this._SEED)); this.setState({data,editing:null},()=>{ this.persist(); this.flash('Сброшено'); }); }
   renderVals(){
@@ -826,7 +912,7 @@ class Component extends DCLogic {
       desc: kcur.desc || ('Свободная площадка '+(kcur.area||'')+' в '+(kcur.district||'')+' районе, готовая к проработке концепции комплексного развития территории — жилой, общественной или смешанной функции.'),
       prevSlide:()=>this.setState(s=>({slideIdx:(s.slideIdx-1+kN)%kN})),
       nextSlide:()=>this.setState(s=>({slideIdx:(s.slideIdx+1)%kN})),
-      download:()=>this.downloadProject({id:'krt-'+kbaseIdx,title:kcur.name,loc:kcur.district+' район',year:kcur.area,cat:'Комплексное развитие территорий',desc:kcur.desc||''})
+      files:(Array.isArray(kcur.files)?kcur.files:[]), hasFiles:(Array.isArray(kcur.files)&&kcur.files.length>0), fileUrl:((Array.isArray(kcur.files)&&kcur.files[0])?kcur.files[0].url:'')
     });
     const krtRelated=KRT.filter((x,i)=>i!==kbaseIdx).slice(0,3).map((x)=>{ const gi=KRT.indexOf(x); return Object.assign({},x,{bg:img1(x.images)||tone(gi+3),open:()=>this.go('krtitem',gi)}); });
     // team
@@ -844,10 +930,20 @@ class Component extends DCLogic {
       slideNum:(pIdx+1)+' / '+nSlides,
       prevSlide:()=>this.setState(s=>({slideIdx:(s.slideIdx-1+nSlides)%nSlides})),
       nextSlide:()=>this.setState(s=>({slideIdx:(s.slideIdx+1)%nSlides})),
-      download:()=>this.downloadProject(cur)
+      files:(Array.isArray(cur.files)?cur.files:[]), hasFiles:(Array.isArray(cur.files)&&cur.files.length>0), fileUrl:((Array.isArray(cur.files)&&cur.files[0])?cur.files[0].url:'')
     });
     const relProjects=PROJECTS.filter(p=>p.id!==cur.id).slice(0,3).map((p)=>Object.assign({},p,{bg:img1(p.images)||tone(PROJECTS.indexOf(p)),open:()=>this.go('project',p.id)}));
-    const news=NEWS.map((n,i)=>Object.assign({},n,{bg:imgU(n.image)||tone(i+2),dateFmt:n.date}));
+    const news=NEWS.map((n,i)=>Object.assign({},n,{bg:imgU(n.image)||tone(i+2),dateFmt:n.date,open:()=>this.go('newsitem',n.id)}));
+    // news detail
+    let curN=NEWS.find(n=>n.id===st.projectId)||NEWS[0]||{};
+    const curNimgs=(curN.images&&curN.images.length)?curN.images:[];
+    const currentNews=Object.assign({},curN,{
+      dateFmt:curN.date||'',
+      coverBg:curN.image?('url("'+curN.image+'")'):'none', hasCover:!!curN.image,
+      body:(curN.body&&curN.body.trim())?curN.body:'Текст новости появится здесь. Добавьте его в панели управления.',
+      gallery:curNimgs.map(u=>({bg:'url("'+u+'")'})), hasGallery:curNimgs.length>0
+    });
+    const relNews=NEWS.filter(n=>n.id!==curN.id).slice(0,3).map((n,i)=>Object.assign({},n,{bg:imgU(n.image)||tone(i+2),dateFmt:n.date,open:()=>this.go('newsitem',n.id)}));
 
     // ---- ADMIN ----
     const SECS=[['projects','Проекты'],['news','Новости'],['services','Услуги'],['krt','КРТ'],['team','Команда'],['manifest','Манифест'],['settings','Настройки']];
@@ -861,10 +957,10 @@ class Component extends DCLogic {
       onEdit:()=>this.editAt(curSec,idx), onDelete:()=>this.deleteAt(curSec,idx),
       onUp:()=>this.moveAt(curSec,idx,-1), onDown:()=>this.moveAt(curSec,idx,1)}));
     const FIELDS={
-      projects:[['title','Название','text'],['cat','Категория','text'],['group','Группа','enum'],['year','Год','text'],['loc','Локация','text'],['desc','Описание','textarea'],['images','Изображения (галерея)','images']],
-      news:[['title','Заголовок','text'],['date','Дата (ГГГГ.ММ.ДД)','text'],['image','Изображение','image']],
+      projects:[['title','Название','text'],['cat','Категория','text'],['group','Группа','enum'],['year','Год','text'],['loc','Локация','text'],['desc','Описание','textarea'],['images','Изображения (галерея)','images'],['files','Файлы проекта','files']],
+      news:[['title','Заголовок','text'],['date','Дата (ГГГГ.ММ.ДД)','text'],['image','Обложка','image'],['images','Фото в новости','images'],['body','Текст новости','textarea']],
       services:[['t','Название','text'],['d','Описание','textarea']],
-      krt:[['name','Название','text'],['district','Район','text'],['area','Площадь','text'],['images','Изображения (галерея)','images']],
+      krt:[['name','Название','text'],['district','Район','text'],['area','Площадь','text'],['desc','Описание','textarea'],['images','Изображения (галерея)','images'],['files','Файлы','files']],
       team:[['name','Имя','text'],['role','Роль','text'],['image','Фото','image']],
       manifest:[['n','Номер','text'],['t','Заголовок','text'],['d','Описание','textarea'],['icon','Иконка (SVG/PNG)','image']]
     };
@@ -876,12 +972,13 @@ class Component extends DCLogic {
         const arr=Array.isArray(raw)?raw:[];
         return {key:k,label,type,value:(raw!==undefined&&!Array.isArray(raw))?raw:'',
           isText:type==='text',isTextarea:type==='textarea',isEnum:type==='enum',
-          isImage:type==='image',isImages:type==='images',
+          isImage:type==='image',isImages:type==='images',isFiles:type==='files',
           hasValue:type==='image'&&!!raw,
           bg:(type==='image'&&raw)?('url("'+raw+'")'):'none',
-          items:type==='images'?arr.map((u,idx)=>({url:u,bg:'url("'+u+'")',onRemove:()=>this.removeImageAt(k,idx)})):[],
+          items:type==='images'?arr.map((u,idx)=>({url:u,bg:'url("'+u+'")',onRemove:()=>this.removeImageAt(k,idx),onLeft:()=>this.moveArr(k,idx,-1),onRight:()=>this.moveArr(k,idx,1)})):[],
+          fileItems:type==='files'?arr.map((it,idx)=>({name:(it&&it.name)||(typeof it==='string'?it.split('/').pop():'файл'),onRemove:()=>this.removeImageAt(k,idx),onUp:()=>this.moveArr(k,idx,-1),onDown:()=>this.moveArr(k,idx,1)})):[],
           options:type==='enum'?GROUPS.map(g=>({value:g[0],label:g[1],sel:e.draft[k]===g[0]})):[],
-          onUpload:(ev)=>this.fieldUpload(k, ev.target.files, type==='images'),
+          onUpload:(ev)=>this.fieldUpload(k, ev.target.files, type),
           onChange:(ev)=>this.setField(k, ev.target.value)}; });
       editing={sec:e.sec,isNew:e.isNew,fields,title:(e.isNew?'Добавить':'Изменить'),onSave:()=>this.saveItem(),onCancel:()=>this.closeEditor()}; }
     const sset=d.settings;
@@ -889,7 +986,8 @@ class Component extends DCLogic {
       rootRef:this.rootRef, navBarRef:this.navBarRef, navRef:this.navRef, logoRef:this.logoRef, pageKey:st.pageKey, menuOpen:st.menuOpen,
       intro:st.intro,
       isHome:st.page==='home', isProjects:st.page==='projects'||st.page==='news', isStudio:st.page==='studio', isContact:st.page==='contact', isPositions:st.page==='positions',
-      isKrt:st.page==='krt', isProject:st.page==='project', isServices:st.page==='services', isKrtItem:st.page==='krtitem',
+      isKrt:st.page==='krt', isProject:st.page==='project', isServices:st.page==='services', isKrtItem:st.page==='krtitem', isNewsItem:st.page==='newsitem',
+      currentNews, relNews,
       krtGroups, krtTotal, team, currentProject, relProjects, currentKrt, krtRelated,
       manifest:MANIFEST.map((m,i)=>Object.assign({},m,{slotId:'manifest-'+(m.n||(i+1)),iconBg:(m.icon?'url("'+m.icon+'")':'none')})),
       aboutImageBg:(SETTINGS.aboutImage?'url("'+SETTINGS.aboutImage+'")':'none'), hasAboutImage:!!SETTINGS.aboutImage,
@@ -898,6 +996,7 @@ class Component extends DCLogic {
       aboutTitle:SETTINGS.aboutTitle, aboutText1:SETTINGS.aboutText1, aboutText2:SETTINGS.aboutText2,
       servicesTitle:SETTINGS.servicesTitle, krtTitle:SETTINGS.krtTitle,
       footAddress:SETTINGS.address, footPhone:SETTINGS.phone, footEmail:SETTINGS.email, footInquiry:SETTINGS.inquiry,
+      footOrgFull:(SETTINGS.orgNameFull||'Центр компетенций по вопросам городской среды Волгограда «ВЯЗ»'), footOrgShort:(SETTINGS.orgNameShort||'МБУ «ВЯЗ»'),
       goStudio:()=>this.go('studio'), goAdmin:()=>this.go('admin'), goKrt:()=>this.go('krt'),
       isAdmin:st.page==='admin', adminAuthed:st.adminAuthed, adminNotAuthed:!st.adminAuthed,
       adminLogin:(e)=>this.adminLogin(e), adminLogout:()=>this.adminLogout(), adminError:st.adminError,
@@ -909,6 +1008,7 @@ class Component extends DCLogic {
       set_aboutTitle:sset.aboutTitle,set_heroTitle:sset.heroTitle,set_servicesTitle:sset.servicesTitle,set_krtTitle:sset.krtTitle,
       set_aboutText1:sset.aboutText1,set_aboutText2:sset.aboutText2,set_address:sset.address,set_phone:sset.phone,set_email:sset.email,set_inquiry:sset.inquiry,
       set_telegram:sset.telegram,set_max:sset.max,set_mapQuery:sset.mapQuery,
+      set_orgNameFull:sset.orgNameFull,set_orgNameShort:sset.orgNameShort,
       contacts, mapSrc, mapAddress,
       openMenu:()=>this.setState({menuOpen:true}), closeMenu:()=>this.setState({menuOpen:false}),
       goHome:()=>this.go('home'), goProjects:()=>this.go('projects'), goNews:()=>this.go('news'), goContact:()=>this.go('contact'), goPositions:()=>this.go('positions'),
