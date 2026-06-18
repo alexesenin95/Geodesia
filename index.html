@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:#fff;color:#111;font-family:'Onest',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  ::selection{background:#111;color:#fff}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes wordCycle{0%{opacity:0;transform:translateY(14px)}6%{opacity:1;transform:none}28%{opacity:1;transform:none}34%{opacity:0;transform:translateY(-14px)}100%{opacity:0;transform:translateY(-14px)}}
+  @keyframes ovItem{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+  @keyframes introLogo{0%{opacity:0;transform:scale(.94)}18%{opacity:1;transform:none}66%{opacity:1;transform:none}100%{opacity:0;transform:scale(1.02)}}
+  @keyframes introWord{0%{opacity:0;transform:translateY(16px)}38%{opacity:1;transform:none}72%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-16px)}}
+  @keyframes introOut{0%{opacity:1;transform:translateY(0)}82%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-46px)}}
+  @keyframes revealUp{0%{clip-path:inset(0 0 100% 0)}100%{clip-path:inset(0 0 0 0)}}
+</style>
+<script src="image-slot.js"></script>
+</helmet>
+
+<div ref="{{ rootRef }}" style="position:relative;min-height:100vh;background:#fff">
+
+  <sc-if value="{{ intro }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:200;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;animation:introOut 3.6s cubic-bezier(.76,0,.24,1) forwards;pointer-events:none">
+      <div style="position:relative;width:min(80vw,420px);height:120px;display:flex;align-items:center;justify-content:center">
+        <img src="assets/vyaz-logo-light.png" alt="ВЯЗ" style="position:absolute;height:54px;width:auto;animation:introLogo 1.5s ease forwards"/>
+        <div style="position:absolute;font-size:clamp(30px,5vw,56px);font-weight:500;letter-spacing:-.03em">
+          <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);white-space:nowrap;opacity:0;animation:introWord .85s ease 1.5s forwards">Возрождаем</span>
+          <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);white-space:nowrap;opacity:0;animation:introWord .85s ease 2.1s forwards">Преображаем</span>
+          <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);white-space:nowrap;opacity:0;animation:introWord .85s ease 2.7s forwards">Создаём</span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <div ref="{{ navBarRef }}" style="position:fixed;top:0;left:0;right:0;height:90px;z-index:59;background:rgba(255,255,255,.5);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,.06);opacity:0;transition:opacity .35s ease;pointer-events:none"></div>
+
+  <nav ref="{{ navRef }}" style="position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;gap:clamp(16px,3vw,52px);padding:14px clamp(18px,3.4vw,40px);color:#fff;transition:color .35s ease">
+    <a onClick="{{ goHome }}" style="display:flex;align-items:center;cursor:pointer">
+      <img ref="{{ logoRef }}" src="assets/vyaz-logo.png" alt="ВЯЗ" style="height:62px;width:auto;filter:invert(1) brightness(2);transition:filter .35s ease"/>
+    </a>
+    <div style="margin-left:auto;display:flex;gap:clamp(16px,2.6vw,46px)">
+      <sc-for list="{{ menuItems }}" as="m" hint-placeholder-count="4">
+        <a onClick="{{ m.onClick }}" style="font-size:15px;font-weight:500;color:inherit;cursor:pointer;transition:opacity .25s" style-hover="opacity:.5">{{ m.label }}</a>
+      </sc-for>
+    </div>
+  </nav>
+
+  <main key="{{ pageKey }}" style="animation:fadeIn .5s ease both">
+
+    <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <div>
+    <!-- FULL-SCREEN PROJECTS HERO -->
+    <section style="position:relative;height:100vh;min-height:580px;overflow:hidden;background:#1a1a1a">
+      <sc-for list="{{ projects }}" as="p" hint-placeholder-count="5">
+        <div style="position:absolute;inset:0;background-image:{{ p.bg }};background-size:cover;background-position:center;opacity:{{ p.activeOpacity }};transform:scale({{ p.activeScale }});transition:opacity .8s ease,transform 2.4s cubic-bezier(.16,1,.3,1)"></div>
+      </sc-for>
+      <div style="position:absolute;inset:0;background:linear-gradient(95deg,rgba(0,0,0,.45),rgba(0,0,0,.05) 46%,rgba(0,0,0,0) 70%)"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.28),rgba(0,0,0,0) 30%)"></div>
+
+      <div style="position:absolute;left:clamp(18px,3.4vw,40px);right:clamp(18px,3.4vw,40px);bottom:clamp(64px,11vh,104px)">
+        <sc-for list="{{ projects }}" as="p" hint-placeholder-count="7">
+          <a onClick="{{ p.open }}" onMouseEnter="{{ p.hover }}" style="display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 18px;width:fit-content;max-width:100%;color:{{ p.heroColor }};cursor:pointer;transition:color .35s ease">
+            <span style="font-size:clamp(26px,3.6vw,52px);font-weight:600;letter-spacing:-.03em;line-height:1.12">{{ p.title }}</span>
+            <span style="display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500;color:#fff;opacity:{{ p.viewOpacity }};transform:translateX({{ p.viewShift }});transition:opacity .35s ease,transform .45s cubic-bezier(.16,1,.3,1);white-space:nowrap;align-self:center"><span style="width:6px;height:6px;background:#fff;display:inline-block"></span>Смотреть проект →</span>
+          </a>
+        </sc-for>
+      </div>
+
+      <a onClick="{{ goProjects }}" style="position:absolute;left:clamp(18px,3.4vw,40px);bottom:clamp(26px,4vh,40px);display:flex;align-items:center;gap:9px;color:#fff;cursor:pointer;font-size:14px;font-weight:500" style-hover="opacity:.6">→ Все проекты</a>
+    </section>
+
+    <!-- NEWS as horizontal rows -->
+    <section style="padding:clamp(48px,8vh,96px) clamp(18px,3.4vw,40px) clamp(60px,9vh,120px)">
+      <h2 style="margin:0 0 clamp(20px,3vh,32px);font-size:15px;font-weight:600;letter-spacing:.01em">Новости</h2>
+      <div style="border-top:1px solid #e0e0e0">
+        <sc-for list="{{ news }}" as="n" hint-placeholder-count="4">
+          <a data-reveal onClick="{{ goNews }}" style="display:grid;grid-template-columns:clamp(180px,22vw,300px) 1fr;gap:clamp(20px,4vw,72px);align-items:center;padding:clamp(22px,3vh,38px) 0;border-bottom:1px solid #e0e0e0;cursor:pointer">
+            <div style="position:relative;width:100%;aspect-ratio:3/2;overflow:hidden;background:#eee">
+              <div style="position:absolute;inset:0;background-image:{{ n.bg }};background-size:cover;background-position:center;transition:transform 1.2s cubic-bezier(.16,1,.3,1)" style-hover="transform:scale(1.05)"></div>
+            </div>
+            <div>
+              <div style="font-size:13px;color:#999">{{ n.dateFmt }}</div>
+              <h3 style="margin:8px 0 0;font-size:clamp(20px,2.4vw,34px);font-weight:600;letter-spacing:-.02em;line-height:1.16;text-wrap:pretty">{{ n.title }}</h3>
+              <span style="display:inline-block;margin-top:14px;font-size:14px;color:#111;border-bottom:1px solid #111;padding-bottom:1px">Подробнее</span>
+            </div>
+          </a>
+        </sc-for>
+      </div>
+    </section>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isProjects }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <section style="padding:clamp(110px,16vh,170px) clamp(18px,3.4vw,40px) clamp(30px,5vh,56px)">
+        <h1 style="margin:0;max-width:18ch;font-size:clamp(28px,4.6vw,66px);font-weight:500;letter-spacing:-.03em;line-height:1.05;text-wrap:balance">{{ projectsTitle }}</h1>
+      </section>
+      <sc-if value="{{ isNews }}" hint-placeholder-val="{{ false }}">
+        <section style="padding:0 clamp(18px,3.4vw,40px) clamp(60px,9vh,120px)">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:clamp(28px,3vw,48px)">
+            <sc-for list="{{ news }}" as="n" hint-placeholder-count="4">
+              <a data-reveal style="cursor:pointer;display:block">
+                <div style="position:relative;width:100%;aspect-ratio:3/2;overflow:hidden;background:#eee">
+                  <div style="position:absolute;inset:0;background-image:{{ n.bg }};background-size:cover;background-position:center;transition:transform 1.2s cubic-bezier(.16,1,.3,1)" style-hover="transform:scale(1.05)"></div>
+                </div>
+                <div style="margin-top:14px;font-size:13px;color:#999">{{ n.dateFmt }}</div>
+                <h3 style="margin:7px 0 0;font-size:clamp(18px,1.6vw,23px);font-weight:500;letter-spacing:-.01em;line-height:1.28">{{ n.title }}</h3>
+              </a>
+            </sc-for>
+          </div>
+        </section>
+      </sc-if>
+      <sc-if value="{{ isProjectsGrid }}" hint-placeholder-val="{{ true }}">
+        <div style="position:sticky;top:0;z-index:40;background:#fff;padding:14px clamp(18px,3.4vw,40px) 16px;border-top:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(12px,2.6vw,40px)">
+            <sc-for list="{{ filterCols }}" as="f" hint-placeholder-count="4">
+              <div>
+                <a onClick="{{ f.onCol }}" style="font-size:14px;font-weight:600;color:#111;cursor:pointer;text-decoration:{{ f.colUnderline }};text-underline-offset:3px">{{ f.col }}</a>
+                <div style="margin-top:9px;display:flex;flex-direction:column;gap:5px">
+                  <sc-for list="{{ f.items }}" as="it" hint-placeholder-count="3">
+                    <span style="font-size:14px;color:#9a9a9a">{{ it }}</span>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <section style="padding:clamp(28px,4vh,52px) clamp(18px,3.4vw,40px) clamp(60px,9vh,120px)">
+          <sc-for list="{{ allProjects }}" as="p" hint-placeholder-count="2">
+            <sc-if value="{{ p.isFull }}" hint-placeholder-val="{{ true }}">
+              <a data-reveal onClick="{{ p.open }}" style="display:block;cursor:pointer;margin-bottom:clamp(28px,4vh,52px)">
+                <div style="position:relative;width:100%;aspect-ratio:21/9;overflow:hidden;background:#eee">
+                  <div style="position:absolute;inset:0;background-image:{{ p.bg }};background-size:cover;background-position:center;transition:transform 1.5s cubic-bezier(.16,1,.3,1)" style-hover="transform:scale(1.04)"></div>
+                </div>
+                <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:24px">
+                  <div><span style="font-size:clamp(18px,1.7vw,24px);font-weight:600;letter-spacing:-.01em;text-decoration:underline;text-underline-offset:3px">{{ p.title }}</span><div style="margin-top:4px;font-size:14px;color:#999">{{ p.loc }}</div></div>
+                  <div style="font-size:clamp(15px,1.4vw,18px);color:#444;line-height:1.45">{{ p.desc }}</div>
+                </div>
+              </a>
+            </sc-if>
+          </sc-for>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,440px),1fr));gap:clamp(28px,3vw,48px) clamp(20px,2.4vw,36px);margin-top:clamp(20px,3vh,36px)">
+            <sc-for list="{{ allProjects }}" as="p" hint-placeholder-count="4">
+              <sc-if value="{{ p.isHalf }}" hint-placeholder-val="{{ true }}">
+                <a data-reveal onClick="{{ p.open }}" style="display:block;cursor:pointer">
+                  <div style="position:relative;width:100%;aspect-ratio:3/2;overflow:hidden;background:#eee">
+                    <div style="position:absolute;inset:0;background-image:{{ p.bg }};background-size:cover;background-position:center;transition:transform 1.4s cubic-bezier(.16,1,.3,1)" style-hover="transform:scale(1.05)"></div>
+                  </div>
+                  <div style="margin-top:14px"><span style="font-size:clamp(17px,1.5vw,22px);font-weight:600;letter-spacing:-.01em;text-decoration:underline;text-underline-offset:3px">{{ p.title }}</span><div style="margin-top:4px;font-size:14px;color:#999">{{ p.loc }}</div></div>
+                </a>
+              </sc-if>
+            </sc-for>
+          </div>
+        </section>
+      </sc-if>
+    </div>
+    </sc-if>
+    <sc-if value="{{ isStudio }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <section style="padding:clamp(110px,16vh,170px) clamp(18px,3.4vw,40px) clamp(40px,6vh,80px)">
+        <h1 style="margin:0;max-width:20ch;font-size:clamp(30px,5vw,72px);font-weight:500;letter-spacing:-.03em;line-height:1.06;text-wrap:balance">{{ aboutTitle }}</h1>
+      </section>
+      <section style="padding:0 clamp(18px,3.4vw,40px) clamp(40px,6vh,72px)">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:clamp(30px,4vw,72px);align-items:start">
+          <div style="width:100%;aspect-ratio:4/5;background:#ececec"><image-slot id="team-collective" shape="rect" placeholder="Фото коллектива" style="display:block;width:100%;height:100%"></image-slot></div>
+          <div style="min-width:0">
+            <div data-reveal style="font-size:13px;font-weight:600;letter-spacing:.04em;color:#888;margin-bottom:18px">О бюро</div>
+            <p data-reveal style="margin:0;font-size:clamp(20px,2.3vw,32px);font-weight:500;letter-spacing:-.01em;line-height:1.35;text-wrap:pretty">{{ aboutText1 }}</p>
+            <p data-reveal style="margin:26px 0 0;font-size:16px;line-height:1.75;color:#555;max-width:60ch">{{ aboutText2 }}</p>
+            <div data-reveal style="display:flex;gap:clamp(28px,5vw,64px);margin-top:clamp(36px,5vh,56px);flex-wrap:wrap">
+              <div><div style="font-size:clamp(34px,4vw,56px);font-weight:500;letter-spacing:-.02em">2020</div><div style="font-size:13px;color:#888;margin-top:6px">Год основания</div></div>
+              <div><div style="font-size:clamp(34px,4vw,56px);font-weight:500;letter-spacing:-.02em">8</div><div style="font-size:13px;color:#888;margin-top:6px">Районов города</div></div>
+              <div><div style="font-size:clamp(34px,4vw,56px);font-weight:500;letter-spacing:-.02em">11</div><div style="font-size:13px;color:#888;margin-top:6px">Специалистов</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section style="padding:clamp(20px,3vh,40px) clamp(18px,3.4vw,40px) clamp(50px,7vh,90px)">
+        <h2 style="margin:0 0 clamp(26px,4vh,46px);font-size:15px;font-weight:600;letter-spacing:.01em">Наш манифест</h2>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(34px,3.4vw,56px) clamp(24px,3vw,48px)">
+          <sc-for list="{{ manifest }}" as="m" hint-placeholder-count="6">
+            <div data-reveal>
+              <image-slot id="{{ m.slotId }}" shape="rect" placeholder="Иконка" style="display:block;width:72px;height:72px;border:1px solid #d8d6cf;background:#f3f2ee"></image-slot>
+              <div style="margin-top:18px;font-size:13px;font-weight:600;color:#999;font-variant-numeric:tabular-nums">{{ m.n }}</div>
+              <h3 style="margin:8px 0 0;font-size:clamp(20px,2vw,27px);font-weight:600;letter-spacing:-.02em;line-height:1.12">{{ m.t }}</h3>
+              <p style="margin:11px 0 0;font-size:15px;line-height:1.6;color:#555;max-width:34ch">{{ m.d }}</p>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+      <section style="padding:0 clamp(18px,3.4vw,40px) clamp(60px,9vh,120px)">
+        <h2 style="margin:0 0 clamp(20px,3vh,32px);font-size:15px;font-weight:600;letter-spacing:.01em">Команда</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:clamp(20px,2.4vw,36px)">
+          <sc-for list="{{ team }}" as="t" hint-placeholder-count="8">
+            <div data-reveal>
+              <div style="position:relative;width:100%;aspect-ratio:3/4;overflow:hidden;background:#eee">
+                <div style="position:absolute;inset:0;background-image:{{ t.bg }};background-size:cover;background-position:center;filter:grayscale(1);transition:filter .6s ease,transform 1.2s cubic-bezier(.16,1,.3,1)" style-hover="filter:grayscale(0);transform:scale(1.04)"></div>
+              </div>
+              <div style="margin-top:13px;font-size:17px;font-weight:500;letter-spacing:-.01em">{{ t.name }}</div>
+              <div style="margin-top:3px;font-size:13px;color:#888">{{ t.role }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <section style="padding:clamp(110px,16vh,170px) clamp(18px,3.4vw,40px) clamp(40px,6vh,80px)">
+        <h1 style="margin:0;max-width:18ch;font-size:clamp(30px,5vw,72px);font-weight:500;letter-spacing:-.03em;line-height:1.06">Давайте создадим пространство вместе</h1>
+      </section>
+      <section style="padding:0 clamp(18px,3.4vw,40px) clamp(60px,9vh,120px)">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:clamp(30px,4vw,64px)">
+          <sc-for list="{{ offices }}" as="o" hint-placeholder-count="2">
+            <div data-reveal>
+              <div style="font-size:13px;font-weight:600;letter-spacing:.04em;margin-bottom:12px">{{ o.city }}</div>
+              <div style="font-size:16px;line-height:1.7;color:#555;white-space:pre-line">{{ o.lines }}</div>
+              <div style="margin-top:10px;font-size:16px;color:#111">{{ o.tel }}</div>
+            </div>
+          </sc-for>
+          <div data-reveal>
+            <div style="font-size:13px;font-weight:600;letter-spacing:.04em;margin-bottom:12px">Сотрудничество</div>
+            <a href="mailto:inquiry@vyaz-vlg.ru" style="font-size:clamp(18px,2vw,26px);font-weight:500;letter-spacing:-.01em;border-bottom:1px solid #111;padding-bottom:2px" style-hover="opacity:.6">inquiry@vyaz-vlg.ru</a>
+          </div>
+        </div>
+      </section>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isPositions }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <section style="padding:clamp(110px,16vh,170px) clamp(18px,3.4vw,40px) clamp(40px,6vh,80px)">
+        <h1 style="margin:0;max-width:18ch;font-size:clamp(30px,5vw,72px);font-weight:500;letter-spacing:-.03em;line-height:1.06">Присоединяйтесь к команде</h1>
+      </section>
+      <section style="padding:0 clamp(18px,3.4vw,40px) clamp(60px,9vh,120px)">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:clamp(28px,4vw,70px);align-items:start">
+          <div data-reveal style="font-size:13px;font-weight:600;letter-spacing:.04em;color:#888;padding-top:6px">Вакансии</div>
+          <div style="grid-column:span 2;min-width:0">
+            <p data-reveal style="margin:0;font-size:clamp(19px,2.1vw,28px);font-weight:500;letter-spacing:-.01em;line-height:1.4;text-wrap:pretty">Мы всегда заинтересованы в талантливых архитекторах, ландшафтных архитекторах и градостроителях любого уровня опыта.</p>
+            <div data-reveal style="margin-top:clamp(34px,5vh,56px);border-top:1px solid #e0e0e0">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:22px 0;border-bottom:1px solid #e0e0e0"><span style="font-size:clamp(19px,2vw,26px);font-weight:500;letter-spacing:-.01em">Архитектор</span><span style="font-size:13px;color:#888">Волгоград</span></div>
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:22px 0;border-bottom:1px solid #e0e0e0"><span style="font-size:clamp(19px,2vw,26px);font-weight:500;letter-spacing:-.01em">Ландшафтный архитектор</span><span style="font-size:13px;color:#888">Волгоград</span></div>
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:22px 0;border-bottom:1px solid #e0e0e0"><span style="font-size:clamp(19px,2vw,26px);font-weight:500;letter-spacing:-.01em">Градостроитель</span><span style="font-size:13px;color:#888">Волгоград</span></div>
+            </div>
+            <p data-reveal style="margin:28px 0 0;font-size:15px;line-height:1.7;color:#555">Присылайте письмо, резюме и портфолио (не более 10 МБ):</p>
+            <a data-reveal href="mailto:hire@vyaz-vlg.ru" style="display:inline-block;margin-top:10px;font-size:clamp(18px,2vw,26px);font-weight:500;letter-spacing:-.01em;border-bottom:1px solid #111;padding-bottom:2px" style-hover="opacity:.6">hire@vyaz-vlg.ru</a>
+          </div>
+        </div>
+      </section>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isServices }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <section style="padding:clamp(110px,16vh,170px) clamp(18px,3.4vw,40px) clamp(30px,5vh,56px)">
+        <div style="font-size:13px;font-weight:600;letter-spacing:.04em;color:#888;margin-bottom:18px">Услуги</div>
+        <h1 style="margin:0;max-width:16ch;font-size:clamp(30px,5vw,72px);font-weight:500;letter-spacing:-.03em;line-height:1.05;text-wrap:balance">{{ servicesTitle }}</h1>
+        <p style="margin:24px 0 0;max-width:56ch;font-size:clamp(16px,1.6vw,21px);line-height:1.5;color:#555">Полный цикл — от концепции и дизайн-кода до рабочей документации и комплексного развития территорий.</p>
+      </section>
+      <section style="padding:clamp(20px,3vh,40px) clamp(18px,3.4vw,40px) clamp(60px,9vh,120px)">
+        <div style="border-top:1px solid #111">
+          <sc-for list="{{ services }}" as="s" hint-placeholder-count="6">
+            <a data-reveal onClick="{{ goContact }}" style="display:grid;grid-template-columns:64px 1.1fr 1.4fr;gap:clamp(14px,3vw,48px);align-items:baseline;padding:clamp(22px,3.4vh,40px) 0;border-bottom:1px solid #e0e0e0;cursor:pointer;transition:padding-left .4s ease" style-hover="padding-left:14px">
+              <span style="font-size:13px;font-weight:600;color:#999;font-variant-numeric:tabular-nums">{{ s.num }}</span>
+              <h3 style="margin:0;font-size:clamp(21px,2.4vw,34px);font-weight:600;letter-spacing:-.02em;line-height:1.1">{{ s.t }}</h3>
+              <p style="margin:0;font-size:clamp(15px,1.4vw,18px);color:#555;line-height:1.5">{{ s.d }}</p>
+            </a>
+          </sc-for>
+        </div>
+        <div data-reveal style="margin-top:clamp(40px,6vh,72px);background:#111;color:#fff;padding:clamp(32px,5vw,56px);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px">
+          <h3 style="margin:0;max-width:22ch;font-size:clamp(20px,2.4vw,32px);font-weight:500;letter-spacing:-.02em;line-height:1.18">Расскажите о задаче — предложим направление и формат работы</h3>
+          <a onClick="{{ goContact }}" style="background:#fff;color:#111;cursor:pointer;font-size:14px;font-weight:600;padding:15px 28px;white-space:nowrap" style-hover="opacity:.8">Связаться с нами</a>
+        </div>
+      </section>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isKrt }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <section style="padding:clamp(110px,16vh,170px) clamp(18px,3.4vw,40px) clamp(30px,4vh,52px)">
+        <div style="font-size:13px;font-weight:600;letter-spacing:.04em;color:#888;margin-bottom:18px">Комплексное развитие территорий</div>
+        <h1 style="margin:0;max-width:16ch;font-size:clamp(30px,5vw,72px);font-weight:500;letter-spacing:-.03em;line-height:1.05;text-wrap:balance">{{ krtTitle }}</h1>
+        <p style="margin:24px 0 0;max-width:56ch;font-size:clamp(16px,1.6vw,21px);line-height:1.5;color:#555">Каталог свободных территорий Волгограда, сгруппированных по районам. Каждая площадка готова к проработке концепции комплексного развития.</p>
+      </section>
+      <section style="padding:0 clamp(18px,3.4vw,40px) clamp(60px,9vh,120px);display:flex;flex-direction:column;gap:clamp(44px,6vh,80px)">
+        <sc-for list="{{ krtGroups }}" as="g" hint-placeholder-count="3">
+          <div>
+            <div data-reveal style="display:flex;align-items:baseline;gap:12px;border-bottom:1px solid #111;padding-bottom:14px;margin-bottom:clamp(22px,3vh,34px)">
+              <h2 style="margin:0;font-size:clamp(20px,2.2vw,30px);font-weight:600;letter-spacing:-.02em">{{ g.district }}</h2>
+              <span style="font-size:13px;color:#999">район</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:clamp(22px,2.6vw,36px)">
+              <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="3">
+                <div data-reveal onClick="{{ it.open }}" style="cursor:pointer">
+                  <div style="position:relative;width:100%;aspect-ratio:4/3;overflow:hidden;background:#eee">
+                    <div style="position:absolute;inset:0;background-image:{{ it.bg }};background-size:cover;background-position:center;transition:transform 1.3s cubic-bezier(.16,1,.3,1)" style-hover="transform:scale(1.05)"></div>
+                    <div style="position:absolute;right:12px;top:11px;font-size:12px;font-weight:600;color:#111;background:rgba(255,255,255,.92);padding:5px 11px">{{ it.area }}</div>
+                  </div>
+                  <div style="margin-top:13px;font-size:18px;font-weight:500;letter-spacing:-.01em">{{ it.name }}</div>
+                  <div style="margin-top:4px;display:flex;align-items:center;justify-content:space-between"><span style="font-size:13px;color:#888">Свободная площадка</span><span style="font-size:12px;color:#111">Детали →</span></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+        <div data-reveal style="background:#111;color:#fff;padding:clamp(32px,5vw,56px);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px">
+          <h3 style="margin:0;max-width:24ch;font-size:clamp(20px,2.4vw,32px);font-weight:500;letter-spacing:-.02em;line-height:1.18">Заинтересовала площадка? Обсудим условия и концепцию развития</h3>
+          <a onClick="{{ goContact }}" style="background:#fff;color:#111;cursor:pointer;font-size:14px;font-weight:600;padding:15px 28px;white-space:nowrap" style-hover="opacity:.8">Оставить заявку</a>
+        </div>
+      </section>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isKrtItem }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <section style="padding:clamp(96px,13vh,150px) clamp(18px,3.4vw,40px) 0">
+        <a onClick="{{ goKrt }}" style="font-size:14px;color:#888;cursor:pointer" style-hover="color:#111">← Все площадки</a>
+        <div style="margin-top:clamp(18px,3vh,30px);display:grid;grid-template-columns:1fr auto;gap:18px;align-items:end;border-bottom:1px solid #e0e0e0;padding-bottom:clamp(20px,3vh,32px)">
+          <div>
+            <div style="font-size:13px;color:#888;margin-bottom:10px">Комплексное развитие территорий · {{ currentKrt.area }}</div>
+            <h1 style="margin:0;max-width:18ch;font-size:clamp(30px,5vw,66px);font-weight:500;letter-spacing:-.03em;line-height:1.04">{{ currentKrt.name }}</h1>
+          </div>
+          <button onClick="{{ currentKrt.download }}" style="background:#111;color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;padding:14px 26px;white-space:nowrap" style-hover="opacity:.82">↓ Выгрузить</button>
+        </div>
+      </section>
+      <section style="padding:clamp(28px,4vh,48px) clamp(18px,3.4vw,40px) 0">
+        <div style="position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#eee">
+          <sc-for list="{{ currentKrt.slides }}" as="s" hint-placeholder-count="4">
+            <div style="position:absolute;inset:0;background-image:{{ s.bg }};background-size:cover;background-position:center;opacity:{{ s.shownOpacity }};transition:opacity .6s ease"></div>
+          </sc-for>
+          <button onClick="{{ currentKrt.prevSlide }}" style="position:absolute;left:0;top:0;bottom:0;width:18%;background:none;border:none;cursor:pointer;display:flex;align-items:center;padding-left:18px;color:#fff" style-hover="background:linear-gradient(90deg,rgba(0,0,0,.25),transparent)"><span style="font-size:30px;font-weight:300;mix-blend-mode:difference">‹</span></button>
+          <button onClick="{{ currentKrt.nextSlide }}" style="position:absolute;right:0;top:0;bottom:0;width:18%;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:flex-end;padding-right:18px;color:#fff" style-hover="background:linear-gradient(270deg,rgba(0,0,0,.25),transparent)"><span style="font-size:30px;font-weight:300;mix-blend-mode:difference">›</span></button>
+          <div style="position:absolute;left:0;right:0;bottom:16px;display:flex;justify-content:center;gap:9px">
+            <sc-for list="{{ currentKrt.slides }}" as="s" hint-placeholder-count="4">
+              <button onClick="{{ s.onDot }}" style="width:8px;height:8px;border-radius:50%;border:none;cursor:pointer;background:{{ s.dotColor }};padding:0"></button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="margin-top:14px;display:flex;justify-content:space-between;font-size:13px;color:#999">
+          <span>{{ currentKrt.district }} район</span>
+          <span>{{ currentKrt.slideNum }}</span>
+        </div>
+      </section>
+      <section style="padding:clamp(44px,7vh,90px) clamp(18px,3.4vw,40px) clamp(60px,9vh,110px)">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:clamp(28px,4vw,70px);align-items:start">
+          <div data-reveal style="display:flex;flex-direction:column;gap:20px">
+            <div><div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:.06em">Район</div><div style="font-size:16px;margin-top:5px">{{ currentKrt.district }}</div></div>
+            <div><div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:.06em">Площадь</div><div style="font-size:16px;margin-top:5px">{{ currentKrt.area }}</div></div>
+            <div><div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:.06em">Статус</div><div style="font-size:16px;margin-top:5px">Свободна</div></div>
+          </div>
+          <div style="grid-column:span 2;min-width:0">
+            <p data-reveal style="margin:0;font-size:clamp(20px,2.4vw,34px);font-weight:500;letter-spacing:-.01em;line-height:1.32;text-wrap:pretty">{{ currentKrt.desc }}</p>
+            <a data-reveal onClick="{{ goContact }}" style="display:inline-block;margin-top:clamp(26px,4vh,40px);background:#111;color:#fff;cursor:pointer;font-size:14px;font-weight:600;padding:15px 28px" style-hover="opacity:.82">Оставить заявку →</a>
+          </div>
+        </div>
+      </section>
+      <section style="padding:0 clamp(18px,3.4vw,40px) clamp(60px,9vh,120px);border-top:1px solid #e0e0e0;padding-top:clamp(40px,6vh,72px)">
+        <h2 style="margin:0 0 clamp(20px,3vh,32px);font-size:15px;font-weight:600;letter-spacing:.01em">Другие площадки</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:clamp(24px,3vw,40px)">
+          <sc-for list="{{ krtRelated }}" as="p" hint-placeholder-count="3">
+            <div data-reveal onClick="{{ p.open }}" style="cursor:pointer">
+              <div style="position:relative;width:100%;aspect-ratio:4/3;overflow:hidden;background:#eee">
+                <div style="position:absolute;inset:0;background-image:{{ p.bg }};background-size:cover;background-position:center;transition:transform 1.3s cubic-bezier(.16,1,.3,1)" style-hover="transform:scale(1.05)"></div>
+                <div style="position:absolute;right:12px;top:11px;font-size:12px;font-weight:600;color:#111;background:rgba(255,255,255,.92);padding:5px 11px">{{ p.area }}</div>
+              </div>
+              <div style="margin-top:13px;font-size:18px;font-weight:500;letter-spacing:-.01em">{{ p.name }}</div>
+              <div style="margin-top:3px;font-size:13px;color:#888">{{ p.district }} район</div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isProject }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <section style="padding:clamp(96px,13vh,150px) clamp(18px,3.4vw,40px) 0">
+        <a onClick="{{ goProjects }}" style="font-size:14px;color:#888;cursor:pointer" style-hover="color:#111">← Все проекты</a>
+        <div style="margin-top:clamp(18px,3vh,30px);display:grid;grid-template-columns:1fr auto;gap:18px;align-items:end;border-bottom:1px solid #e0e0e0;padding-bottom:clamp(20px,3vh,32px)">
+          <div>
+            <div style="font-size:13px;color:#888;margin-bottom:10px">{{ currentProject.cat }} · {{ currentProject.year }}</div>
+            <h1 style="margin:0;max-width:18ch;font-size:clamp(30px,5vw,66px);font-weight:500;letter-spacing:-.03em;line-height:1.04">{{ currentProject.title }}</h1>
+          </div>
+          <button onClick="{{ currentProject.download }}" style="background:#111;color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;padding:14px 26px;white-space:nowrap" style-hover="opacity:.82">↓ Выгрузить</button>
+        </div>
+      </section>
+
+      <section style="padding:clamp(28px,4vh,48px) clamp(18px,3.4vw,40px) 0">
+        <div style="position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#eee">
+          <sc-for list="{{ currentProject.slides }}" as="s" hint-placeholder-count="4">
+            <div style="position:absolute;inset:0;background-image:{{ s.bg }};background-size:cover;background-position:center;opacity:{{ s.shownOpacity }};transition:opacity .6s ease"></div>
+          </sc-for>
+          <button onClick="{{ currentProject.prevSlide }}" style="position:absolute;left:0;top:0;bottom:0;width:18%;background:none;border:none;cursor:pointer;display:flex;align-items:center;padding-left:18px;color:#fff" style-hover="background:linear-gradient(90deg,rgba(0,0,0,.25),transparent)"><span style="font-size:30px;font-weight:300;mix-blend-mode:difference">‹</span></button>
+          <button onClick="{{ currentProject.nextSlide }}" style="position:absolute;right:0;top:0;bottom:0;width:18%;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:flex-end;padding-right:18px;color:#fff" style-hover="background:linear-gradient(270deg,rgba(0,0,0,.25),transparent)"><span style="font-size:30px;font-weight:300;mix-blend-mode:difference">›</span></button>
+          <div style="position:absolute;left:0;right:0;bottom:16px;display:flex;justify-content:center;gap:9px">
+            <sc-for list="{{ currentProject.slides }}" as="s" hint-placeholder-count="4">
+              <button onClick="{{ s.onDot }}" style="width:8px;height:8px;border-radius:50%;border:none;cursor:pointer;background:{{ s.dotColor }};padding:0"></button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="margin-top:14px;display:flex;justify-content:space-between;font-size:13px;color:#999">
+          <span>{{ currentProject.loc }}</span>
+          <span>{{ currentProject.slideNum }}</span>
+        </div>
+      </section>
+
+      <section style="padding:clamp(44px,7vh,90px) clamp(18px,3.4vw,40px) clamp(60px,9vh,110px)">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:clamp(28px,4vw,70px);align-items:start">
+          <div data-reveal style="display:flex;flex-direction:column;gap:20px">
+            <div><div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:.06em">Локация</div><div style="font-size:16px;margin-top:5px">{{ currentProject.loc }}</div></div>
+            <div><div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:.06em">Категория</div><div style="font-size:16px;margin-top:5px">{{ currentProject.cat }}</div></div>
+            <div><div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:.06em">Год</div><div style="font-size:16px;margin-top:5px">{{ currentProject.year }}</div></div>
+          </div>
+          <div style="grid-column:span 2;min-width:0">
+            <p data-reveal style="margin:0;font-size:clamp(20px,2.4vw,34px);font-weight:500;letter-spacing:-.01em;line-height:1.32;text-wrap:pretty">{{ currentProject.desc }}</p>
+          </div>
+        </div>
+      </section>
+
+      <section style="padding:0 clamp(18px,3.4vw,40px) clamp(60px,9vh,120px);border-top:1px solid #e0e0e0;padding-top:clamp(40px,6vh,72px)">
+        <h2 style="margin:0 0 clamp(20px,3vh,32px);font-size:15px;font-weight:600;letter-spacing:.01em">Другие проекты</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:clamp(24px,3vw,40px)">
+          <sc-for list="{{ relProjects }}" as="p" hint-placeholder-count="3">
+            <a data-reveal onClick="{{ p.open }}" style="cursor:pointer;display:block">
+              <div style="position:relative;width:100%;aspect-ratio:3/2;overflow:hidden;background:#eee">
+                <div style="position:absolute;inset:0;background-image:{{ p.bg }};background-size:cover;background-position:center;transition:transform 1.3s cubic-bezier(.16,1,.3,1)" style-hover="transform:scale(1.05)"></div>
+              </div>
+              <div style="margin-top:13px;font-size:19px;font-weight:500;letter-spacing:-.01em">{{ p.title }}</div>
+              <div style="margin-top:3px;font-size:13px;color:#888">{{ p.cat }} · {{ p.year }}</div>
+            </a>
+          </sc-for>
+        </div>
+      </section>
+    </div>
+    </sc-if>
+
+  </main>
+
+  <footer style="background:#111;color:#fff;padding:clamp(40px,6vh,64px) clamp(18px,3.4vw,40px) 32px">
+    <div style="display:flex;align-items:center;gap:clamp(16px,3vw,52px);padding-bottom:clamp(36px,5vh,60px);border-bottom:1px solid rgba(255,255,255,.16)">
+      <a onClick="{{ goHome }}" style="display:flex;align-items:center;cursor:pointer"><img src="assets/vyaz-logo-light.png" alt="ВЯЗ" style="height:62px;width:auto"/></a>
+      <div style="margin-left:auto;display:flex;flex-wrap:wrap;gap:clamp(16px,2.6vw,46px)">
+        <sc-for list="{{ menuItems }}" as="m" hint-placeholder-count="4"><a onClick="{{ m.onClick }}" style="font-size:15px;font-weight:500;cursor:pointer;color:#fff" style-hover="opacity:.55">{{ m.label }}</a></sc-for>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:clamp(30px,4vw,56px);padding:clamp(40px,6vh,72px) 0;border-bottom:1px solid rgba(255,255,255,.16)">
+      <div style="font-size:14px;line-height:1.7;color:rgba(255,255,255,.66)"><div style="color:#fff;margin-bottom:8px">Волгоград</div><span style="white-space:pre-line">{{ footAddress }}</span><br>{{ footPhone }}</div>
+      <div style="font-size:14px;line-height:1.7;color:rgba(255,255,255,.66)"><div style="color:#fff;margin-bottom:8px">Связаться</div>{{ footEmail }}<br>{{ footInquiry }}</div>
+      <div style="font-size:14px;line-height:1.7;color:rgba(255,255,255,.66)"><div style="color:#fff;margin-bottom:8px">Навигация</div><div style="display:flex;flex-direction:column;gap:4px"><sc-for list="{{ menuItems }}" as="m" hint-placeholder-count="4"><a onClick="{{ m.onClick }}" style="cursor:pointer" style-hover="color:#fff">{{ m.label }}</a></sc-for></div></div>
+      <div style="font-size:14px;line-height:1.7;color:rgba(255,255,255,.66)">Центр стратегического планирования Волгограда «ВЯЗ»</div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;padding-top:26px;font-size:13px;color:rgba(255,255,255,.5)">
+      <span>© 2026 МБУ «ВЯЗ»</span>
+      <div style="display:flex;gap:18px"><a onClick="{{ goAdmin }}" style="cursor:pointer" style-hover="color:#fff">Панель управления</a><a href="https://www.instagram.com" target="_blank" style="cursor:pointer" style-hover="color:#fff">Instagram</a></div>
+    </div>
+  </footer>
+
+  <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:90;background:#fff;font-family:'Onest',system-ui,sans-serif">
+    <sc-if value="{{ adminNotAuthed }}" hint-placeholder-val="{{ true }}">
+      <div style="height:100%;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;padding:24px">
+        <div style="width:100%;max-width:360px">
+          <img src="assets/vyaz-logo.png" alt="ВЯЗ" style="height:54px;width:auto;filter:invert(1) brightness(2);display:block;margin:0 auto 26px"/>
+          <div style="text-align:center;font-size:13px;letter-spacing:.04em;color:#888;margin-bottom:24px">Панель управления</div>
+          <form onSubmit="{{ adminLogin }}" style="display:flex;flex-direction:column;gap:14px">
+            <input name="u" placeholder="Логин" style="background:none;border:1px solid rgba(255,255,255,.25);color:#fff;font-family:inherit;font-size:15px;padding:13px 15px;outline:none"/>
+            <input name="p" type="password" placeholder="Пароль" style="background:none;border:1px solid rgba(255,255,255,.25);color:#fff;font-family:inherit;font-size:15px;padding:13px 15px;outline:none"/>
+            <sc-if value="{{ adminError }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:#e0a08a;line-height:1.5">{{ adminError }}</div></sc-if>
+            <button type="submit" style="margin-top:6px;background:#fff;color:#111;border:none;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;padding:14px;">Войти</button>
+          </form>
+          <div style="text-align:center;margin-top:22px;font-size:12px;color:#777;line-height:1.7">Демо: admin / vyaz<br><a onClick="{{ goHome }}" style="cursor:pointer;border-bottom:1px solid rgba(255,255,255,.25)" style-hover="color:#fff">← На сайт</a></div>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ adminAuthed }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;height:100%;overflow:hidden">
+        <aside style="width:230px;flex:none;background:#111;color:#fff;display:flex;flex-direction:column;padding:20px 0">
+          <div style="padding:0 22px 20px;border-bottom:1px solid rgba(255,255,255,.14);display:flex;align-items:center;gap:10px"><img src="assets/vyaz-logo.png" alt="ВЯЗ" style="height:38px;width:auto;filter:invert(1) brightness(2)"/><span style="font-size:11px;letter-spacing:.2em;color:#888">CMS</span></div>
+          <nav style="flex:1;padding:14px 0;overflow-y:auto">
+            <sc-for list="{{ adminNav }}" as="n" hint-placeholder-count="7">
+              <button onClick="{{ n.onClick }}" style="width:100%;text-align:left;background:none;border:none;border-left:2px solid {{ n.bar }};cursor:pointer;font-family:inherit;font-size:14px;padding:12px 22px;color:{{ n.color }}" style-hover="color:#fff">{{ n.label }}</button>
+            </sc-for>
+          </nav>
+          <div style="padding:16px 22px 0;border-top:1px solid rgba(255,255,255,.14);display:flex;flex-direction:column;gap:12px">
+            <a onClick="{{ goHome }}" style="font-size:13px;color:#9a9a9a;cursor:pointer" style-hover="color:#fff">↗ Открыть сайт</a>
+            <a onClick="{{ adminLogout }}" style="font-size:13px;color:#9a9a9a;cursor:pointer" style-hover="color:#fff">Выйти</a>
+          </div>
+        </aside>
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+          <header style="flex:none;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px clamp(20px,3vw,40px);border-bottom:1px solid #e0e0e0">
+            <h1 style="margin:0;font-size:22px;font-weight:600;letter-spacing:-.01em">{{ adminSectionLabel }}</h1>
+            <sc-if value="{{ adminIsList }}" hint-placeholder-val="{{ true }}"><button onClick="{{ addNew }}" style="background:#111;color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;padding:12px 22px">+ Добавить</button></sc-if>
+          </header>
+          <div style="flex:1;overflow-y:auto;padding:clamp(18px,2.5vw,32px)">
+            <sc-if value="{{ adminIsList }}" hint-placeholder-val="{{ true }}">
+              <div style="border-top:1px solid #e8e8e8">
+                <sc-for list="{{ adminRows }}" as="r" hint-placeholder-count="5">
+                  <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;padding:14px 0;border-bottom:1px solid #e8e8e8">
+                    <div style="min-width:0"><div style="font-size:16px;font-weight:500">{{ r.label }}</div><div style="font-size:13px;color:#999;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.sub }}</div></div>
+                    <div style="display:flex;gap:7px">
+                      <button onClick="{{ r.onUp }}" style="background:none;border:1px solid #ddd;cursor:pointer;font-family:inherit;font-size:13px;width:32px;height:32px;color:#666" style-hover="border-color:#111;color:#111">↑</button>
+                      <button onClick="{{ r.onDown }}" style="background:none;border:1px solid #ddd;cursor:pointer;font-family:inherit;font-size:13px;width:32px;height:32px;color:#666" style-hover="border-color:#111;color:#111">↓</button>
+                      <button onClick="{{ r.onEdit }}" style="background:none;border:1px solid #ddd;cursor:pointer;font-family:inherit;font-size:13px;padding:0 14px;height:32px;color:#111" style-hover="border-color:#111">Изменить</button>
+                      <button onClick="{{ r.onDelete }}" style="background:none;border:1px solid #e3c4bc;cursor:pointer;font-family:inherit;font-size:13px;padding:0 14px;height:32px;color:#b0573f" style-hover="background:#faeee9">Удалить</button>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ adminIsSettings }}" hint-placeholder-val="{{ false }}">
+              <form onSubmit="{{ saveSettings }}" style="max-width:680px;display:flex;flex-direction:column;gap:20px">
+                <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Заголовок «О нас»</span><input name="aboutTitle" defaultValue="{{ set_aboutTitle }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
+                <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Заголовок на главной / проектах</span><input name="heroTitle" defaultValue="{{ set_heroTitle }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
+                <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Заголовок «Услуги»</span><input name="servicesTitle" defaultValue="{{ set_servicesTitle }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
+                <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Заголовок «КРТ»</span><input name="krtTitle" defaultValue="{{ set_krtTitle }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
+                <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">О бюро — абзац 1</span><textarea name="aboutText1" rows="3" defaultValue="{{ set_aboutText1 }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none;resize:vertical"></textarea></label>
+                <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">О бюро — абзац 2</span><textarea name="aboutText2" rows="3" defaultValue="{{ set_aboutText2 }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none;resize:vertical"></textarea></label>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                  <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Адрес</span><textarea name="address" rows="2" defaultValue="{{ set_address }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none;resize:vertical"></textarea></label>
+                  <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Телефон</span><input name="phone" defaultValue="{{ set_phone }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
+                  <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Email</span><input name="email" defaultValue="{{ set_email }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
+                  <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Email (сотрудничество)</span><input name="inquiry" defaultValue="{{ set_inquiry }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
+                </div>
+                <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:4px"><button type="submit" style="background:#111;color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;padding:13px 26px">Сохранить</button><button type="button" onClick="{{ resetData }}" style="background:none;color:#b0573f;border:1px solid #e3c4bc;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;padding:13px 26px">Сбросить весь контент</button></div>
+              </form>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+      <sc-if value="{{ isEditing }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ editing.onCancel }}" style="position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.4)"></div>
+        <div style="position:fixed;top:0;right:0;bottom:0;z-index:96;width:min(460px,100%);background:#fff;box-shadow:-16px 0 50px rgba(0,0,0,.18);display:flex;flex-direction:column">
+          <div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #e0e0e0"><h2 style="margin:0;font-size:19px;font-weight:600">{{ editing.title }}</h2><button onClick="{{ editing.onCancel }}" style="background:none;border:none;cursor:pointer;font-size:22px;color:#888;line-height:1">✕</button></div>
+          <div style="flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:18px">
+            <sc-for list="{{ editing.fields }}" as="f" hint-placeholder-count="4">
+              <label style="display:flex;flex-direction:column;gap:7px">
+                <span style="font-size:12px;letter-spacing:.04em;color:#999">{{ f.label }}</span>
+                <sc-if value="{{ f.isText }}" hint-placeholder-val="{{ true }}"><input value="{{ f.value }}" onChange="{{ f.onChange }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></sc-if>
+                <sc-if value="{{ f.isTextarea }}" hint-placeholder-val="{{ false }}"><textarea value="{{ f.value }}" onChange="{{ f.onChange }}" rows="4" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none;resize:vertical"></textarea></sc-if>
+                <sc-if value="{{ f.isEnum }}" hint-placeholder-val="{{ false }}"><select value="{{ f.value }}" onChange="{{ f.onChange }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none;background:#fff"><sc-for list="{{ f.options }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></sc-if>
+              </label>
+            </sc-for>
+          </div>
+          <div style="flex:none;display:flex;gap:12px;padding:18px 24px;border-top:1px solid #e0e0e0"><button onClick="{{ editing.onSave }}" style="background:#111;color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;padding:13px 26px">Сохранить</button><button onClick="{{ editing.onCancel }}" style="background:none;color:#111;border:1px solid #ddd;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;padding:13px 26px">Отмена</button></div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:98;background:#111;color:#fff;font-size:14px;padding:13px 24px">{{ toast }}</div></sc-if>
+    </sc-if>
+  </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const TONES = {
+  a:'linear-gradient(150deg,#b9c2c8,#7d8a91 60%,#4f5a61)',
+  b:'linear-gradient(150deg,#cdc6b8,#9c9282 60%,#6b6557)',
+  c:'linear-gradient(150deg,#c2c7b4,#828b6e 60%,#525a44)',
+  d:'linear-gradient(150deg,#d2c8bd,#a08e7e 60%,#6b5a4c)',
+  e:'linear-gradient(150deg,#c4cdd2,#8b979e 60%,#586269)',
+  f:'linear-gradient(150deg,#cfcabf,#9a9286 60%,#645d52)'
+};
+const TG=['a','c','d','e','f','c','d','a','e','b','f','c'];
+const SEED_PROJECTS = [
+  {id:'sarpinsky',title:'Остров Сарпинский',cat:'Развитие территорий',group:'frame',year:'2023',loc:'Кировский район, Волгоград',desc:'Природно-рекреационный каркас крупнейшего речного острова Европы.'},
+  {id:'tsaritsa',title:'Пойма реки Царицы',cat:'Развитие территорий',group:'frame',year:'2023',loc:'Центральный район, Волгоград',desc:'Развитие поймы как водно-зелёного каркаса в сердце города.'},
+  {id:'privokzal',title:'Привокзальная площадь',cat:'Улицы',group:'place',year:'2022',loc:'Центральный район, Волгоград',desc:'Новая логика пешеходных потоков у главных ворот города.'},
+  {id:'mira',title:'Улица Мира',cat:'Улицы',group:'place',year:'2021',loc:'Центральный район, Волгоград',desc:'Возвращение пешеходного характера первой улице послевоенного города.'},
+  {id:'pobedy',title:'Парк Победы',cat:'Парки',group:'place',year:'2022',loc:'Краснооктябрьский район, Волгоград',desc:'Пять функциональных зон, раскрывающих историю района.'},
+  {id:'voroshil',title:'Набережная Ворошиловского района',cat:'Набережные',group:'place',year:'2023',loc:'Ворошиловский район, Волгоград',desc:'Раскрытие города к Волге: непрерывный прогулочный фронт.'},
+  {id:'komsomol',title:'Комсомольский сад',cat:'Парки',group:'life',year:'2021',loc:'Центральный район, Волгоград',desc:'Реновация исторического сада как общественной гостиной.'},
+  {id:'orlenok',title:'Лагерь «Орлёнок»',cat:'Развитие территорий',group:'life',year:'2022',loc:'Городищенский район',desc:'Безопасная вдохновляющая среда в природном ландшафте.'}
+];
+const FILTERS=[
+  {key:'all',col:'Избранное',items:[]},
+  {key:'frame',col:'Направления',items:['Развитие территорий','Благоустройство','Инфраструктура']},
+  {key:'place',col:'Места',items:['Парки','Набережные','Улицы','Скверы']},
+  {key:'life',col:'Среда',items:['Общественные','Сады','Культурные']}
+];
+const SEED_TEAM = [
+  {name:'Юрий Комлев',role:'Архитектор'},{name:'Злата Чуйкова',role:'Архитектор'},
+  {name:'Виктория Корж',role:'Архитектор'},{name:'Александр Чапайкин',role:'Архитектор'},
+  {name:'Алиса Татаринцева',role:'Архитектор'},{name:'Алёна Макалова',role:'Архитектор'},
+  {name:'Александра Верменская',role:'Архитектор'},{name:'Пётр Плотников',role:'Архитектор'},
+  {name:'Ания Арустамян',role:'Архитектор'},{name:'Ольга Трифонова',role:'Инженер'},
+  {name:'Александр Битюцкий',role:'Связи с общественностью'}
+];
+const SEED_MANIFEST = [
+  {n:'01',t:'Человек в центре',d:'Создаём комфортные, безопасные и вдохновляющие пространства для людей.'},
+  {n:'02',t:'Симбиоз с природой',d:'Минимизируем воздействие на среду и закладываем устойчивое развитие.'},
+  {n:'03',t:'Инновации и технологии',d:'Применяем новейшие технологии и современные стандарты проектирования.'},
+  {n:'04',t:'Наследие и традиции',d:'Ищем гармонию истории места и современных решений.'},
+  {n:'05',t:'Эстетика и функциональность',d:'Удерживаем баланс формы и содержания в каждом решении.'},
+  {n:'06',t:'Ответственность перед будущим',d:'Проектируем устойчивую среду на годы вперёд.'}
+];
+const SEED_SERVICES = [
+  {t:'Концепции зданий',d:'Архитектурные концепции жилых и общественных зданий — от идеи до объёмно-планировочных решений.'},
+  {t:'Разработка дизайн-кода',d:'Единые правила оформления городской среды: вывески, навигация, фасады, малые формы.'},
+  {t:'Концепции благоустройства',d:'Проекты общественных пространств — скверов, парков, набережных и улиц.'},
+  {t:'Дизайн-проекты интерьеров',d:'Функциональные и эстетичные интерьерные решения для общественных и жилых пространств.'},
+  {t:'Проектно-сметная документация',d:'Полный пакет рабочей документации для реализации проектов.'},
+  {t:'Комплексное развитие территорий',d:'Стратегии и мастер-планы развития городских и инвестиционных территорий.'}
+];
+const SEED_KRT = [
+  {name:'ул. Академика Бардина',district:'Тракторозаводский',area:'1,8 га'},
+  {name:'пос. Мирный',district:'Тракторозаводский',area:'3,2 га'},
+  {name:'пос. Забазный',district:'Тракторозаводский',area:'2,4 га'},
+  {name:'пос. Замечетенский',district:'Тракторозаводский',area:'2,0 га'},
+  {name:'ул. Дзержинского, 27',district:'Тракторозаводский',area:'0,9 га'},
+  {name:'пос. Кирпичного завода №8',district:'Советский',area:'1,5 га'},
+  {name:'пос. Кирпичного завода №2',district:'Советский',area:'1,3 га'},
+  {name:'ул. Олимпийская',district:'Красноармейский',area:'2,7 га'},
+  {name:'ул. Саушинская',district:'Красноармейский',area:'1,1 га'},
+  {name:'ул. Лимоновая',district:'Кировский',area:'1,6 га'}
+];
+const SEED_NEWS = [
+  {id:'n1',title:'В пойме реки Царицы появится интерактивная экотропа',date:'2026.05.19'},
+  {id:'n2',title:'Набережная Волгограда названа лучшей в номинации городской среды',date:'2026.04.27'},
+  {id:'n3',title:'Представлена концепция развития улицы Мира',date:'2026.04.15'},
+  {id:'n4',title:'«ВЯЗ» разрабатывает зелёные стандарты города',date:'2025.09.06'}
+];
+function tone(i){ return TONES[TG[i%TG.length]]||TONES.a; }
+
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    let seen=false; try{ seen=sessionStorage.getItem('vyaz_intro')==='1'; }catch(e){}
+    const SEED={ projects:SEED_PROJECTS, team:SEED_TEAM, manifest:SEED_MANIFEST, services:SEED_SERVICES, krt:SEED_KRT, news:SEED_NEWS,
+      settings:{ aboutTitle:'Центр стратегического планирования Волгограда',
+        aboutText1:'Бюро основано в 2020 году и работает из исторического особняка в центре Волгограда. Мы проектируем городскую среду на стыке красоты, функциональности и устойчивости — от скверов и набережных до масштабных концепций развития территорий.',
+        aboutText2:'В команде — архитекторы, инженеры, дизайнеры и экономисты. Такой состав позволяет вести проект от концепции до рабочей документации и реализации.',
+        heroTitle:'Проектируем городские пространства, которыми гордится Волгоград',
+        servicesTitle:'Что мы делаем',
+        krtTitle:'Площадки для инвестиций и развития',
+        address:'ул. Комсомольская, 10а\nВолгоград, 400066', phone:'+7 (8442) 32-54-94', email:'info@vyaz-vlg.ru', inquiry:'inquiry@vyaz-vlg.ru' } };
+    let data=null; try{ const raw=localStorage.getItem('vyaz_cms'); if(raw) data=JSON.parse(raw); }catch(e){}
+    if(!data) data=JSON.parse(JSON.stringify(SEED));
+    ['projects','team','manifest','services','krt','news'].forEach(k=>{ if(!Array.isArray(data[k])) data[k]=JSON.parse(JSON.stringify(SEED[k])); });
+    if(!data.settings) data.settings=JSON.parse(JSON.stringify(SEED.settings));
+    this._SEED=SEED;
+    this.state = { page:'home', menuOpen:false, pageKey:0, activeIdx:0, intro:!seen, projFilter:'all', projectId:null, krtId:0, slideIdx:0, navDark:false,
+      data, adminAuthed:false, adminSection:'projects', editing:null, adminError:'', toast:'' };
+    this.rootRef = React.createRef();
+    this.navBarRef = React.createRef();
+    this.navRef = React.createRef();
+    this.logoRef = React.createRef();
+    this._onScroll = this._onScroll.bind(this);
+  }
+  go(page,id){ const lightHero=(page==='home'); const ns={page, slideIdx:0, menuOpen:false, pageKey:this.state.pageKey+1, navDark:!lightHero};
+    if(page==='krtitem'){ ns.krtId=id; } else if(id!==undefined){ ns.projectId=id; }
+    this.setState(ns); requestAnimationFrame(()=>{ try{window.scrollTo(0,0);}catch(e){} }); }
+  downloadProject(p){
+    try{
+      const txt='ВЯЗ — '+p.title+'\n'+p.loc+' · '+p.year+'\n\n'+p.desc+'\n\nКатегория: '+p.cat+'\n\nМБУ «Центр стратегического планирования Волгограда «ВЯЗ»»';
+      const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(p.id||'project')+'-vyaz.txt'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },100);
+    }catch(e){}
+  }
+  componentDidMount(){
+    if(this.state.intro){
+      try{ document.documentElement.style.overflow='hidden'; }catch(e){}
+      this._introT=setTimeout(()=>{ this.setState({intro:false}); try{ document.documentElement.style.overflow=''; sessionStorage.setItem('vyaz_intro','1'); }catch(e){} }, 3600);
+    }
+    this._io = new IntersectionObserver((es)=>{ es.forEach(e=>{ if(e.isIntersecting){ e.target.style.opacity='1'; e.target.style.transform='none'; this._io.unobserve(e.target);} }); },{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+    this.initReveal();
+    window.addEventListener('scroll', this._onScroll, {passive:true});
+    this._onScroll();
+  }
+  componentDidUpdate(p){ if(p.pageKey!==this.state.pageKey){ this.initReveal(); this._onScroll(); } this._onScroll(); }
+  componentWillUnmount(){ window.removeEventListener('scroll', this._onScroll); if(this._io) this._io.disconnect(); if(this._introT) clearTimeout(this._introT); }
+  initReveal(){ requestAnimationFrame(()=>{ const r=this.rootRef.current; if(!r) return; r.querySelectorAll('[data-reveal]').forEach(el=>{ if(el.dataset.s) return; el.dataset.s='1'; el.style.opacity='0'; el.style.transform='translateY(22px)'; el.style.transition='opacity .9s cubic-bezier(.16,1,.3,1),transform 1s cubic-bezier(.16,1,.3,1)'; this._io.observe(el); }); }); }
+  applyNav(dark){ const nav=this.navRef.current, logo=this.logoRef.current; const c=dark?'#111':'#fff';
+    if(nav){ nav.style.setProperty('color',c,'important'); nav.querySelectorAll('a').forEach(a=>a.style.setProperty('color',c,'important')); }
+    if(logo) logo.style.filter = dark?'none':'invert(1) brightness(2)'; }
+  _onScroll(){ const y=window.pageYOffset||0; const bar=this.navBarRef.current; if(bar) bar.style.opacity=y>48?'1':'0';
+    const lightHero=(this.state.page==='home'); this.applyNav(!lightHero || y>48); }
+  persist(){ try{ localStorage.setItem('vyaz_cms', JSON.stringify(this.state.data)); }catch(e){} }
+  flash(msg){ this.setState({toast:msg}); clearTimeout(this._toastT); this._toastT=setTimeout(()=>this.setState({toast:''}),2000); }
+  adminLogin(e){ if(e&&e.preventDefault)e.preventDefault(); const fd=e&&e.target?new FormData(e.target):null;
+    const u=(fd&&fd.get('u')||'').trim(), p=(fd&&fd.get('p')||'').trim();
+    if(u==='admin'&&p==='vyaz'){ this.setState({adminAuthed:true,adminError:''}); } else { this.setState({adminError:'Неверный логин или пароль. Демо: admin / vyaz'}); } }
+  adminLogout(){ this.setState({adminAuthed:false,editing:null}); }
+  adminBlank(sec){ const t=Date.now();
+    if(sec==='projects') return {id:'p'+t,title:'',cat:'Парки',group:'place',year:String(new Date().getFullYear()),loc:'',desc:''};
+    if(sec==='news') return {id:'n'+t,title:'',date:new Date().toISOString().slice(0,10).replace(/-/g,'.')};
+    if(sec==='services') return {t:'',d:''};
+    if(sec==='krt') return {name:'',district:'Тракторозаводский',area:''};
+    if(sec==='team') return {name:'',role:'Архитектор'};
+    if(sec==='manifest') return {n:'',t:'',d:''};
+    return {}; }
+  openEditor(sec,item){ this.setState({editing:{sec,isNew:!item,draft:item?JSON.parse(JSON.stringify(item)):this.adminBlank(sec)}}); }
+  closeEditor(){ this.setState({editing:null}); }
+  setField(k,v){ this.setState(s=>({editing:Object.assign({},s.editing,{draft:Object.assign({},s.editing.draft,{[k]:v})})})); }
+  saveItem(){ const ed=this.state.editing; if(!ed) return; const data=Object.assign({},this.state.data); const arr=(data[ed.sec]||[]).slice();
+    if(ed.isNew){ arr.push(ed.draft); } else { const i=arr.findIndex(x=>x===this._editingOrig||(ed.draft.id&&x.id===ed.draft.id)); if(i>=0) arr[i]=ed.draft; else { const j=this._editIndex; if(j>=0&&j<arr.length) arr[j]=ed.draft; } }
+    data[ed.sec]=arr; this.setState({data,editing:null},()=>{ this.persist(); this.flash(ed.isNew?'Добавлено':'Сохранено'); }); }
+  editAt(sec,idx){ this._editIndex=idx; this._editingOrig=this.state.data[sec][idx]; this.openEditor(sec,this.state.data[sec][idx]); }
+  deleteAt(sec,idx){ const data=Object.assign({},this.state.data); const arr=data[sec].slice(); arr.splice(idx,1); data[sec]=arr; this.setState({data},()=>{ this.persist(); this.flash('Удалено'); }); }
+  moveAt(sec,idx,dir){ const data=Object.assign({},this.state.data); const arr=data[sec].slice(); const j=idx+dir; if(j<0||j>=arr.length) return; const t=arr[idx]; arr[idx]=arr[j]; arr[j]=t; data[sec]=arr; this.setState({data},()=>this.persist()); }
+  saveSettings(e){ if(e&&e.preventDefault)e.preventDefault(); const fd=new FormData(e.target); const data=Object.assign({},this.state.data); const s=Object.assign({},data.settings);
+    ['aboutTitle','heroTitle','servicesTitle','krtTitle','aboutText1','aboutText2','address','phone','email','inquiry'].forEach(k=>{ if(fd.get(k)!==null) s[k]=fd.get(k); }); data.settings=s;
+    this.setState({data},()=>{ this.persist(); this.flash('Настройки сохранены'); }); }
+  resetData(){ if(typeof confirm==='function'&&!confirm('Сбросить весь контент к исходному?')) return; const data=JSON.parse(JSON.stringify(this._SEED)); this.setState({data,editing:null},()=>{ this.persist(); this.flash('Сброшено'); }); }
+  renderVals(){
+    const st=this.state;
+    const d=st.data;
+    const PROJECTS=d.projects, NEWS=d.news, SERVICES=d.services, KRT=d.krt, TEAM=d.team, MANIFEST=d.manifest, SETTINGS=d.settings;
+    const mk=(page,label)=>({label,onClick:()=>this.go(page)});
+    const menuItems=[mk('projects','Проекты'),mk('krt','КРТ'),mk('services','Услуги'),mk('studio','О нас'),mk('contact','Контакты')];
+    const projects = PROJECTS.map((p,i)=>Object.assign({},p,{
+      bg:tone(i),
+      activeOpacity: i===st.activeIdx?1:0,
+      activeScale: i===st.activeIdx?1.04:1,
+      nameColor: i===st.activeIdx?'#111':'#9a9a9a',
+      heroColor: i===st.activeIdx?'#fff':'rgba(255,255,255,.42)',
+      viewOpacity: i===st.activeIdx?1:0, viewShift: i===st.activeIdx?'0px':'-10px',
+      namePad: i===st.activeIdx?'10px':'0px',
+      hover:()=>this.setState({activeIdx:i}),
+      open:()=>this.go('project',p.id)
+    }));
+    const act=PROJECTS[st.activeIdx]||PROJECTS[0];
+    const flt=st.projFilter;
+    const filtered=PROJECTS.filter(p=>flt==='all'||p.group===flt);
+    const allProjects=filtered.map((p,i)=>Object.assign({},p,{bg:tone(PROJECTS.indexOf(p)),isFull:i<2,isHalf:i>=2,open:()=>this.go('project',p.id)}));
+    const filterCols=FILTERS.map(f=>({col:f.col,key:f.key,items:f.items,
+      colColor: st.projFilter===f.key?'#111':'#111',
+      colUnderline: st.projFilter===f.key?'underline':'none',
+      onCol:()=>this.setState({projFilter:f.key})}));
+    const offices=[
+      {city:'Волгоград',lines:'ул. Комсомольская, 10а\nВолгоград, 400066',tel:'+7 (8442) 32-54-94'},
+      {city:'Почта',lines:SETTINGS.email+'\n'+SETTINGS.inquiry,tel:''}
+    ];
+    offices[0]={city:'Волгоград',lines:SETTINGS.address,tel:SETTINGS.phone};
+    const isNews=st.page==='news';
+    // КРТ grouped by district
+    const kmap={}; KRT.forEach((it,i)=>{ (kmap[it.district]=kmap[it.district]||[]).push(Object.assign({},it,{bg:tone(i+3),open:()=>this.go('krtitem',i)})); });
+    const krtGroups=Object.keys(kmap).map(d=>({district:d,items:kmap[d]}));
+    const krtTotal=KRT.length;
+    // КРТ detail
+    let kcur=KRT[st.krtId]||KRT[0]||{};
+    const kbaseIdx=KRT.indexOf(kcur);
+    const kSlides=['d','a','e','c'].map((t,k)=>({bg:TONES[t],shownOpacity:k===st.slideIdx?1:0,dotColor:k===st.slideIdx?'#111':'#cfcfcf',onDot:()=>this.setState({slideIdx:k})}));
+    const kN=4;
+    const currentKrt=Object.assign({},kcur,{
+      bg:tone(kbaseIdx+3), slides:kSlides, slideNum:(st.slideIdx+1)+' / '+kN,
+      desc: kcur.desc || ('Свободная площадка '+(kcur.area||'')+' в '+(kcur.district||'')+' районе, готовая к проработке концепции комплексного развития территории — жилой, общественной или смешанной функции.'),
+      prevSlide:()=>this.setState(s=>({slideIdx:(s.slideIdx-1+kN)%kN})),
+      nextSlide:()=>this.setState(s=>({slideIdx:(s.slideIdx+1)%kN})),
+      download:()=>this.downloadProject({id:'krt-'+kbaseIdx,title:kcur.name,loc:kcur.district+' район',year:kcur.area,cat:'Комплексное развитие территорий',desc:kcur.desc||''})
+    });
+    const krtRelated=KRT.filter((x,i)=>i!==kbaseIdx).slice(0,3).map((x)=>{ const gi=KRT.indexOf(x); return Object.assign({},x,{bg:tone(gi+3),open:()=>this.go('krtitem',gi)}); });
+    // team
+    const team=TEAM.map((t,i)=>Object.assign({},t,{bg:tone(i)}));
+    // project detail
+    let cur=PROJECTS.find(p=>p.id===st.projectId)||PROJECTS[0];
+    const baseIdx=PROJECTS.indexOf(cur);
+    const slideTones=['a','c','d','e'];
+    const slides=slideTones.map((t,k)=>({bg:TONES[t], shownOpacity:k===st.slideIdx?1:0, dotColor:k===st.slideIdx?'#111':'#cfcfcf', onDot:()=>this.setState({slideIdx:k})}));
+    const nSlides=slideTones.length;
+    const currentProject=Object.assign({},cur,{
+      bg:tone(baseIdx), slides,
+      slideNum:(st.slideIdx+1)+' / '+nSlides,
+      prevSlide:()=>this.setState(s=>({slideIdx:(s.slideIdx-1+nSlides)%nSlides})),
+      nextSlide:()=>this.setState(s=>({slideIdx:(s.slideIdx+1)%nSlides})),
+      download:()=>this.downloadProject(cur)
+    });
+    const relProjects=PROJECTS.filter(p=>p.id!==cur.id).slice(0,3).map((p)=>Object.assign({},p,{bg:tone(PROJECTS.indexOf(p)),open:()=>this.go('project',p.id)}));
+    const news=NEWS.map((n,i)=>Object.assign({},n,{bg:tone(i+2),dateFmt:n.date}));
+
+    // ---- ADMIN ----
+    const SECS=[['projects','Проекты'],['news','Новости'],['services','Услуги'],['krt','КРТ'],['team','Команда'],['manifest','Манифест'],['settings','Настройки']];
+    const adminNav=SECS.map(s=>({key:s[0],label:s[1],active:st.adminSection===s[0],
+      color:st.adminSection===s[0]?'#fff':'#9a9a9a', bar:st.adminSection===s[0]?'#fff':'transparent',
+      onClick:()=>this.setState({adminSection:s[0],editing:null})}));
+    const labelOf=(sec,it)=>{ if(sec==='projects'||sec==='news') return it.title; if(sec==='services'||sec==='manifest') return it.t; if(sec==='krt') return it.name; if(sec==='team') return it.name; return ''; };
+    const subOf=(sec,it)=>{ if(sec==='projects') return (it.cat||'')+' · '+(it.year||''); if(sec==='news') return it.date||''; if(sec==='services') return it.d||''; if(sec==='krt') return (it.district||'')+' · '+(it.area||''); if(sec==='team') return it.role||''; if(sec==='manifest') return (it.n?it.n+' · ':'')+(it.d||''); return ''; };
+    const curSec=st.adminSection;
+    const adminRows=(curSec!=='settings'?(d[curSec]||[]):[]).map((it,idx,arr)=>({label:labelOf(curSec,it),sub:subOf(curSec,it),
+      onEdit:()=>this.editAt(curSec,idx), onDelete:()=>this.deleteAt(curSec,idx),
+      onUp:()=>this.moveAt(curSec,idx,-1), onDown:()=>this.moveAt(curSec,idx,1)}));
+    const FIELDS={
+      projects:[['title','Название','text'],['cat','Категория','text'],['group','Группа','enum'],['year','Год','text'],['loc','Локация','text'],['desc','Описание','textarea']],
+      news:[['title','Заголовок','text'],['date','Дата (ГГГГ.ММ.ДД)','text']],
+      services:[['t','Название','text'],['d','Описание','textarea']],
+      krt:[['name','Название','text'],['district','Район','text'],['area','Площадь','text']],
+      team:[['name','Имя','text'],['role','Роль','text']],
+      manifest:[['n','Номер','text'],['t','Заголовок','text'],['d','Описание','textarea']]
+    };
+    const GROUPS=[['frame','Направления'],['place','Места'],['life','Среда']];
+    let editing=null;
+    if(st.editing){ const e=st.editing; const conf=FIELDS[e.sec]||[];
+      const fields=conf.map(c=>{ const k=c[0],label=c[1],type=c[2];
+        return {key:k,label,type,value:e.draft[k]!==undefined?e.draft[k]:'',
+          isText:type==='text',isTextarea:type==='textarea',isEnum:type==='enum',
+          options:type==='enum'?GROUPS.map(g=>({value:g[0],label:g[1],sel:e.draft[k]===g[0]})):[],
+          onChange:(ev)=>this.setField(k, ev.target.value)}; });
+      editing={sec:e.sec,isNew:e.isNew,fields,title:(e.isNew?'Добавить':'Изменить'),onSave:()=>this.saveItem(),onCancel:()=>this.closeEditor()}; }
+    const sset=d.settings;
+    return {
+      rootRef:this.rootRef, navBarRef:this.navBarRef, navRef:this.navRef, logoRef:this.logoRef, pageKey:st.pageKey, menuOpen:st.menuOpen,
+      intro:st.intro,
+      isHome:st.page==='home', isProjects:st.page==='projects'||st.page==='news', isStudio:st.page==='studio', isContact:st.page==='contact', isPositions:st.page==='positions',
+      isKrt:st.page==='krt', isProject:st.page==='project', isServices:st.page==='services', isKrtItem:st.page==='krtitem',
+      krtGroups, krtTotal, team, currentProject, relProjects, currentKrt, krtRelated,
+      manifest:MANIFEST.map((m,i)=>Object.assign({},m,{slotId:'manifest-'+(m.n||(i+1))})),
+      services:SERVICES.map((s,i)=>Object.assign({},s,{num:String(i+1).padStart(2,'0')})),
+      aboutTitle:SETTINGS.aboutTitle, aboutText1:SETTINGS.aboutText1, aboutText2:SETTINGS.aboutText2,
+      servicesTitle:SETTINGS.servicesTitle, krtTitle:SETTINGS.krtTitle,
+      footAddress:SETTINGS.address, footPhone:SETTINGS.phone, footEmail:SETTINGS.email, footInquiry:SETTINGS.inquiry,
+      goStudio:()=>this.go('studio'), goAdmin:()=>this.go('admin'), goKrt:()=>this.go('krt'),
+      isAdmin:st.page==='admin', adminAuthed:st.adminAuthed, adminNotAuthed:!st.adminAuthed,
+      adminLogin:(e)=>this.adminLogin(e), adminLogout:()=>this.adminLogout(), adminError:st.adminError,
+      toast:st.toast, hasToast:!!st.toast,
+      adminNav, adminRows, adminSectionLabel:({projects:'Проекты',news:'Новости',services:'Услуги',krt:'КРТ',team:'Команда',manifest:'Манифест',settings:'Настройки'})[st.adminSection],
+      adminIsSettings:st.adminSection==='settings', adminIsList:st.adminSection!=='settings',
+      addNew:()=>this.openEditor(st.adminSection,null), editing, isEditing:!!editing,
+      saveSettings:(e)=>this.saveSettings(e), resetData:()=>this.resetData(),
+      set_aboutTitle:sset.aboutTitle,set_heroTitle:sset.heroTitle,set_servicesTitle:sset.servicesTitle,set_krtTitle:sset.krtTitle,
+      set_aboutText1:sset.aboutText1,set_aboutText2:sset.aboutText2,set_address:sset.address,set_phone:sset.phone,set_email:sset.email,set_inquiry:sset.inquiry,
+      openMenu:()=>this.setState({menuOpen:true}), closeMenu:()=>this.setState({menuOpen:false}),
+      goHome:()=>this.go('home'), goProjects:()=>this.go('projects'), goNews:()=>this.go('news'), goContact:()=>this.go('contact'), goPositions:()=>this.go('positions'),
+      menuItems, projects, news, allProjects, filterCols, offices, isNews, isProjectsGrid:!isNews, projectsTitle: isNews?'Новости':SETTINGS.heroTitle,
+      activeMeta: act.cat+' · '+act.year, openActive:()=>this.go('project',act.id)
+    };
+  }
+}
+</script>
+</body>
+</html>
