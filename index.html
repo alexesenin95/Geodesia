@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;height:100%;overflow:hidden}
+  body{background:#ededed;color:#111;font-family:'Golos Text',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  ::selection{background:#111;color:#fff}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  button{font-family:inherit}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  @keyframes fadeUpSm{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  @keyframes kenburns{0%{transform:scale(1.04)}100%{transform:scale(1.13)}}
+  @keyframes introOut{0%{opacity:1}74%{opacity:1}100%{opacity:0}}
+  @keyframes introLogo{0%{opacity:0;transform:translateY(10px) scale(.96)}30%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+  @keyframes barGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+</style>
+<script src="image-slot.js"></script>
+</helmet>
+
+<div ref="{{ rootRef }}" style="position:fixed;inset:0;display:flex;flex-direction:column;background:#ededed;--accent:#111">
+
+  <sc-if value="{{ intro }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:300;background:#0a0a0a;display:flex;align-items:center;justify-content:center;animation:introOut 2.4s ease forwards;pointer-events:none">
+      <img src="assets/vyaz-logo-light.png" alt="ВЯЗ" style="height:62px;width:auto;animation:introLogo 1.3s cubic-bezier(.16,1,.3,1) forwards"/>
+    </div>
+  </sc-if>
+
+  <!-- DESKTOP -->
+  <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+  <div style="display:contents">
+  <header ref="{{ headerRef }}" style="position:relative;z-index:60;flex:none;height:clamp(74px,9vh,94px);background:{{ headerBg }};display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 clamp(20px,3.4vw,48px)">
+    <div style="display:flex;align-items:center;gap:clamp(18px,2.8vw,46px)">
+      <sc-for list="{{ menuLeft }}" as="m" hint-placeholder-count="3">
+        <a data-nav onClick="{{ m.onClick }}" style="font-size:13px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:{{ navColor }};cursor:pointer;opacity:{{ m.op }};text-decoration:{{ m.ul }};text-underline-offset:7px;text-decoration-thickness:1.5px;transition:opacity .3s" style-hover="opacity:1">{{ m.label }}</a>
+      </sc-for>
+    </div>
+    <a onClick="{{ goHome }}" style="display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0 clamp(10px,2vw,30px)">
+      <img ref="{{ logoRef }}" src="assets/vyaz-logo-light.png" alt="ВЯЗ" style="height:clamp(40px,5vh,54px);width:auto;filter:{{ logoFilter }}"/>
+    </a>
+    <div style="display:flex;align-items:center;justify-content:flex-end;gap:clamp(18px,2.8vw,46px)">
+      <sc-for list="{{ menuRight }}" as="m" hint-placeholder-count="3">
+        <a data-nav onClick="{{ m.onClick }}" style="font-size:13px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:{{ navColor }};cursor:pointer;opacity:{{ m.op }};text-decoration:{{ m.ul }};text-underline-offset:7px;text-decoration-thickness:1.5px;transition:opacity .3s" style-hover="opacity:1">{{ m.label }}</a>
+      </sc-for>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main style="position:relative;flex:1;min-height:0;overflow:hidden">
+    <div key="{{ pageKey }}" style="position:absolute;inset:0;animation:fadeIn .5s ease both">
+
+      <!-- HOME -->
+      <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+      <div style="position:absolute;inset:0;background:#0a0a0a;overflow:hidden">
+        <sc-for list="{{ featured }}" as="f" hint-placeholder-count="5">
+          <div style="position:absolute;inset:0;opacity:{{ f.op }};transition:opacity .9s ease;overflow:hidden">
+            <div style="position:absolute;inset:0;animation:kenburns 17s ease-in-out infinite alternate">
+              <image-slot id="{{ f.heroSlot }}" shape="rect" radius="0" placeholder="Изображение проекта" style="display:block;width:100%;height:100%"></image-slot>
+            </div>
+          </div>
+        </sc-for>
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,8,.62),rgba(8,8,8,.4) 30%,rgba(8,8,8,.42) 60%,rgba(8,8,8,.72))"></div>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px;color:#fff">
+          <div key="{{ heroKey }}" style="animation:fadeUp .7s cubic-bezier(.16,1,.3,1) both;display:flex;flex-direction:column;align-items:center;gap:clamp(14px,2.4vh,26px)">
+            <h1 style="margin:0;font-size:clamp(16px,2.2vw,34px);font-weight:700;letter-spacing:.02em;text-transform:uppercase;line-height:1.08;text-wrap:balance;max-width:22ch">{{ heroTitle }}</h1>
+            <p style="margin:0;font-size:clamp(14px,1.25vw,19px);font-weight:400;letter-spacing:.04em;color:rgba(255,255,255,.82)">{{ heroSubtitle }}</p>
+            <a onClick="{{ openFeatured }}" style="margin-top:6px;display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#fff;cursor:pointer;border:1px solid rgba(255,255,255,.5);padding:13px 26px;transition:background .35s,color .35s" style-hover="background:#fff;color:#0a0a0a">Смотреть проект</a>
+          </div>
+        </div>
+        <div style="position:absolute;left:50%;transform:translateX(-50%);bottom:clamp(22px,5vh,46px);display:flex;gap:clamp(10px,1.4vw,18px);width:min(78%,980px)">
+          <sc-for list="{{ featured }}" as="f" hint-placeholder-count="5">
+            <button onClick="{{ f.go }}" style="flex:1;height:3px;border:none;cursor:pointer;background:rgba(255,255,255,.26);padding:0;position:relative;overflow:hidden">
+              <span style="position:absolute;inset:0;background:#fff;transform:scaleX({{ f.barFill }});transform-origin:left;transition:transform .6s ease"></span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- WORKS -->
+      <sc-if value="{{ isWorks }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#ededed;display:flex;flex-direction:column;padding:clamp(14px,2.4vh,32px) clamp(16px,2.6vw,44px)">
+        <div style="flex:none;display:flex;align-items:center;gap:16px;margin-bottom:clamp(10px,1.8vh,18px)">
+          <input value="{{ worksSearch }}" onChange="{{ worksSetSearch }}" placeholder="Поиск по названию проекта" style="width:clamp(220px,26vw,340px);border:1px solid #c8c8c8;background:#fff;font-family:inherit;font-size:14px;padding:11px 15px;outline:none"/>
+        </div>
+        <div style="flex:1;min-height:0;display:flex;align-items:center;gap:clamp(8px,1.6vw,28px)">
+        <button onClick="{{ worksPrev }}" style="flex:none;width:clamp(40px,4vw,58px);height:64px;background:none;border:none;cursor:pointer;color:#1a1a1a;font-size:34px;line-height:1;display:flex;align-items:center;justify-content:center;transition:opacity .3s;opacity:.78" style-hover="opacity:1">◀</button>
+        <sc-if value="{{ worksNoResults }}" hint-placeholder-val="{{ false }}"><div style="flex:1;display:flex;align-items:center;justify-content:center;color:#999;font-size:15px">Ничего не найдено</div></sc-if>
+        <div style="flex:1;min-width:0;height:100%;max-width:1380px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:clamp(10px,1.4vw,22px)">
+          <sc-for list="{{ worksOnPage }}" as="w" hint-placeholder-count="6">
+            <div onClick="{{ w.open }}" onMouseEnter="{{ w.enter }}" onMouseLeave="{{ leave }}" style="position:relative;overflow:hidden;cursor:pointer;background:#d6d6d6">
+              <div style="position:absolute;inset:0;filter:grayscale({{ w.gray }});transform:scale({{ w.scale }});transition:filter .6s ease,transform 1.1s cubic-bezier(.16,1,.3,1)">
+                <image-slot id="{{ w.tileSlot }}" shape="rect" radius="0" placeholder="{{ w.title }}" style="display:block;width:100%;height:100%"></image-slot>
+              </div>
+              <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.42),rgba(0,0,0,0) 38%,rgba(0,0,0,0) 58%,rgba(0,0,0,.5));opacity:{{ w.labelOp }};transition:opacity .45s ease"></div>
+              <div style="position:absolute;left:clamp(14px,1.4vw,22px);top:clamp(12px,1.4vw,20px);right:18px;color:#fff;font-size:clamp(13px,1.05vw,17px);font-weight:700;letter-spacing:.08em;text-transform:uppercase;line-height:1.15;opacity:{{ w.labelOp }};transform:translateY({{ w.labelShift }});transition:opacity .45s ease,transform .55s cubic-bezier(.16,1,.3,1)">{{ w.title }}</div>
+              <div style="position:absolute;left:clamp(14px,1.4vw,22px);bottom:clamp(12px,1.4vw,20px);right:18px;color:rgba(255,255,255,.92);font-size:clamp(10px,.78vw,12px);font-weight:500;letter-spacing:.14em;text-transform:uppercase;opacity:{{ w.labelOp }};transition:opacity .45s ease">{{ w.subtitle }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <button onClick="{{ worksNext }}" style="flex:none;width:clamp(40px,4vw,58px);height:64px;background:none;border:none;cursor:pointer;color:#1a1a1a;font-size:34px;line-height:1;display:flex;align-items:center;justify-content:center;transition:opacity .3s;opacity:.78" style-hover="opacity:1">▶</button>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- SERVICES -->
+      <sc-if value="{{ isServices }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#ededed;padding:clamp(18px,3vh,38px) clamp(16px,2.6vw,44px)">
+        <div style="height:100%;max-width:1380px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(10px,1.2vw,18px)">
+          <sc-for list="{{ serviceCols }}" as="col" hint-placeholder-count="4">
+            <div style="display:flex;flex-direction:column;gap:clamp(10px,1.2vw,18px);min-height:0">
+              <sc-for list="{{ col.cards }}" as="c" hint-placeholder-count="2">
+                <div onClick="{{ c.open }}" onMouseEnter="{{ c.enter }}" onMouseLeave="{{ leave }}" style="position:relative;flex:{{ c.flex }};min-height:0;overflow:hidden;cursor:pointer;background:#cfcfcf">
+                  <div style="position:absolute;inset:0;filter:grayscale(1);transform:scale({{ c.scale }});transition:transform 1.1s cubic-bezier(.16,1,.3,1)">
+                    <image-slot id="{{ c.slot }}" shape="rect" radius="0" placeholder="{{ c.t }}" style="display:block;width:100%;height:100%"></image-slot>
+                  </div>
+                  <div style="position:absolute;inset:0;background:rgba(10,10,10,{{ c.dim }});transition:background .45s ease"></div>
+                  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:clamp(14px,1.6vw,26px)">
+                    <span style="color:#fff;font-size:clamp(12px,1.05vw,17px);font-weight:700;letter-spacing:.09em;text-transform:uppercase;text-align:center;line-height:1.28;text-wrap:balance">{{ c.t }}</span>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ABOUT -->
+      <sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#ededed;display:flex;gap:clamp(20px,3vw,56px);padding:clamp(20px,3.4vh,44px) clamp(20px,3vw,56px)">
+        <aside style="flex:none;width:clamp(150px,15vw,230px);display:flex;flex-direction:column;gap:clamp(8px,1.4vh,16px);padding-top:clamp(4px,1.4vh,18px)">
+          <sc-for list="{{ aboutTabs }}" as="t" hint-placeholder-count="4">
+            <button onClick="{{ t.onClick }}" style="text-align:center;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:clamp(14px,1.8vh,22px) 14px;background:{{ t.bg }};color:{{ t.color }};transition:background .35s,color .35s">{{ t.label }}</button>
+          </sc-for>
+        </aside>
+        <div key="{{ aboutSub }}" style="flex:1;min-width:0;display:flex;flex-direction:column;animation:fadeUpSm .45s ease both">
+
+          <sc-if value="{{ aboutIsHistory }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:clamp(16px,2.4vh,28px)">
+            <div style="flex:1;min-height:0;position:relative;overflow:hidden;background:#dcdcdc">
+              <image-slot id="about-team" shape="rect" radius="0" placeholder="Фото команды" style="display:block;width:100%;height:100%"></image-slot>
+            </div>
+            <div style="flex:none;display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,1.6vw,26px) clamp(24px,3vw,60px)">
+              <sc-for list="{{ aboutBullets }}" as="b" hint-placeholder-count="4">
+                <div style="display:flex;gap:12px;font-size:clamp(11px,.92vw,14px);line-height:1.5;color:#333"><span style="flex:none;width:6px;height:6px;background:var(--accent);margin-top:7px"></span><span>{{ b }}</span></div>
+              </sc-for>
+            </div>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ aboutIsManifest }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:clamp(12px,1.6vw,26px)">
+            <sc-for list="{{ manifest }}" as="m" hint-placeholder-count="6">
+              <div style="border-top:2px solid #1a1a1a;padding-top:clamp(10px,1.6vh,20px);display:flex;flex-direction:column;min-height:0">
+                <div style="display:flex;align-items:center;gap:11px">
+                  <div style="flex:none;width:clamp(40px,3.2vw,56px);height:clamp(40px,3.2vw,56px);overflow:hidden;background:#e3e0d8;border:1px solid #d8d5cd"><image-slot id="{{ m.slot }}" shape="rect" radius="0" placeholder="" style="display:block;width:100%;height:100%"></image-slot></div>
+                  <div style="font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.1em">{{ m.n }}</div>
+                </div>
+                <h3 style="margin:11px 0 0;font-size:clamp(15px,1.4vw,22px);font-weight:700;letter-spacing:-.01em;line-height:1.12;text-transform:uppercase">{{ m.t }}</h3>
+                <p style="margin:9px 0 0;font-size:clamp(11px,.9vw,14px);line-height:1.5;color:#555">{{ m.d }}</p>
+              </div>
+            </sc-for>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ aboutIsTeam }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;min-height:0;overflow-y:auto">
+            <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(8px,1vw,16px)">
+            <sc-for list="{{ team }}" as="t" hint-placeholder-count="12">
+              <div onMouseEnter="{{ t.enter }}" onMouseLeave="{{ leave }}" style="position:relative;overflow:hidden;background:#d6d6d6;aspect-ratio:3/4">
+                <div style="position:absolute;inset:0;filter:grayscale({{ t.gray }});transform:scale({{ t.scale }});transition:filter .6s ease,transform 1s cubic-bezier(.16,1,.3,1)">
+                  <image-slot id="{{ t.slot }}" shape="rect" radius="0" placeholder="Фото" style="display:block;width:100%;height:100%"></image-slot>
+                </div>
+                <div style="position:absolute;left:0;right:0;bottom:0;padding:18px 10px 9px;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.78));color:#fff">
+                  <div style="font-size:clamp(10px,.82vw,13px);font-weight:600;line-height:1.15">{{ t.name }}</div>
+                  <div style="font-size:clamp(9px,.7vw,11px);color:rgba(255,255,255,.7);margin-top:2px">{{ t.role }}</div>
+                </div>
+              </div>
+            </sc-for>
+            </div>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ aboutIsMedia }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:clamp(12px,1.6vw,24px)">
+            <sc-for list="{{ media }}" as="md" hint-placeholder-count="6">
+              <a href="{{ md.url }}" target="_blank" style="position:relative;overflow:hidden;background:#d6d6d6;display:block;cursor:pointer">
+                <div style="position:absolute;inset:0;transition:transform 1s cubic-bezier(.16,1,.3,1)" style-hover="transform:scale(1.05)">
+                  <image-slot id="{{ md.slot }}" shape="rect" radius="0" placeholder="Обложка" style="display:block;width:100%;height:100%"></image-slot>
+                </div>
+                <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.72));pointer-events:none"></div>
+                <div style="position:absolute;left:0;right:0;bottom:0;padding:clamp(12px,1.6vw,20px);color:#fff;pointer-events:none">
+                  <div style="font-size:clamp(9px,.72vw,11px);font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.75)">{{ md.source }} · {{ md.date }}</div>
+                  <div style="margin-top:6px;font-size:clamp(13px,1.05vw,17px);font-weight:600;line-height:1.2">{{ md.title }}</div>
+                </div>
+              </a>
+            </sc-for>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ aboutIsDocs }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;min-height:0;display:flex;flex-direction:column">
+            <div style="font-size:13px;font-weight:600;letter-spacing:.04em;color:#888;margin-bottom:clamp(10px,1.6vh,18px)">Нормативные документы</div>
+            <div style="border-top:2px solid #1a1a1a">
+              <sc-for list="{{ docs }}" as="dc" hint-placeholder-count="4">
+                <a onClick="{{ dc.open }}" style="display:flex;align-items:center;gap:clamp(14px,1.6vw,22px);padding:clamp(13px,1.9vh,20px) 4px;border-bottom:1px solid #d6d6d6;cursor:pointer;transition:padding-left .35s ease" style-hover="padding-left:12px">
+                  <span style="flex:none;width:30px;height:38px;border:1px solid #b8b8b8;display:flex;align-items:flex-end;justify-content:center;font-size:8px;font-weight:700;letter-spacing:.04em;color:#777;padding-bottom:4px">PDF</span>
+                  <span style="flex:1;min-width:0;font-size:clamp(14px,1.25vw,18px);font-weight:500;color:#1a1a1a">{{ dc.name }}</span>
+                  <span style="flex:none;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#888">Скачать →</span>
+                </a>
+              </sc-for>
+            </div>
+          </div>
+          </sc-if>
+
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- CONTACTS -->
+      <sc-if value="{{ isContacts }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#ededed;display:flex;gap:clamp(24px,4vw,80px);padding:clamp(24px,4vh,56px) clamp(24px,4vw,72px);align-items:center">
+        <div style="flex:1;min-width:0;max-width:560px">
+          <h1 style="margin:0;font-size:clamp(28px,3.6vw,54px);font-weight:700;letter-spacing:-.01em;line-height:1.05;text-transform:uppercase">{{ contactsHeading }}</h1>
+          <div style="margin-top:clamp(24px,4vh,44px);display:flex;flex-direction:column;gap:clamp(16px,2.4vh,26px)">
+            <div><div style="font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#999">Адрес</div><div style="margin-top:6px;font-size:clamp(15px,1.3vw,19px);line-height:1.5;white-space:pre-line">{{ cAddress }}</div></div>
+            <div style="display:flex;gap:clamp(28px,5vw,72px);flex-wrap:wrap">
+              <div><div style="font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#999">Телефон</div><a href="tel:{{ cPhoneHref }}" style="margin-top:6px;display:block;font-size:clamp(15px,1.3vw,19px)" style-hover="opacity:.6">{{ cPhone }}</a></div>
+              <div><div style="font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#999">Почта</div><a href="mailto:{{ cEmail }}" style="margin-top:6px;display:block;font-size:clamp(15px,1.3vw,19px);border-bottom:1px solid #111;padding-bottom:1px" style-hover="opacity:.6">{{ cEmail }}</a></div>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:6px">
+              <sc-for list="{{ socials }}" as="s" hint-placeholder-count="4">
+                <a href="{{ s.url }}" target="_blank" style="width:44px;height:44px;border:1px solid #c4c4c4;display:flex;align-items:center;justify-content:center;color:#1a1a1a;transition:background .3s,color .3s,border-color .3s" style-hover="background:#1a1a1a;color:#fff;border-color:#1a1a1a">{{ s.iconEl }}</a>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:0;align-self:stretch;position:relative;overflow:hidden;border:1px solid #d8d8d8;background:#e4e4e4">
+          <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=44.5047%2C48.7036%2C44.5247%2C48.7136&layer=mapnik&marker=48.7086%2C44.5147" title="Карта — офис ВЯЗ" loading="lazy" style="width:100%;height:100%;border:0;filter:grayscale(.45) contrast(1.05)"></iframe>
+          <div style="position:absolute;left:18px;top:18px;display:flex;align-items:center;gap:9px;background:#0a0a0a;color:#fff;padding:11px 17px;font-size:13px;font-weight:600;letter-spacing:.03em;box-shadow:0 8px 24px rgba(0,0,0,.28)"><span style="width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(255,255,255,.3)"></span>Мы здесь</div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- INVESTOR -->
+      <sc-if value="{{ isInvestor }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#ededed;display:flex;gap:clamp(20px,3vw,56px);padding:clamp(20px,3.4vh,44px) clamp(20px,3vw,56px)">
+        <aside style="flex:none;width:clamp(160px,15vw,240px);display:flex;flex-direction:column;gap:clamp(8px,1.4vh,16px);padding-top:clamp(4px,1.4vh,18px)">
+          <sc-for list="{{ invTabs }}" as="t" hint-placeholder-count="4">
+            <button onClick="{{ t.onClick }}" style="text-align:center;border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;line-height:1.3;padding:clamp(13px,1.7vh,21px) 12px;background:{{ t.bg }};color:{{ t.color }};transition:background .35s,color .35s">{{ t.label }}</button>
+          </sc-for>
+        </aside>
+        <div key="{{ invSub }}" style="flex:1;min-width:0;display:flex;flex-direction:column;animation:fadeUpSm .45s ease both">
+
+          <sc-if value="{{ invIsMap }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:1;min-height:0;position:relative;overflow:hidden;border:1px solid #d8d8d8;background:#e4e4e4">
+            <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=44.40%2C48.66%2C44.62%2C48.78&layer=mapnik&marker=48.7086%2C44.5147" title="Карта Волгограда" loading="lazy" style="width:100%;height:100%;border:0;filter:grayscale(.4) contrast(1.05)"></iframe>
+            <div style="position:absolute;left:18px;top:18px;background:#0a0a0a;color:#fff;padding:11px 17px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 8px 24px rgba(0,0,0,.28)">Волгоград</div>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ invIsInfo }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;max-width:72ch">
+            <h1 style="margin:0;font-size:clamp(24px,3vw,46px);font-weight:700;letter-spacing:-.01em;line-height:1.06;text-transform:uppercase">{{ investorHeading }}</h1>
+            <p style="margin:clamp(14px,2.4vh,24px) 0 0;font-size:clamp(15px,1.4vw,20px);line-height:1.55;color:#444">{{ investorIntro }}</p>
+            <p style="margin:clamp(14px,2vh,20px) 0 0;font-size:clamp(14px,1.25vw,18px);line-height:1.6;color:#666">{{ investorInfo }}</p>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ invIsActs }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;min-height:0;display:flex;flex-direction:column">
+            <div style="border-top:2px solid #1a1a1a">
+              <sc-for list="{{ acts }}" as="ac" hint-placeholder-count="4">
+                <a onClick="{{ ac.open }}" style="display:flex;align-items:center;gap:clamp(14px,1.6vw,22px);padding:clamp(13px,1.9vh,20px) 4px;border-bottom:1px solid #d6d6d6;cursor:pointer;transition:padding-left .35s ease" style-hover="padding-left:12px">
+                  <span style="flex:none;width:30px;height:38px;border:1px solid #b8b8b8;display:flex;align-items:flex-end;justify-content:center;font-size:8px;font-weight:700;letter-spacing:.04em;color:#777;padding-bottom:4px">PDF</span>
+                  <span style="flex:1;min-width:0;font-size:clamp(14px,1.25vw,18px);font-weight:500;color:#1a1a1a">{{ ac.name }}</span>
+                  <span style="flex:none;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#888">Скачать →</span>
+                </a>
+              </sc-for>
+            </div>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ invIsKrt }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:clamp(12px,1.8vh,18px)">
+            <div style="flex:none;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px">
+              <input value="{{ krtSearch }}" onChange="{{ krtSetSearch }}" placeholder="Поиск по названию" style="flex:none;width:clamp(190px,22vw,280px);border:1px solid #c8c8c8;background:#fff;font-family:inherit;font-size:14px;padding:10px 14px;outline:none"/>
+              <div style="display:flex;flex-wrap:wrap;gap:7px">
+                <sc-for list="{{ districtChips }}" as="c" hint-placeholder-count="5">
+                  <button onClick="{{ c.onClick }}" style="border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.color }};cursor:pointer;font-family:inherit;font-size:12px;font-weight:500;padding:8px 14px;transition:background .25s,color .25s">{{ c.label }}</button>
+                </sc-for>
+              </div>
+              <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
+                <span style="font-size:12px;color:#888;white-space:nowrap">{{ krtPageLabel }}</span>
+                <button onClick="{{ krtPrev }}" style="width:34px;height:34px;border:1px solid #c8c8c8;background:#fff;cursor:pointer;font-size:15px;color:#333" style-hover="border-color:#111;color:#111">‹</button>
+                <button onClick="{{ krtNext }}" style="width:34px;height:34px;border:1px solid #c8c8c8;background:#fff;cursor:pointer;font-size:15px;color:#333" style-hover="border-color:#111;color:#111">›</button>
+              </div>
+            </div>
+            <sc-if value="{{ krtHasResults }}" hint-placeholder-val="{{ true }}">
+            <div style="flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:clamp(12px,1.4vw,22px)">
+              <sc-for list="{{ krtItems }}" as="s" hint-placeholder-count="6">
+                <div style="position:relative;overflow:hidden;background:#d6d6d6;cursor:pointer" onClick="{{ s.open }}" onMouseEnter="{{ s.enter }}" onMouseLeave="{{ leave }}">
+                  <div style="position:absolute;inset:0;filter:grayscale({{ s.gray }});transform:scale({{ s.scale }});transition:filter .6s ease,transform 1.1s cubic-bezier(.16,1,.3,1)">
+                    <image-slot id="{{ s.slot }}" shape="rect" radius="0" placeholder="{{ s.name }}" style="display:block;width:100%;height:100%"></image-slot>
+                  </div>
+                  <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.2),rgba(0,0,0,0) 38%,rgba(0,0,0,.7))"></div>
+                  <div style="position:absolute;right:12px;top:11px;font-size:11px;font-weight:700;color:#111;background:rgba(255,255,255,.92);padding:4px 9px">{{ s.area }}</div>
+                  <div style="position:absolute;left:14px;right:14px;bottom:12px;color:#fff">
+                    <div style="font-size:clamp(13px,1.1vw,17px);font-weight:600;letter-spacing:-.01em;line-height:1.15">{{ s.name }}</div>
+                    <div style="margin-top:3px;font-size:11px;color:rgba(255,255,255,.78)">{{ s.district }} район</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            </sc-if>
+            <sc-if value="{{ krtNoResults }}" hint-placeholder-val="{{ false }}">
+            <div style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;color:#999;font-size:15px">Ничего не найдено</div>
+            </sc-if>
+          </div>
+          </sc-if>
+
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- NEWS -->
+      <sc-if value="{{ isNews }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#ededed;display:flex;flex-direction:column;padding:clamp(20px,3.4vh,44px) clamp(24px,4vw,64px)">
+        <h1 style="flex:none;margin:0 0 clamp(16px,2.6vh,28px);font-size:clamp(22px,2.6vw,40px);font-weight:700;letter-spacing:-.01em;text-transform:uppercase">Новости</h1>
+        <div style="flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr;gap:clamp(16px,2vw,30px)">
+          <sc-for list="{{ news }}" as="n" hint-placeholder-count="6">
+            <a onClick="{{ n.open }}" style="display:flex;flex-direction:column;min-height:0;cursor:pointer;background:#fff;border:1px solid #e2e2e2">
+              <div style="flex:1;min-height:0;position:relative;overflow:hidden;background:#d6d6d6">
+                <div style="position:absolute;inset:0;transition:transform 1s cubic-bezier(.16,1,.3,1)" style-hover="transform:scale(1.05)">
+                  <image-slot id="{{ n.cover }}" shape="rect" radius="0" placeholder="Фото новости" style="display:block;width:100%;height:100%"></image-slot>
+                </div>
+              </div>
+              <div style="flex:none;padding:clamp(12px,1.4vw,18px)">
+                <div style="font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#999">{{ n.dateLabel }}</div>
+                <div style="margin-top:7px;font-size:clamp(13px,1.05vw,17px);font-weight:600;line-height:1.25;color:#1a1a1a">{{ n.title }}</div>
+              </div>
+            </a>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- NEWS ITEM (scrollable article) -->
+      <sc-if value="{{ isNewsItem }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#ededed;overflow-y:auto">
+        <div style="max-width:900px;margin:0 auto;padding:clamp(24px,4vh,52px) clamp(24px,4vw,40px) clamp(40px,7vh,96px)">
+          <a onClick="{{ goNews }}" style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#888;cursor:pointer" style-hover="color:#111">← Все новости</a>
+          <h1 style="margin:12px 0 0;font-size:clamp(24px,3vw,44px);font-weight:700;letter-spacing:-.01em;line-height:1.08;text-wrap:balance">{{ newsTitle }}</h1>
+          <div style="margin-top:8px;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#999">{{ newsDate }}</div>
+          <div style="margin-top:clamp(18px,3vh,30px)">
+            <div style="position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#d6d6d6">
+              <sc-for list="{{ newsPhotos }}" as="p" hint-placeholder-count="2">
+                <div style="position:absolute;inset:0;opacity:{{ p.op }};transition:opacity .5s ease">
+                  <image-slot id="{{ p.slot }}" shape="rect" radius="0" placeholder="Фото новости" style="display:block;width:100%;height:100%"></image-slot>
+                </div>
+              </sc-for>
+              <button onClick="{{ newsOpenFs }}" title="Полный экран" style="position:absolute;right:12px;top:12px;width:40px;height:40px;background:rgba(10,10,10,.78);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px" style-hover="background:#0a0a0a">⤢</button>
+            </div>
+            <sc-if value="{{ newsHasThumbs }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ newsPhotos }}" as="p" hint-placeholder-count="2">
+                <button onClick="{{ p.onDot }}" style="width:clamp(72px,9vw,112px);aspect-ratio:16/10;border:2px solid {{ p.thumbBorder }};background:#cfcfcf;cursor:pointer;padding:0;overflow:hidden">
+                  <image-slot id="{{ p.slot }}" shape="rect" radius="0" placeholder="" style="display:block;width:100%;height:100%;pointer-events:none"></image-slot>
+                </button>
+              </sc-for>
+            </div>
+            </sc-if>
+          </div>
+          <p style="margin:clamp(18px,3vh,30px) 0 0;font-size:clamp(14px,1.15vw,18px);line-height:1.7;color:#333;white-space:pre-line">{{ newsBody }}</p>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- PROJECT / SITE DETAIL -->
+      <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#ededed;display:flex;flex-direction:column;padding:clamp(16px,2.6vh,30px) clamp(24px,3.2vw,56px) clamp(16px,2.6vh,30px)">
+        <a onClick="{{ detBack }}" style="flex:none;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#888;cursor:pointer;margin-bottom:clamp(10px,1.6vh,16px)" style-hover="color:#111">← {{ detBackLabel }}</a>
+        <div style="flex:1;min-height:0;display:flex;gap:clamp(28px,4vw,72px);align-items:stretch">
+          <div style="flex:1.5;min-width:0;display:flex;flex-direction:column;gap:clamp(8px,1.4vh,14px)">
+            <div style="flex:none;font-size:12px;font-weight:600;color:#777;letter-spacing:.02em;min-height:15px">{{ detCaption }}</div>
+            <div style="flex:1;min-height:0;position:relative;overflow:hidden;background:#d6d6d6">
+              <sc-for list="{{ detSlides }}" as="s" hint-placeholder-count="4">
+                <div style="position:absolute;inset:0;opacity:{{ s.op }};transition:opacity .5s ease">
+                  <image-slot id="{{ s.slot }}" shape="rect" radius="0" placeholder="Изображение проекта" style="display:block;width:100%;height:100%"></image-slot>
+                </div>
+              </sc-for>
+              <button onClick="{{ openFsBtn }}" title="Полный экран" style="position:absolute;right:12px;top:12px;width:40px;height:40px;background:rgba(10,10,10,.78);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:background .3s" style-hover="background:#0a0a0a">⤢</button>
+            </div>
+            <div style="flex:none;display:flex;gap:clamp(7px,.7vw,11px);height:clamp(52px,8vh,80px)">
+              <sc-for list="{{ detSlides }}" as="s" hint-placeholder-count="4">
+                <button onClick="{{ s.onDot }}" style="flex:1;min-width:0;height:100%;border:2px solid {{ s.thumbBorder }};background:#cfcfcf;cursor:pointer;padding:0;overflow:hidden">
+                  <image-slot id="{{ s.slot }}" shape="rect" radius="0" placeholder="" style="display:block;width:100%;height:100%;pointer-events:none"></image-slot>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;max-width:48ch">
+            <h1 style="margin:0;font-size:clamp(22px,2.5vw,40px);font-weight:700;letter-spacing:-.01em;line-height:1.14">{{ detTitle }}</h1>
+            <p style="margin:clamp(14px,2.2vh,22px) 0 0;font-size:clamp(13px,1.15vw,17px);line-height:1.65;color:#555">{{ detDesc }}</p>
+            <button onClick="{{ detDownload }}" style="align-self:flex-start;margin-top:clamp(20px,3.2vh,34px);background:#0a0a0a;color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;letter-spacing:.04em;padding:18px 46px;transition:opacity .3s" style-hover="opacity:.85">скачать</button>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer style="position:relative;z-index:60;flex:none;background:#141414;color:#fff;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 clamp(20px,3.4vw,48px);height:clamp(52px,7vh,66px)">
+    <span style="font-size:12px;letter-spacing:.04em;color:rgba(255,255,255,.62)">© 2024 МБУ «ВЯЗ»</span>
+    <div style="display:flex;gap:12px;justify-content:center">
+      <sc-for list="{{ socials }}" as="s" hint-placeholder-count="4">
+        <a href="{{ s.url }}" target="_blank" style="width:32px;height:32px;border-radius:50%;background:#2a2a2a;display:flex;align-items:center;justify-content:center;color:#fff;transition:background .3s" style-hover="background:var(--accent)">{{ s.iconEl }}</a>
+      </sc-for>
+    </div>
+    <div style="display:flex;justify-content:flex-end">
+      <a onClick="{{ goAdmin }}" style="font-size:11px;letter-spacing:.08em;color:rgba(255,255,255,.38);cursor:pointer" style-hover="color:#fff">Панель управления</a>
+    </div>
+  </footer>
+  </div>
+  </sc-if>
+
+  <!-- MOBILE -->
+  <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#ededed;color:#111">
+    <header style="position:sticky;top:0;z-index:55;background:#0a0a0a;display:flex;align-items:center;justify-content:space-between;padding:11px 16px">
+      <a onClick="{{ goHome }}" style="display:flex;cursor:pointer"><img src="assets/vyaz-logo-light.png" alt="ВЯЗ" style="height:34px;width:auto"/></a>
+      <button onClick="{{ toggleMenu }}" style="background:none;border:none;cursor:pointer;display:flex;flex-direction:column;gap:5px;padding:8px"><span style="display:block;width:24px;height:2px;background:#fff"></span><span style="display:block;width:24px;height:2px;background:#fff"></span><span style="display:block;width:24px;height:2px;background:#fff"></span></button>
+    </header>
+    <div style="padding:16px 16px 8px">
+
+      <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <sc-for list="{{ featured }}" as="f" hint-placeholder-count="5">
+          <a onClick="{{ f.open }}" style="position:relative;display:block;cursor:pointer;aspect-ratio:4/3;overflow:hidden;background:#0a0a0a">
+            <image-slot id="{{ f.heroSlot }}" shape="rect" radius="0" placeholder="{{ f.title }}" style="display:block;width:100%;height:100%"></image-slot>
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,0) 40%,rgba(0,0,0,.72))"></div>
+            <div style="position:absolute;left:16px;right:16px;bottom:16px;color:#fff"><div style="font-size:17px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;line-height:1.15">{{ f.title }}</div><div style="margin-top:5px;font-size:12px;color:rgba(255,255,255,.82)">{{ f.subtitle }}</div></div>
+          </a>
+        </sc-for>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ isWorks }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <input value="{{ worksSearch }}" onChange="{{ worksSetSearch }}" placeholder="Поиск по названию проекта" style="border:1px solid #c8c8c8;background:#fff;font-family:inherit;font-size:14px;padding:11px 14px;outline:none"/>
+        <sc-for list="{{ mWorks }}" as="w" hint-placeholder-count="6">
+          <a onClick="{{ w.open }}" style="position:relative;display:block;cursor:pointer;aspect-ratio:16/10;overflow:hidden;background:#d6d6d6">
+            <image-slot id="{{ w.slot }}" shape="rect" radius="0" placeholder="{{ w.title }}" style="display:block;width:100%;height:100%"></image-slot>
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,0) 45%,rgba(0,0,0,.62))"></div>
+            <div style="position:absolute;left:14px;right:14px;bottom:13px;color:#fff"><div style="font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;line-height:1.15">{{ w.title }}</div><div style="margin-top:4px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.8)">{{ w.subtitle }}</div></div>
+          </a>
+        </sc-for>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ isServices }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <h1 style="margin:2px 0 0;font-size:22px;font-weight:700;text-transform:uppercase">Услуги</h1>
+        <sc-for list="{{ mServices }}" as="s" hint-placeholder-count="6">
+          <a onClick="{{ s.open }}" style="position:relative;display:block;cursor:pointer;aspect-ratio:16/10;overflow:hidden;background:#cfcfcf">
+            <image-slot id="{{ s.slot }}" shape="rect" radius="0" placeholder="{{ s.t }}" style="display:block;width:100%;height:100%"></image-slot>
+            <div style="position:absolute;inset:0;background:rgba(10,10,10,.45);display:flex;align-items:center;justify-content:center;padding:18px"><span style="color:#fff;font-size:15px;font-weight:700;text-transform:uppercase;text-align:center;line-height:1.3">{{ s.t }}</span></div>
+          </a>
+        </sc-for>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:2px">
+          <sc-for list="{{ aboutTabs }}" as="t" hint-placeholder-count="5"><button onClick="{{ t.onClick }}" style="flex:none;border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:11px 16px;background:{{ t.bg }};color:{{ t.color }};white-space:nowrap">{{ t.label }}</button></sc-for>
+        </div>
+        <sc-if value="{{ aboutIsHistory }}" hint-placeholder-val="{{ true }}">
+          <div style="aspect-ratio:4/3;overflow:hidden;background:#dcdcdc"><image-slot id="about-team" shape="rect" radius="0" placeholder="Фото команды" style="display:block;width:100%;height:100%"></image-slot></div>
+          <div style="display:flex;flex-direction:column;gap:12px"><sc-for list="{{ aboutBullets }}" as="b" hint-placeholder-count="4"><div style="display:flex;gap:10px;font-size:13px;line-height:1.55;color:#333"><span style="flex:none;width:6px;height:6px;background:var(--accent);margin-top:7px"></span><span>{{ b }}</span></div></sc-for></div>
+        </sc-if>
+        <sc-if value="{{ aboutIsManifest }}" hint-placeholder-val="{{ false }}">
+          <sc-for list="{{ manifest }}" as="m" hint-placeholder-count="6"><div style="border-top:2px solid #1a1a1a;padding-top:13px"><div style="display:flex;align-items:center;gap:11px"><div style="flex:none;width:46px;height:46px;overflow:hidden;background:#e3e0d8;border:1px solid #d8d5cd"><image-slot id="{{ m.slot }}" shape="rect" radius="0" placeholder="" style="display:block;width:100%;height:100%"></image-slot></div><div style="font-size:12px;font-weight:700;color:var(--accent)">{{ m.n }}</div></div><h3 style="margin:10px 0 0;font-size:17px;font-weight:700;text-transform:uppercase;line-height:1.15">{{ m.t }}</h3><p style="margin:7px 0 0;font-size:13px;line-height:1.55;color:#555">{{ m.d }}</p></div></sc-for>
+        </sc-if>
+        <sc-if value="{{ aboutIsTeam }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><sc-for list="{{ team }}" as="t" hint-placeholder-count="12"><div style="position:relative;aspect-ratio:3/4;overflow:hidden;background:#d6d6d6"><image-slot id="{{ t.slot }}" shape="rect" radius="0" placeholder="Фото" style="display:block;width:100%;height:100%"></image-slot><div style="position:absolute;left:0;right:0;bottom:0;padding:16px 9px 8px;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.78));color:#fff"><div style="font-size:12px;font-weight:600;line-height:1.15">{{ t.name }}</div><div style="font-size:10px;color:rgba(255,255,255,.7);margin-top:2px">{{ t.role }}</div></div></div></sc-for></div>
+        </sc-if>
+        <sc-if value="{{ aboutIsMedia }}" hint-placeholder-val="{{ false }}">
+          <sc-for list="{{ media }}" as="md" hint-placeholder-count="6"><a href="{{ md.url }}" target="_blank" style="position:relative;display:block;aspect-ratio:16/10;overflow:hidden;background:#d6d6d6"><image-slot id="{{ md.slot }}" shape="rect" radius="0" placeholder="Обложка" style="display:block;width:100%;height:100%"></image-slot><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.72))"></div><div style="position:absolute;left:14px;right:14px;bottom:12px;color:#fff"><div style="font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.75)">{{ md.source }} · {{ md.date }}</div><div style="margin-top:5px;font-size:15px;font-weight:600;line-height:1.2">{{ md.title }}</div></div></a></sc-for>
+        </sc-if>
+        <sc-if value="{{ aboutIsDocs }}" hint-placeholder-val="{{ false }}">
+          <div style="border-top:2px solid #1a1a1a"><sc-for list="{{ docs }}" as="dc" hint-placeholder-count="4"><a onClick="{{ dc.open }}" style="display:flex;align-items:center;gap:14px;padding:14px 2px;border-bottom:1px solid #d6d6d6;cursor:pointer"><span style="flex:none;width:28px;height:36px;border:1px solid #b8b8b8;display:flex;align-items:flex-end;justify-content:center;font-size:8px;font-weight:700;color:#777;padding-bottom:4px">PDF</span><span style="flex:1;font-size:14px;font-weight:500">{{ dc.name }}</span><span style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#888">↓</span></a></sc-for></div>
+        </sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ isNews }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <h1 style="margin:2px 0 0;font-size:22px;font-weight:700;text-transform:uppercase">Новости</h1>
+        <sc-for list="{{ news }}" as="n" hint-placeholder-count="4"><a onClick="{{ n.open }}" style="display:block;cursor:pointer;background:#fff;border:1px solid #e2e2e2"><div style="aspect-ratio:16/10;overflow:hidden;background:#d6d6d6"><image-slot id="{{ n.cover }}" shape="rect" radius="0" placeholder="Фото новости" style="display:block;width:100%;height:100%"></image-slot></div><div style="padding:13px"><div style="font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#999">{{ n.dateLabel }}</div><div style="margin-top:6px;font-size:15px;font-weight:600;line-height:1.25">{{ n.title }}</div></div></a></sc-for>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ isNewsItem }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <a onClick="{{ goNews }}" style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#888;cursor:pointer">← Все новости</a>
+        <h1 style="margin:0;font-size:22px;font-weight:700;line-height:1.12">{{ newsTitle }}</h1>
+        <div style="font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#999">{{ newsDate }}</div>
+        <sc-for list="{{ newsPhotos }}" as="p" hint-placeholder-count="2"><div style="aspect-ratio:16/9;overflow:hidden;background:#d6d6d6"><image-slot id="{{ p.slot }}" shape="rect" radius="0" placeholder="Фото новости" style="display:block;width:100%;height:100%"></image-slot></div></sc-for>
+        <p style="margin:0;font-size:14px;line-height:1.7;color:#333;white-space:pre-line">{{ newsBody }}</p>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ isInvestor }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:2px"><sc-for list="{{ invTabs }}" as="t" hint-placeholder-count="4"><button onClick="{{ t.onClick }}" style="flex:none;border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:11px 15px;background:{{ t.bg }};color:{{ t.color }};white-space:nowrap">{{ t.label }}</button></sc-for></div>
+        <sc-if value="{{ invIsMap }}" hint-placeholder-val="{{ true }}"><div style="aspect-ratio:1/1;border:1px solid #d8d8d8;overflow:hidden;background:#e4e4e4"><iframe src="https://www.openstreetmap.org/export/embed.html?bbox=44.40%2C48.66%2C44.62%2C48.78&layer=mapnik&marker=48.7086%2C44.5147" title="Карта Волгограда" loading="lazy" style="width:100%;height:100%;border:0;filter:grayscale(.4)"></iframe></div></sc-if>
+        <sc-if value="{{ invIsInfo }}" hint-placeholder-val="{{ false }}"><div><h1 style="margin:0;font-size:21px;font-weight:700;text-transform:uppercase;line-height:1.1">{{ investorHeading }}</h1><p style="margin:14px 0 0;font-size:14px;line-height:1.6;color:#444">{{ investorIntro }}</p><p style="margin:12px 0 0;font-size:13px;line-height:1.6;color:#666">{{ investorInfo }}</p></div></sc-if>
+        <sc-if value="{{ invIsActs }}" hint-placeholder-val="{{ false }}"><div style="border-top:2px solid #1a1a1a"><sc-for list="{{ acts }}" as="ac" hint-placeholder-count="4"><a onClick="{{ ac.open }}" style="display:flex;align-items:center;gap:14px;padding:14px 2px;border-bottom:1px solid #d6d6d6;cursor:pointer"><span style="flex:none;width:28px;height:36px;border:1px solid #b8b8b8;display:flex;align-items:flex-end;justify-content:center;font-size:8px;font-weight:700;color:#777;padding-bottom:4px">PDF</span><span style="flex:1;font-size:14px;font-weight:500">{{ ac.name }}</span><span style="font-size:11px;color:#888">↓</span></a></sc-for></div></sc-if>
+        <sc-if value="{{ invIsKrt }}" hint-placeholder-val="{{ false }}">
+          <input value="{{ krtSearch }}" onChange="{{ krtSetSearch }}" placeholder="Поиск по названию" style="border:1px solid #c8c8c8;background:#fff;font-family:inherit;font-size:14px;padding:10px 13px;outline:none"/>
+          <div style="display:flex;gap:7px;overflow-x:auto;padding-bottom:2px"><sc-for list="{{ districtChips }}" as="c" hint-placeholder-count="5"><button onClick="{{ c.onClick }}" style="flex:none;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.color }};cursor:pointer;font-family:inherit;font-size:12px;font-weight:500;padding:8px 13px;white-space:nowrap">{{ c.label }}</button></sc-for></div>
+          <sc-for list="{{ mKrt }}" as="s" hint-placeholder-count="6"><div onClick="{{ s.open }}" style="position:relative;cursor:pointer;aspect-ratio:16/10;overflow:hidden;background:#d6d6d6"><image-slot id="{{ s.slot }}" shape="rect" radius="0" placeholder="{{ s.name }}" style="display:block;width:100%;height:100%"></image-slot><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.2),rgba(0,0,0,0) 40%,rgba(0,0,0,.7))"></div><div style="position:absolute;right:11px;top:10px;font-size:11px;font-weight:700;color:#111;background:rgba(255,255,255,.92);padding:4px 9px">{{ s.area }}</div><div style="position:absolute;left:13px;right:13px;bottom:11px;color:#fff"><div style="font-size:15px;font-weight:600;line-height:1.15">{{ s.name }}</div><div style="margin-top:3px;font-size:11px;color:rgba(255,255,255,.78)">{{ s.district }} район</div></div></div></sc-for>
+        </sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ isContacts }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <h1 style="margin:2px 0 0;font-size:24px;font-weight:700;text-transform:uppercase;line-height:1.06">{{ contactsHeading }}</h1>
+        <div><div style="font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#999">Адрес</div><div style="margin-top:5px;font-size:16px;line-height:1.5;white-space:pre-line">{{ cAddress }}</div></div>
+        <div style="display:flex;gap:40px;flex-wrap:wrap"><div><div style="font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#999">Телефон</div><a href="tel:{{ cPhoneHref }}" style="margin-top:5px;display:block;font-size:16px">{{ cPhone }}</a></div><div><div style="font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#999">Почта</div><a href="mailto:{{ cEmail }}" style="margin-top:5px;display:block;font-size:16px;border-bottom:1px solid #111;padding-bottom:1px">{{ cEmail }}</a></div></div>
+        <div style="display:flex;gap:11px"><sc-for list="{{ socials }}" as="s" hint-placeholder-count="4"><a href="{{ s.url }}" target="_blank" style="width:44px;height:44px;border:1px solid #c4c4c4;display:flex;align-items:center;justify-content:center;color:#1a1a1a">{{ s.iconEl }}</a></sc-for></div>
+        <div style="aspect-ratio:1/1;border:1px solid #d8d8d8;overflow:hidden;background:#e4e4e4;position:relative"><iframe src="https://www.openstreetmap.org/export/embed.html?bbox=44.5047%2C48.7036%2C44.5247%2C48.7136&layer=mapnik&marker=48.7086%2C44.5147" title="Карта" loading="lazy" style="width:100%;height:100%;border:0;filter:grayscale(.45)"></iframe><div style="position:absolute;left:14px;top:14px;display:flex;align-items:center;gap:8px;background:#0a0a0a;color:#fff;padding:9px 14px;font-size:12px;font-weight:600"><span style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span>Мы здесь</div></div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:13px">
+        <a onClick="{{ detBack }}" style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#888;cursor:pointer">← {{ detBackLabel }}</a>
+        <div style="font-size:11px;font-weight:600;color:#777">{{ detCaption }}</div>
+        <div style="position:relative;aspect-ratio:4/3;overflow:hidden;background:#d6d6d6">
+          <sc-for list="{{ detSlides }}" as="s" hint-placeholder-count="3"><div style="position:absolute;inset:0;opacity:{{ s.op }};transition:opacity .4s ease"><image-slot id="{{ s.slot }}" shape="rect" radius="0" placeholder="Изображение проекта" style="display:block;width:100%;height:100%"></image-slot></div></sc-for>
+          <button onClick="{{ openFsBtn }}" title="Полный экран" style="position:absolute;right:11px;top:11px;width:38px;height:38px;background:rgba(10,10,10,.78);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px">⤢</button>
+        </div>
+        <div style="display:flex;gap:7px"><sc-for list="{{ detSlides }}" as="s" hint-placeholder-count="3"><button onClick="{{ s.onDot }}" style="flex:1;aspect-ratio:16/10;border:2px solid {{ s.thumbBorder }};background:#cfcfcf;cursor:pointer;padding:0;overflow:hidden"><image-slot id="{{ s.slot }}" shape="rect" radius="0" placeholder="" style="display:block;width:100%;height:100%;pointer-events:none"></image-slot></button></sc-for></div>
+        <h1 style="margin:6px 0 0;font-size:22px;font-weight:700;line-height:1.12">{{ detTitle }}</h1>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:#555">{{ detDesc }}</p>
+        <button onClick="{{ detDownload }}" style="align-self:flex-start;background:#0a0a0a;color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;padding:15px 38px">скачать</button>
+      </div>
+      </sc-if>
+
+    </div>
+    <footer style="background:#141414;color:#fff;padding:26px 18px 30px;display:flex;flex-direction:column;gap:18px;margin-top:14px">
+      <div style="display:flex;gap:11px;justify-content:center"><sc-for list="{{ socials }}" as="s" hint-placeholder-count="4"><a href="{{ s.url }}" target="_blank" style="width:38px;height:38px;border-radius:50%;background:#2a2a2a;display:flex;align-items:center;justify-content:center;color:#fff">{{ s.iconEl }}</a></sc-for></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:rgba(255,255,255,.55)"><span>© 2024 МБУ «ВЯЗ»</span><a onClick="{{ goAdmin }}" style="cursor:pointer;color:rgba(255,255,255,.45)">Панель</a></div>
+    </footer>
+  </div>
+  <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:90;background:#0a0a0a;color:#fff;display:flex;flex-direction:column;padding:18px">
+    <div style="display:flex;align-items:center;justify-content:space-between"><img src="assets/vyaz-logo-light.png" alt="ВЯЗ" style="height:34px;width:auto"/><button onClick="{{ closeMenu }}" style="background:none;border:none;color:#fff;font-size:30px;cursor:pointer;line-height:1">✕</button></div>
+    <nav style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:4px"><sc-for list="{{ mNav }}" as="m" hint-placeholder-count="6"><a onClick="{{ m.onClick }}" style="font-size:27px;font-weight:600;text-transform:uppercase;letter-spacing:.02em;cursor:pointer;padding:9px 0" style-hover="opacity:.6">{{ m.label }}</a></sc-for></nav>
+  </div>
+  </sc-if>
+  </sc-if>
+
+  <!-- COOKIE / AGREEMENT -->
+  <sc-if value="{{ showConsent }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;left:0;right:0;bottom:0;z-index:110;background:#0a0a0a;color:#fff;padding:clamp(13px,2vh,18px) clamp(20px,3.4vw,48px);display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px">
+    <div style="flex:1;min-width:240px;font-size:13px;line-height:1.5;color:rgba(255,255,255,.82)">Мы используем файлы cookie для корректной работы сайта. Продолжая пользоваться сайтом, вы соглашаетесь с <a onClick="{{ openAgreement }}" style="color:#fff;border-bottom:1px solid rgba(255,255,255,.5);cursor:pointer">пользовательским соглашением</a> и политикой обработки персональных данных.</div>
+    <button onClick="{{ acceptConsent }}" style="flex:none;background:#fff;color:#0a0a0a;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;letter-spacing:.04em;padding:13px 32px;transition:opacity .3s" style-hover="opacity:.85">Принимаю</button>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ agreementOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:210;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:24px">
+    <div style="width:100%;max-width:640px;max-height:82vh;overflow-y:auto;background:#fff;padding:clamp(26px,4vw,44px)">
+      <h2 style="margin:0;font-size:clamp(20px,2.4vw,30px);font-weight:700;letter-spacing:-.01em">Пользовательское соглашение</h2>
+      <p style="margin:18px 0 0;font-size:14px;line-height:1.7;color:#444">Настоящее соглашение регулирует отношения между МБУ «ВЯЗ» и пользователем сайта. Используя сайт, пользователь соглашается на обработку файлов cookie и предоставленных данных в целях улучшения работы сервиса.</p>
+      <p style="margin:14px 0 0;font-size:14px;line-height:1.7;color:#444">Персональные данные обрабатываются в соответствии с действующим законодательством РФ. Пользователь вправе отозвать согласие, направив обращение по контактному адресу, указанному в разделе «Контакты».</p>
+      <p style="margin:14px 0 0;font-size:14px;line-height:1.7;color:#444">Материалы сайта носят информационный характер. Полные тексты документов доступны по запросу.</p>
+      <div style="margin-top:24px;display:flex;gap:12px"><button onClick="{{ acceptConsent }}" style="background:#0a0a0a;color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;padding:13px 28px">Принимаю</button><button onClick="{{ closeAgreement }}" style="background:none;color:#111;border:1px solid #ddd;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;padding:13px 28px">Закрыть</button></div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- FULLSCREEN VIEWER -->
+  <sc-if value="{{ fsOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:200;background:rgba(8,8,8,.97);display:flex;flex-direction:column;padding:clamp(14px,2.6vh,36px)">
+    <div style="flex:none;display:flex;justify-content:space-between;align-items:center;color:#fff;margin-bottom:clamp(10px,1.6vh,16px)">
+      <div style="font-size:13px;color:rgba(255,255,255,.72)">{{ fsTitle }}</div>
+      <button onClick="{{ fsClose }}" style="background:none;border:none;color:#fff;font-size:26px;cursor:pointer;line-height:1" style-hover="opacity:.7">✕</button>
+    </div>
+    <div style="flex:1;min-height:0;position:relative">
+      <sc-for list="{{ fsSlides }}" as="s" hint-placeholder-count="4">
+        <div style="position:absolute;inset:0;opacity:{{ s.op }};transition:opacity .4s ease">
+          <image-slot id="{{ s.slot }}" shape="rect" radius="0" fit="contain" placeholder="" style="display:block;width:100%;height:100%"></image-slot>
+        </div>
+      </sc-for>
+      <button onClick="{{ fsPrev }}" style="position:absolute;left:0;top:0;bottom:0;width:12%;background:none;border:none;color:#fff;font-size:42px;cursor:pointer" style-hover="background:linear-gradient(90deg,rgba(0,0,0,.4),transparent)">‹</button>
+      <button onClick="{{ fsNext }}" style="position:absolute;right:0;top:0;bottom:0;width:12%;background:none;border:none;color:#fff;font-size:42px;cursor:pointer" style-hover="background:linear-gradient(270deg,rgba(0,0,0,.4),transparent)">›</button>
+    </div>
+    <div style="flex:none;display:flex;justify-content:center;gap:9px;margin-top:clamp(10px,1.6vh,16px)">
+      <sc-for list="{{ fsSlides }}" as="s" hint-placeholder-count="4">
+        <button onClick="{{ s.onDot }}" style="width:9px;height:9px;border-radius:50%;border:none;cursor:pointer;background:{{ s.dot }};padding:0"></button>
+      </sc-for>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ADMIN -->
+  <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:120;background:#fff;font-family:'Golos Text',system-ui,sans-serif">
+    <sc-if value="{{ adminNotAuthed }}" hint-placeholder-val="{{ true }}">
+      <div style="height:100%;background:#0a0a0a;color:#fff;display:flex;align-items:center;justify-content:center;padding:24px">
+        <div style="width:100%;max-width:360px">
+          <img src="assets/vyaz-logo-light.png" alt="ВЯЗ" style="height:48px;width:auto;display:block;margin:0 auto 24px"/>
+          <div style="text-align:center;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#888;margin-bottom:26px">Панель управления</div>
+          <form onSubmit="{{ adminLogin }}" style="display:flex;flex-direction:column;gap:14px">
+            <input name="u" placeholder="Логин" style="background:none;border:1px solid rgba(255,255,255,.25);color:#fff;font-family:inherit;font-size:15px;padding:13px 15px;outline:none"/>
+            <input name="p" type="password" placeholder="Пароль" style="background:none;border:1px solid rgba(255,255,255,.25);color:#fff;font-family:inherit;font-size:15px;padding:13px 15px;outline:none"/>
+            <sc-if value="{{ adminError }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:#e0a08a;line-height:1.5">{{ adminError }}</div></sc-if>
+            <button type="submit" style="margin-top:6px;background:#fff;color:#0a0a0a;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:14px">Войти</button>
+          </form>
+          <div style="text-align:center;margin-top:22px;font-size:12px;color:#777;line-height:1.7">Демо: admin / vyaz<br><a onClick="{{ goHome }}" style="cursor:pointer;border-bottom:1px solid rgba(255,255,255,.25)" style-hover="color:#fff">← На сайт</a></div>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ adminAuthed }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;height:100%;overflow:hidden">
+        <aside style="width:230px;flex:none;background:#0a0a0a;color:#fff;display:flex;flex-direction:column;padding:20px 0">
+          <div style="padding:0 22px 20px;border-bottom:1px solid rgba(255,255,255,.14);display:flex;align-items:center;gap:10px"><img src="assets/vyaz-logo-light.png" alt="ВЯЗ" style="height:30px;width:auto"/><span style="font-size:11px;letter-spacing:.2em;color:#888">CMS</span></div>
+          <nav style="flex:1;padding:14px 0;overflow-y:auto">
+            <sc-for list="{{ adminNav }}" as="n" hint-placeholder-count="7">
+              <button onClick="{{ n.onClick }}" style="width:100%;text-align:left;background:none;border:none;border-left:2px solid {{ n.bar }};cursor:pointer;font-family:inherit;font-size:14px;padding:12px 22px;color:{{ n.color }}" style-hover="color:#fff">{{ n.label }}</button>
+            </sc-for>
+          </nav>
+          <div style="padding:16px 22px 0;border-top:1px solid rgba(255,255,255,.14);display:flex;flex-direction:column;gap:12px">
+            <a onClick="{{ goHome }}" style="font-size:13px;color:#9a9a9a;cursor:pointer" style-hover="color:#fff">↗ Открыть сайт</a>
+            <a onClick="{{ adminLogout }}" style="font-size:13px;color:#9a9a9a;cursor:pointer" style-hover="color:#fff">Выйти</a>
+          </div>
+        </aside>
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+          <header style="flex:none;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px clamp(20px,3vw,40px);border-bottom:1px solid #e0e0e0">
+            <h1 style="margin:0;font-size:22px;font-weight:700;letter-spacing:-.01em">{{ adminSectionLabel }}</h1>
+            <sc-if value="{{ adminIsList }}" hint-placeholder-val="{{ true }}"><button onClick="{{ addNew }}" style="background:#0a0a0a;color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;padding:12px 22px">+ Добавить</button></sc-if>
+          </header>
+          <div style="flex:1;overflow-y:auto;padding:clamp(18px,2.5vw,32px)">
+            <sc-if value="{{ adminIsWorks }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:#888;margin-bottom:14px;line-height:1.5">Отметьте до 5 проектов «На главной» — они листаются в слайдере на главной странице. Сейчас выбрано: {{ featuredCount }} / 5.</div></sc-if>
+            <sc-if value="{{ adminIsList }}" hint-placeholder-val="{{ true }}">
+              <div style="border-top:1px solid #e8e8e8">
+                <sc-for list="{{ adminRows }}" as="r" hint-placeholder-count="5">
+                  <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;padding:14px 0;border-bottom:1px solid #e8e8e8">
+                    <div style="min-width:0"><div style="font-size:16px;font-weight:500">{{ r.label }}</div><div style="font-size:13px;color:#999;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.sub }}</div></div>
+                    <div style="display:flex;gap:7px;align-items:center">
+                      <sc-if value="{{ r.canFeature }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.onFeature }}" style="background:{{ r.featBg }};border:1px solid {{ r.featBorder }};cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;padding:0 13px;height:32px;color:{{ r.featColor }}">★ На главной</button></sc-if>
+                      <button onClick="{{ r.onUp }}" style="background:none;border:1px solid #ddd;cursor:pointer;font-family:inherit;font-size:13px;width:32px;height:32px;color:#666" style-hover="border-color:#111;color:#111">↑</button>
+                      <button onClick="{{ r.onDown }}" style="background:none;border:1px solid #ddd;cursor:pointer;font-family:inherit;font-size:13px;width:32px;height:32px;color:#666" style-hover="border-color:#111;color:#111">↓</button>
+                      <button onClick="{{ r.onDuplicate }}" title="Дублировать" style="background:none;border:1px solid #ddd;cursor:pointer;font-family:inherit;font-size:13px;padding:0 12px;height:32px;color:#111" style-hover="border-color:#111">Дублировать</button>
+                      <button onClick="{{ r.onEdit }}" style="background:none;border:1px solid #ddd;cursor:pointer;font-family:inherit;font-size:13px;padding:0 14px;height:32px;color:#111" style-hover="border-color:#111">Изменить</button>
+                      <button onClick="{{ r.onDelete }}" style="background:none;border:1px solid #e3c4bc;cursor:pointer;font-family:inherit;font-size:13px;padding:0 14px;height:32px;color:#b0573f" style-hover="background:#faeee9">Удалить</button>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ adminIsSettings }}" hint-placeholder-val="{{ false }}">
+              <form onSubmit="{{ saveSettings }}" style="max-width:680px;display:flex;flex-direction:column;gap:20px">
+                <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Заголовок «Контакты»</span><input name="contactsHeading" defaultValue="{{ set_contactsHeading }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
+                <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Заголовок «Инвестору»</span><input name="investorHeading" defaultValue="{{ set_investorHeading }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
+                <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Текст «Инвестору»</span><textarea name="investorIntro" rows="2" defaultValue="{{ set_investorIntro }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none;resize:vertical"></textarea></label>
+                <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">О нас — тезисы (каждый с новой строки)</span><textarea name="aboutText" rows="5" defaultValue="{{ set_aboutText }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none;resize:vertical"></textarea></label>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                  <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Адрес</span><textarea name="address" rows="2" defaultValue="{{ set_address }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none;resize:vertical"></textarea></label>
+                  <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Телефон</span><input name="phone" defaultValue="{{ set_phone }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
+                  <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:12px;letter-spacing:.04em;color:#999">Email</span><input name="email" defaultValue="{{ set_email }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></label>
+                </div>
+                <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:4px"><button type="submit" style="background:#0a0a0a;color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;padding:13px 26px">Сохранить</button><button type="button" onClick="{{ resetData }}" style="background:none;color:#b0573f;border:1px solid #e3c4bc;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;padding:13px 26px">Сбросить весь контент</button></div>
+              </form>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+      <sc-if value="{{ isEditing }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ editing.onCancel }}" style="position:fixed;inset:0;z-index:125;background:rgba(0,0,0,.4)"></div>
+        <div style="position:fixed;top:0;right:0;bottom:0;z-index:126;width:min(460px,100%);background:#fff;box-shadow:-16px 0 50px rgba(0,0,0,.18);display:flex;flex-direction:column">
+          <div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #e0e0e0"><h2 style="margin:0;font-size:19px;font-weight:600">{{ editing.title }}</h2><button onClick="{{ editing.onCancel }}" style="background:none;border:none;cursor:pointer;font-size:22px;color:#888;line-height:1">✕</button></div>
+          <div style="flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:18px">
+            <sc-for list="{{ editing.fields }}" as="f" hint-placeholder-count="4">
+              <label style="display:flex;flex-direction:column;gap:7px">
+                <span style="font-size:12px;letter-spacing:.04em;color:#999">{{ f.label }}</span>
+                <sc-if value="{{ f.isText }}" hint-placeholder-val="{{ true }}"><input value="{{ f.value }}" onChange="{{ f.onChange }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none"/></sc-if>
+                <sc-if value="{{ f.isTextarea }}" hint-placeholder-val="{{ false }}"><textarea value="{{ f.value }}" onChange="{{ f.onChange }}" rows="4" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none;resize:vertical"></textarea></sc-if>
+                <sc-if value="{{ f.isEnum }}" hint-placeholder-val="{{ false }}"><select value="{{ f.value }}" onChange="{{ f.onChange }}" style="border:1px solid #ddd;font-family:inherit;font-size:15px;padding:11px 13px;outline:none;background:#fff"><sc-for list="{{ f.options }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></sc-if>
+              </label>
+            </sc-for>
+            <sc-if value="{{ editing.hasImages }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <span style="font-size:12px;letter-spacing:.04em;color:#999">Изображения — перетащите фото в ячейку, меняйте порядок стрелками</span>
+              <sc-for list="{{ editing.images }}" as="im" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;gap:12px;border:1px solid #eee;padding:8px">
+                  <div style="flex:none;width:88px;height:56px;overflow:hidden;background:#ededed;border:1px solid #e0e0e0"><image-slot id="{{ im.slot }}" shape="rect" radius="0" placeholder="фото" style="display:block;width:100%;height:100%"></image-slot></div>
+                  <span style="flex:1;font-size:13px;color:#888">Фото {{ im.num }}</span>
+                  <button onClick="{{ im.onUp }}" style="width:30px;height:30px;border:1px solid #ddd;background:none;cursor:pointer;color:#666" style-hover="border-color:#111;color:#111">↑</button>
+                  <button onClick="{{ im.onDown }}" style="width:30px;height:30px;border:1px solid #ddd;background:none;cursor:pointer;color:#666" style-hover="border-color:#111;color:#111">↓</button>
+                  <button onClick="{{ im.onDel }}" style="width:30px;height:30px;border:1px solid #e3c4bc;background:none;cursor:pointer;color:#b0573f" style-hover="background:#faeee9">✕</button>
+                </div>
+              </sc-for>
+              <button onClick="{{ editing.imgAdd }}" style="align-self:flex-start;background:none;border:1px dashed #bbb;cursor:pointer;font-family:inherit;font-size:13px;padding:10px 18px;color:#555" style-hover="border-color:#111;color:#111">+ Добавить фото</button>
+            </div>
+            </sc-if>
+          </div>
+          <div style="flex:none;display:flex;gap:12px;padding:18px 24px;border-top:1px solid #e0e0e0"><button onClick="{{ editing.onSave }}" style="background:#0a0a0a;color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;padding:13px 26px">Сохранить</button><button onClick="{{ editing.onCancel }}" style="background:none;color:#111;border:1px solid #ddd;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;padding:13px 26px">Отмена</button></div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:130;background:#0a0a0a;color:#fff;font-size:14px;padding:13px 24px">{{ toast }}</div></sc-if>
+    </sc-if>
+  </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;},&quot;introEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;heroAutoplay&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#111111&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const MAIL='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m3 6 9 7 9-7"/></svg>';
+const VK='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.8 16.3c-5.4 0-8.9-3.8-9-10h2.7c.1 4.6 2.2 6.5 3.7 6.9V6.3h2.6v3.8c1.6-.2 3.2-1.9 3.7-3.8h2.5c-.4 2.3-2 4-3.2 4.7 1.2.6 3 2.1 3.7 4.8h-2.8c-.5-1.7-1.9-3-3.9-3.2v3.2z"/></svg>';
+const TG='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.3 18.6 19c-.2 1.1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.3-5 9-8.1c.4-.3-.1-.5-.6-.2L6.4 13l-4.8-1.5c-1-.3-1-1 .2-1.5l18.7-7.2c.9-.3 1.6.2 1.4 1.5z"/></svg>';
+const MAP_CITY='https://www.openstreetmap.org/export/embed.html?bbox=44.40%2C48.66%2C44.62%2C48.78&layer=mapnik&marker=48.7086%2C44.5147';
+const MAP_OFFICE='https://www.openstreetmap.org/export/embed.html?bbox=44.5047%2C48.7036%2C44.5247%2C48.7136&layer=mapnik&marker=48.7086%2C44.5147';
+const I_MAX='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M7 16V9l5 5 5-5v7"/></svg>';
+const I_WA='<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.4A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.4-1.1-2.7s.7-1.9.9-2.1c.2-.2.5-.3.6-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.4.5c-.2.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.2.1.4.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.2.5.3.1.2.1.7-.1 1.3z"/></svg>';
+const I_YT='<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23 12s0-3.5-.4-5.1c-.2-.9-.9-1.6-1.8-1.8C19 4.7 12 4.7 12 4.7s-7 0-8.8.4c-.9.2-1.6.9-1.8 1.8C1 8.5 1 12 1 12s0 3.5.4 5.1c.2.9.9 1.6 1.8 1.8 1.8.4 8.8.4 8.8.4s7 0 8.8-.4c.9-.2 1.6-.9 1.8-1.8.4-1.6.4-5.1.4-5.1zM9.7 15.3V8.7l5.8 3.3-5.8 3.3z"/></svg>';
+const I_IG='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r="1.1" fill="currentColor" stroke="none"/></svg>';
+const I_WEB='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18z"/></svg>';
+const ICONS={ email:MAIL, vk:VK, tg:TG, max:I_MAX, whatsapp:I_WA, youtube:I_YT, instagram:I_IG, website:I_WEB, link:I_WEB };
+const SOCIAL_TYPES=[['email','Почта'],['vk','ВКонтакте'],['tg','Telegram'],['max','MAX'],['whatsapp','WhatsApp'],['youtube','YouTube'],['instagram','Instagram'],['website','Сайт']];
+const SOCIAL_LABELS=SOCIAL_TYPES.reduce((a,x)=>{a[x[0]]=x[1];return a;},{});
+const SEED_SOCIALS=[{type:'email',url:'mailto:info@vyaz34.ru'},{type:'vk',url:'https://vk.com'},{type:'tg',url:'https://t.me'},{type:'max',url:'https://max.ru'}];
+
+const SEED_WORKS = [
+  {id:'simbirtseva',title:'Сквер Симбирцева',subtitle:'Благоустройство города',cat:'Благоустройство',year:'2023',loc:'Центральный район, Волгоград',desc:'Реорганизация исторического сквера: новые пешеходные сценарии, озеленение и подсветка монумента, единый дизайн-код малых форм.',featured:true},
+  {id:'tsaritsa',title:'Пойма реки Царица',subtitle:'Концепция развития территории',cat:'Развитие территорий',year:'2023',loc:'Центральный район, Волгоград',desc:'Развитие поймы как непрерывного водно-зелёного каркаса в самом сердце города — прогулочные маршруты, экотропы, видовые площадки.',featured:true},
+  {id:'alley',title:'Аллея Героев',subtitle:'Реконструкция бульвара',cat:'Улицы',year:'2022',loc:'Центральный район, Волгоград',desc:'Возвращение бульвару пешеходного характера: новое мощение, освещение и сценарии вечернего использования.',featured:true},
+  {id:'radial',title:'Парк аттракционов',subtitle:'Концепция развития',cat:'Парки',year:'2022',loc:'Краснооктябрьский район, Волгоград',desc:'Радиальная композиция парка с центральной площадью-розой и лучами тематических зон отдыха.',featured:true},
+  {id:'pier',title:'Набережная',subtitle:'Прогулочный фронт у воды',cat:'Набережные',year:'2023',loc:'Ворошиловский район, Волгоград',desc:'Раскрытие города к Волге: протяжённый прогулочный пирс, спуски к воде и места для созерцания заката.',featured:true},
+  {id:'komsomol',title:'Комсомольский сад',subtitle:'Реновация исторического сада',cat:'Парки',year:'2021',loc:'Центральный район, Волгоград',desc:'Реновация исторического сада как общественной гостиной города: перголы, событийные поляны, кафе.',featured:false},
+  {id:'river-park',title:'Парк у реки',subtitle:'Благоустройство набережной',cat:'Набережные',year:'2023',loc:'Кировский район, Волгоград',desc:'Семейный парк вдоль воды с детскими площадками, спортивными зонами и непрерывным прогулочным маршрутом.',featured:false},
+  {id:'mira',title:'Улица Мира',subtitle:'Возвращение пешеходной улицы',cat:'Улицы',year:'2021',loc:'Центральный район, Волгоград',desc:'Возвращение пешеходного характера первой восстановленной улице послевоенного Волгограда.',featured:false}
+];
+const SEED_SERVICES = [
+  {t:'Разработка дизайн-проектов (интерьеров)',d:'Функциональные и эстетичные интерьерные решения для общественных и жилых пространств.'},
+  {t:'Разработка концепций жилых и общественных зданий и сооружений',d:'Архитектурные концепции — от идеи до объёмно-планировочных решений.'},
+  {t:'Разработка дизайн-кода',d:'Единые правила оформления городской среды: вывески, навигация, фасады, малые формы.'},
+  {t:'Разработка проектно-сметной документации',d:'Полный пакет рабочей документации для реализации проектов.'},
+  {t:'Разработка концепции благоустройства',d:'Проекты общественных пространств — скверов, парков, набережных и улиц.'},
+  {t:'Комплексное развитие территорий',d:'Стратегии и мастер-планы развития городских и инвестиционных территорий.'}
+];
+const SEED_TEAM = [
+  {name:'Юрий Комлев',role:'Руководитель'},{name:'Злата Чуйкова',role:'Архитектор'},
+  {name:'Виктория Корж',role:'Архитектор'},{name:'Александр Чапайкин',role:'Архитектор'},
+  {name:'Алиса Татаринцева',role:'Архитектор'},{name:'Алёна Макалова',role:'Ландшафт'},
+  {name:'Александра Верменская',role:'Дизайнер'},{name:'Пётр Плотников',role:'Архитектор'},
+  {name:'Ания Арустамян',role:'Дизайнер'},{name:'Ольга Трифонова',role:'Инженер'},
+  {name:'Александр Битюцкий',role:'PR'},{name:'Дарья Соколова',role:'Экономист'}
+];
+const SEED_MANIFEST = [
+  {n:'01',t:'Человек в центре',d:'Создаём комфортные, безопасные и вдохновляющие пространства для людей.'},
+  {n:'02',t:'Симбиоз с природой',d:'Минимизируем воздействие на среду и закладываем устойчивое развитие.'},
+  {n:'03',t:'Инновации',d:'Применяем новейшие технологии и современные стандарты проектирования.'},
+  {n:'04',t:'Наследие',d:'Ищем гармонию истории места и современных решений.'},
+  {n:'05',t:'Эстетика и функция',d:'Удерживаем баланс формы и содержания в каждом решении.'},
+  {n:'06',t:'Ответственность',d:'Проектируем устойчивую среду на годы вперёд.'}
+];
+const SEED_MEDIA = [
+  {title:'Как ВЯЗ меняет облик Волгограда',source:'РБК',date:'2024',url:'#'},
+  {title:'Интервью с командой бюро',source:'Журнал «Проект»',date:'2024',url:'#'},
+  {title:'Пойма Царицы: новая концепция',source:'V1.RU',date:'2023',url:'#'},
+  {title:'Дизайн-код для исторического центра',source:'Strelka Mag',date:'2023',url:'#'},
+  {title:'Лекция о городских пространствах',source:'YouTube',date:'2023',url:'#'},
+  {title:'Премия за лучшую набережную',source:'Архсовет',date:'2022',url:'#'}
+];
+const SEED_INVESTOR = [
+  {name:'ул. Академика Бардина',area:'1,8 га',district:'Тракторозаводский',desc:'Площадка под жилую и общественную застройку рядом со сложившейся жилой средой.'},
+  {name:'пос. Мирный',area:'3,2 га',district:'Тракторозаводский',desc:'Территория для комплексной жилой застройки с социальной инфраструктурой.'},
+  {name:'пос. Забазный',area:'2,4 га',district:'Тракторозаводский',desc:'Свободный участок под смешанную функцию вблизи транспортных связей.'},
+  {name:'ул. Дзержинского, 27',area:'0,9 га',district:'Тракторозаводский',desc:'Компактная площадка под точечную общественную застройку.'},
+  {name:'пос. Кирпичного завода №8',area:'1,5 га',district:'Советский',desc:'Территория бывшего производства, готовая к редевелопменту.'},
+  {name:'пос. Кирпичного завода №2',area:'1,3 га',district:'Советский',desc:'Участок под жилую застройку средней этажности.'},
+  {name:'ул. Олимпийская',area:'2,7 га',district:'Красноармейский',desc:'Площадка под спортивно-общественный кластер.'},
+  {name:'ул. Саушинская',area:'1,1 га',district:'Красноармейский',desc:'Свободная территория под общественную функцию.'},
+  {name:'ул. Лимоновая',area:'1,6 га',district:'Кировский',desc:'Участок под малоэтажную жилую застройку.'},
+  {name:'Пойма реки Царица',area:'12 га',district:'Центральный',desc:'Рекреационный кластер с высоким инвестиционным потенциалом.'},
+  {name:'Набережная, 2-я очередь',area:'4,5 га',district:'Ворошиловский',desc:'Развитие прибрежной общественной зоны вдоль Волги.'},
+  {name:'ул. Историческая',area:'2,2 га',district:'Дзержинский',desc:'Площадка под жилую и общественную застройку в растущем районе.'}
+];
+const SEED_NEWS = [
+  {id:'n1',title:'В пойме реки Царицы появится интерактивная экотропа',date:'19.05.2026',photos:'3',body:'Команда «ВЯЗ» представила концепцию интерактивной экотропы в пойме реки Царицы. Маршрут свяжет верхнюю и нижнюю террасы, а вдоль него появятся смотровые площадки, навигация и места для отдыха.'},
+  {id:'n2',title:'Набережная Волгограда признана лучшей в номинации городской среды',date:'27.04.2026',photos:'2',body:'Проект набережной получил награду профессионального сообщества за качество городской среды и работу с прибрежным фронтом.'},
+  {id:'n3',title:'Представлена концепция развития улицы Мира',date:'15.04.2026',photos:'2',body:'Концепция возвращает улице пешеходный характер: новое мощение, освещение и сценарии вечернего использования.'},
+  {id:'n4',title:'«ВЯЗ» разрабатывает зелёные стандарты города',date:'06.09.2025',photos:'1',body:'Бюро формирует свод зелёных стандартов для общественных пространств Волгограда — от озеленения до водного баланса территорий.'}
+];
+const SEED_DOCS = [
+  {name:'Устав МБУ «ВЯЗ»',url:'#'},
+  {name:'Положение об учреждении',url:'#'},
+  {name:'Свидетельство о членстве в СРО',url:'#'},
+  {name:'Политика обработки персональных данных',url:'#'}
+];
+const SEED_ACTS = [
+  {name:'Генеральный план Волгограда',url:'#'},
+  {name:'Правила землепользования и застройки',url:'#'},
+  {name:'Положение о комплексном развитии территорий',url:'#'},
+  {name:'Региональные нормативы градостроительного проектирования',url:'#'}
+];
+
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    let seen=false; try{ seen=sessionStorage.getItem('vyaz_intro2')==='1'; }catch(e){}
+    let consent=false; try{ consent=localStorage.getItem('vyaz_consent')==='1'; }catch(e){}
+    const SEED={ works:SEED_WORKS, services:SEED_SERVICES, team:SEED_TEAM, manifest:SEED_MANIFEST, media:SEED_MEDIA, investor:SEED_INVESTOR, news:SEED_NEWS, docs:SEED_DOCS, acts:SEED_ACTS, socials:SEED_SOCIALS,
+      settings:{
+        contactsHeading:'Свяжитесь с нами',
+        investorHeading:'Инвестиционные площадки',
+        investorIntro:'Свободные территории Волгограда, готовые к проработке концепции комплексного развития — жилой, общественной или смешанной функции.',
+        investorInfo:'Волгоград — миллионный город, протянувшийся вдоль Волги почти на 90 км. Бюро «ВЯЗ» формирует и сопровождает каталог свободных территорий, готовых к комплексному развитию: жилому, общественному и смешанному.',
+        aboutText:'Мы — архитектурное бюро, основанное в 2020 году. Наш офис расположен в самом центре Волгограда в историческом особняке по адресу: Комсомольская, 10а.\nВ нашей команде — архитекторы, графические дизайнеры, экономисты, инженеры. Уже несколько лет мы преображаем пространство вокруг себя и делаем город лучше, современнее и удобнее.\nНаше главное направление — создание архитектурно-градостроительных концепций благоустройства городских пространств, масштабных инвестиционных проектов, концепций развития территорий, а также их реализация.\nМы разрабатываем туристические коды для улиц и городов, продумываем брендирование и создаём уникальные графические дизайны.',
+        address:'ул. Комсомольская, 10а\nВолгоград, 400066', phone:'+7 (8442) 32-54-94', email:'info@vyaz34.ru' } };
+    let data=null; try{ const raw=localStorage.getItem('vyaz_cms3'); if(raw) data=JSON.parse(raw); }catch(e){}
+    if(!data) data=JSON.parse(JSON.stringify(SEED));
+    ['works','services','team','manifest','media','investor','news','docs','acts','socials'].forEach(k=>{ if(!Array.isArray(data[k])) data[k]=JSON.parse(JSON.stringify(SEED[k])); });
+    if(!data.settings) data.settings=JSON.parse(JSON.stringify(SEED.settings));
+    Object.keys(SEED.settings).forEach(k=>{ if(data.settings[k]===undefined) data.settings[k]=SEED.settings[k]; });
+    const ENSURE=(arr,pfx)=>{ (arr||[]).forEach((it,i)=>{ if(!it.id) it.id=pfx+i; if(!Array.isArray(it.imgs)||!it.imgs.length) it.imgs=[it.id+'-1',it.id+'-2',it.id+'-3']; }); };
+    ENSURE(data.works,'w'); ENSURE(data.investor,'krt'); ENSURE(data.services,'svc');
+    this._SEED=SEED;
+    this.state = { page:'home', aboutSub:'history', invSub:'map', newsId:null, siteId:null, fsOpen:false, fsIdx:0, krtSearch:'', krtDistrict:'all', krtPage:0, worksSearch:'', pageKey:0, activeIdx:0, worksPage:0, projectId:null, slideIdx:0, hoveredId:'', intro:!seen,
+      consent, agreementOpen:false, isMobile:(typeof window!=='undefined'&&window.innerWidth<760), menuOpen:false,
+      data, adminAuthed:false, adminSection:'works', editing:null, adminError:'', toast:'' };
+    this.rootRef=React.createRef(); this.headerRef=React.createRef(); this.logoRef=React.createRef();
+  }
+  componentDidMount(){
+    const acc=this.props.accent||'#111'; const r=this.rootRef.current; if(r) r.style.setProperty('--accent',acc);
+    if(this.state.intro){ this._introT=setTimeout(()=>{ this.setState({intro:false}); try{ sessionStorage.setItem('vyaz_intro2','1'); }catch(e){} },2400); }
+    if(this.props.heroAutoplay!==false){ this._auto=setInterval(()=>{ if(this.state.page==='home'){ const n=this.featuredList().length||1; this.setState(s=>({activeIdx:(s.activeIdx+1)%n})); } },6000); }
+    this._onResize=()=>{ const m=window.innerWidth<760; if(m!==this.state.isMobile) this.setState({isMobile:m}); };
+    window.addEventListener('resize', this._onResize); this._onResize();
+  }
+  componentWillUnmount(){ if(this._introT)clearTimeout(this._introT); if(this._auto)clearInterval(this._auto); if(this._toastT)clearTimeout(this._toastT); if(this._onResize)window.removeEventListener('resize',this._onResize); }
+  isDark(){ return this.state.page==='home'; }
+  applyTheme(){ const dark=this.isDark(); const h=this.headerRef.current, lg=this.logoRef.current;
+    if(h){ h.style.background=dark?'#0a0a0a':'#ededed'; h.querySelectorAll('a[data-nav]').forEach(a=>a.style.color=dark?'#fff':'#111'); }
+    if(lg) lg.src=dark?'assets/vyaz-logo-light.png':'assets/vyaz-logo.png'; }
+  featuredList(){ const f=this.state.data.works.filter(w=>w.featured); return (f.length?f:this.state.data.works).slice(0,5); }
+  go(page){ this.setState({page,slideIdx:0,pageKey:this.state.pageKey+1}); }
+  openWork(id){ this.setState({page:'project',projectId:id,slideIdx:0,pageKey:this.state.pageKey+1}); }
+  openNews(id){ this.setState({page:'newsitem',newsId:id,slideIdx:0,pageKey:this.state.pageKey+1}); }
+  openSite(id){ this.setState({page:'site',siteId:id,slideIdx:0,fsOpen:false,fsIdx:0,pageKey:this.state.pageKey+1}); }
+  setHover(k){ this.setState({hoveredId:k}); }
+  downloadWork(w){ try{ const txt='ВЯЗ — '+w.title+'\n'+(w.subtitle||'')+'\n'+(w.loc||'')+' · '+(w.year||'')+'\n\n'+(w.desc||'')+'\n\nМБУ «ВЯЗ», Волгоград';
+    const blob=new Blob([txt],{type:'text/plain;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(w.id||'project')+'-vyaz.txt'; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},100);}catch(e){} }
+  submitContact(e){ if(e&&e.preventDefault)e.preventDefault(); if(e&&e.target&&e.target.reset)e.target.reset(); this.flash('Заявка отправлена'); }
+  acceptConsent(){ try{ localStorage.setItem('vyaz_consent','1'); }catch(e){} this.setState({consent:true,agreementOpen:false}); }
+  openAgreement(){ this.setState({agreementOpen:true}); }
+  closeAgreement(){ this.setState({agreementOpen:false}); }
+  duplicateAt(sec,idx){ const data=Object.assign({},this.state.data); const arr=(data[sec]||[]).slice(); const src=arr[idx]; if(!src)return; const copy=JSON.parse(JSON.stringify(src)); const t=Date.now();
+    if(copy.id!==undefined){ const pfx=sec==='works'?'w':sec==='investor'?'krt':sec==='news'?'n':sec==='services'?'svc':'id'; copy.id=pfx+t; }
+    if(Array.isArray(copy.imgs)) copy.imgs=copy.imgs.map((_,k)=>(copy.id||'item')+'-'+(k+1));
+    if(sec==='works') copy.featured=false;
+    if(copy.title!==undefined) copy.title=(copy.title||'')+' (копия)'; else if(copy.name!==undefined) copy.name=(copy.name||'')+' (копия)'; else if(copy.t!==undefined) copy.t=(copy.t||'')+' (копия)';
+    arr.splice(idx+1,0,copy); data[sec]=arr; this.setState({data},()=>{ this.persist(); this.flash('Дублировано'); }); }
+  persist(){ try{ localStorage.setItem('vyaz_cms3', JSON.stringify(this.state.data)); }catch(e){} }
+  flash(msg){ this.setState({toast:msg}); clearTimeout(this._toastT); this._toastT=setTimeout(()=>this.setState({toast:''}),2000); }
+  adminLogin(e){ if(e&&e.preventDefault)e.preventDefault(); const fd=e&&e.target?new FormData(e.target):null; const u=(fd&&fd.get('u')||'').trim(),p=(fd&&fd.get('p')||'').trim();
+    if(u==='admin'&&p==='vyaz'){ this.setState({adminAuthed:true,adminError:''}); } else { this.setState({adminError:'Неверный логин или пароль. Демо: admin / vyaz'}); } }
+  adminLogout(){ this.setState({adminAuthed:false,editing:null}); }
+  toggleFeatured(idx){ const data=Object.assign({},this.state.data); const arr=data.works.slice(); const cur=arr[idx];
+    if(!cur.featured && arr.filter(w=>w.featured).length>=5){ this.flash('Можно выбрать максимум 5'); return; }
+    arr[idx]=Object.assign({},cur,{featured:!cur.featured}); data.works=arr; this.setState({data},()=>this.persist()); }
+  adminBlank(sec){ const t=Date.now();
+    if(sec==='works') return {id:'w'+t,title:'',subtitle:'',cat:'',year:String(new Date().getFullYear()),loc:'',desc:'',featured:false,imgs:['w'+t+'-1','w'+t+'-2','w'+t+'-3']};
+    if(sec==='services') return {id:'svc'+t,t:'',d:'',imgs:['svc'+t+'-1','svc'+t+'-2','svc'+t+'-3']};
+    if(sec==='team') return {name:'',role:''};
+    if(sec==='manifest') return {n:'',t:'',d:''};
+    if(sec==='media') return {title:'',source:'',date:'',url:'#'};
+    if(sec==='investor') return {id:'krt'+t,name:'',area:'',desc:'',district:'',imgs:['krt'+t+'-1','krt'+t+'-2','krt'+t+'-3']};
+    if(sec==='news') return {id:'n'+t,title:'',date:new Date().toLocaleDateString('ru-RU'),photos:'1',body:''};
+    if(sec==='docs') return {name:'',url:'#'};
+    if(sec==='acts') return {name:'',url:'#'};
+    if(sec==='socials') return {type:'tg',url:''};
+    return {}; }
+  openEditor(sec,item,idx){ this._editIndex=(idx===undefined?-1:idx); this.setState({editing:{sec,isNew:!item,draft:item?JSON.parse(JSON.stringify(item)):this.adminBlank(sec)}}); }
+  closeEditor(){ this.setState({editing:null}); }
+  setField(k,v){ this.setState(s=>({editing:Object.assign({},s.editing,{draft:Object.assign({},s.editing.draft,{[k]:v})})})); }
+  _setImgs(fn){ this.setState(s=>{ const e=s.editing; if(!e) return {}; const imgs=(e.draft.imgs||[]).slice(); const r=fn(imgs); const next=r||imgs; return {editing:Object.assign({},e,{draft:Object.assign({},e.draft,{imgs:next})})}; }); }
+  imgAdd(){ this._setImgs(imgs=>{ imgs.push((this.state.editing.draft.id||'item')+'-'+Date.now().toString(36)); return imgs; }); }
+  imgMove(k,dir){ this._setImgs(imgs=>{ const j=k+dir; if(j<0||j>=imgs.length) return imgs; const t=imgs[k];imgs[k]=imgs[j];imgs[j]=t; return imgs; }); }
+  imgDel(k){ this._setImgs(imgs=>{ imgs.splice(k,1); return imgs; }); }
+  saveItem(){ const ed=this.state.editing; if(!ed)return; const data=Object.assign({},this.state.data); const arr=(data[ed.sec]||[]).slice();
+    if(ed.isNew){ arr.push(ed.draft); } else if(this._editIndex>=0){ arr[this._editIndex]=ed.draft; }
+    data[ed.sec]=arr; this.setState({data,editing:null},()=>{ this.persist(); this.flash(ed.isNew?'Добавлено':'Сохранено'); }); }
+  deleteAt(sec,idx){ const data=Object.assign({},this.state.data); const arr=data[sec].slice(); arr.splice(idx,1); data[sec]=arr; this.setState({data},()=>{this.persist();this.flash('Удалено');}); }
+  moveAt(sec,idx,dir){ const data=Object.assign({},this.state.data); const arr=data[sec].slice(); const j=idx+dir; if(j<0||j>=arr.length)return; const t=arr[idx];arr[idx]=arr[j];arr[j]=t; data[sec]=arr; this.setState({data},()=>this.persist()); }
+  saveSettings(e){ if(e&&e.preventDefault)e.preventDefault(); const fd=new FormData(e.target); const data=Object.assign({},this.state.data); const s=Object.assign({},data.settings);
+    ['contactsHeading','investorHeading','investorIntro','aboutText','address','phone','email'].forEach(k=>{ if(fd.get(k)!==null) s[k]=fd.get(k); }); data.settings=s;
+    this.setState({data},()=>{this.persist();this.flash('Настройки сохранены');}); }
+  resetData(){ if(typeof confirm==='function'&&!confirm('Сбросить весь контент?'))return; const data=JSON.parse(JSON.stringify(this._SEED)); this.setState({data,editing:null},()=>{this.persist();this.flash('Сброшено');}); }
+
+  renderVals(){
+    const st=this.state, d=st.data, S=d.settings;
+    const dark=st.page==='home';
+    const mk=(page,label)=>{ const active=st.page===page; return {label,onClick:()=>this.go(page),op:active?1:0.62,ul:active?'underline':'none'}; };
+    const menuLeft=[mk('about','О нас'),mk('works','Работы'),mk('investor','Инвестору')];
+    const menuRight=[mk('services','Услуги'),mk('news','Новости'),mk('contacts','Контакты')];
+
+    const feat=this.featuredList();
+    const ai=feat.length?st.activeIdx%feat.length:0;
+    const featured=feat.map((w,i)=>({heroSlot:'hero-'+w.id,title:w.title,subtitle:w.subtitle,op:i===ai?1:0,barFill:i===ai?1:0,go:()=>this.setState({activeIdx:i}),open:()=>this.openWork(w.id)}));
+    const mWorks=d.works.map(w=>({title:w.title,subtitle:w.subtitle,slot:'tile-'+w.id,open:()=>this.openWork(w.id)}));
+    const mServices=d.services.map((s,i)=>({t:s.t,d:s.d,slot:(s.imgs&&s.imgs[0])||('svc-'+i),open:()=>this.go('contacts')}));
+    const mNav=[['about','О нас'],['works','Работы'],['services','Услуги'],['investor','Инвестору'],['news','Новости'],['contacts','Контакты']].map(x=>({label:x[1],onClick:()=>{this.go(x[0]);this.setState({menuOpen:false});}}));
+    const fa=feat[ai]||{};
+
+    const WPP=6; const wq=(st.worksSearch||'').toLowerCase().trim();
+    const worksFiltered=d.works.filter(w=>!wq||(w.title||'').toLowerCase().includes(wq));
+    const totalPages=Math.max(1,Math.ceil(worksFiltered.length/WPP)); const wp=Math.min(st.worksPage,totalPages-1);
+    const worksOnPage=worksFiltered.slice(wp*WPP,wp*WPP+WPP).map(w=>{ const hov=st.hoveredId==='w:'+w.id; return Object.assign({},w,{
+      tileSlot:'tile-'+w.id, gray:hov?0:1, scale:hov?1.05:1, labelOp:hov?1:0, labelShift:hov?'0px':'10px',
+      enter:()=>this.setHover('w:'+w.id), open:()=>this.openWork(w.id) }); });
+
+    const svc=d.services.slice(0,6);
+    const cardOf=(s,i,flex)=>{ const hov=st.hoveredId==='s:'+i; return {t:s.t,slot:(s.imgs&&s.imgs[0])||('svc-'+i),flex,dim:hov?0.32:0.55,scale:hov?1.05:1,enter:()=>this.setHover('s:'+i),open:()=>this.go('contacts')}; };
+    const serviceCols=[
+      {cards:[svc[0]&&cardOf(svc[0],0,2),svc[1]&&cardOf(svc[1],1,3)].filter(Boolean)},
+      {cards:[svc[2]&&cardOf(svc[2],2,1)].filter(Boolean)},
+      {cards:[svc[3]&&cardOf(svc[3],3,2),svc[4]&&cardOf(svc[4],4,3)].filter(Boolean)},
+      {cards:[svc[5]&&cardOf(svc[5],5,1)].filter(Boolean)}
+    ];
+
+    const aboutTabs=[['history','История'],['manifest','Манифест'],['team','Команда'],['media','Медиа'],['docs','Документы']].map(t=>({label:t[1],
+      bg:st.aboutSub===t[0]?'var(--accent)':'#fff', color:st.aboutSub===t[0]?'#fff':'#1a1a1a', onClick:()=>this.setState({aboutSub:t[0]})}));
+    const aboutBullets=(S.aboutText||'').split('\n').filter(x=>x.trim());
+    const team=d.team.slice(0,12).map((t,i)=>{ const hov=st.hoveredId==='t:'+i; return Object.assign({},t,{slot:'team-'+i,gray:hov?0:1,scale:hov?1.04:1,enter:()=>this.setHover('t:'+i)}); });
+    const manifest=d.manifest.slice(0,6).map((m,i)=>Object.assign({},m,{slot:'mimg-'+(m.n||i)}));
+    const media=d.media.slice(0,6).map((m,i)=>Object.assign({},m,{slot:'media-'+i}));
+    const openDoc=(x)=>{ try{ if(x.url&&x.url!=='#') window.open(x.url,'_blank'); else this.flash('Файл будет загружен'); }catch(e){} };
+    const docs=(d.docs||[]).map(x=>Object.assign({},x,{open:()=>openDoc(x)}));
+    const acts=(d.acts||[]).map(x=>Object.assign({},x,{open:()=>openDoc(x)}));
+    const news=(d.news||[]).slice(0,6).map((n,i)=>Object.assign({},n,{cover:'news-'+(n.id||('n'+i))+'-0',dateLabel:n.date||'',open:()=>this.openNews(n.id||('n'+i))}));
+    const invTabs=[['map','Карта Волгограда'],['info','Общая информация'],['acts','Нормативные акты'],['krt','Комплексное развитие территорий']].map(t=>({label:t[1],bg:st.invSub===t[0]?'var(--accent)':'#fff',color:st.invSub===t[0]?'#fff':'#1a1a1a',onClick:()=>this.setState({invSub:t[0]})}));
+    let curN=(d.news||[]).find(n=>n.id===st.newsId)||(d.news||[])[0]||{};
+    const NP=Math.max(1,Math.min(6,parseInt(curN.photos)||1));
+    const newsPhotos=Array.from({length:NP}).map((_,k)=>({slot:'news-'+(curN.id||'n')+'-'+k,op:k===st.slideIdx?1:0,dot:k===st.slideIdx?'#0a0a0a':'#cfcfcf',thumbBorder:k===st.slideIdx?(this.props.accent||'#111'):'transparent',onDot:()=>this.setState({slideIdx:k})}));
+
+    const KPP=6; const allInv=d.investor||[];
+    const kq=(st.krtSearch||'').toLowerCase().trim(); const kdist=st.krtDistrict||'all';
+    const filteredInv=allInv.map((s,gi)=>({s,gi})).filter(o=>(kdist==='all'||o.s.district===kdist)&&(!kq||(o.s.name||'').toLowerCase().includes(kq)));
+    const mKrt=filteredInv.map(o=>Object.assign({},o.s,{slot:'inv-'+o.gi,open:()=>this.openSite(o.gi)}));
+    const kTotalPages=Math.max(1,Math.ceil(filteredInv.length/KPP)); const kp=Math.min(st.krtPage,kTotalPages-1);
+    const krtItems=filteredInv.slice(kp*KPP,kp*KPP+KPP).map(o=>{ const gi=o.gi, s=o.s; const hov=st.hoveredId==='i:'+gi; return Object.assign({},s,{slot:'inv-'+gi,gray:hov?0:1,scale:hov?1.05:1,enter:()=>this.setHover('i:'+gi),open:()=>this.openSite(gi)}); });
+    const kDistricts=['all'].concat(Array.from(new Set(allInv.map(s=>s.district).filter(Boolean))));
+    const districtChips=kDistricts.map(dd=>({label:dd==='all'?'Все районы':dd,bg:kdist===dd?'var(--accent)':'#fff',color:kdist===dd?'#fff':'#444',border:kdist===dd?'var(--accent)':'#c8c8c8',onClick:()=>this.setState({krtDistrict:dd,krtPage:0})}));
+
+    const socials=(d.socials||[]).map(s=>({url:s.url||'#',iconEl:React.createElement('span',{style:{display:'flex',alignItems:'center',justifyContent:'center'},dangerouslySetInnerHTML:{__html:ICONS[s.type]||ICONS.link}})}));
+
+    let cur=d.works.find(w=>w.id===st.projectId)||d.works[0]||{};
+    const accentC=this.props.accent||'#111';
+    let detTitle='',detDesc='',detCaption='',detBackLabel='',detDlObj=cur,detBackPage='works',detImgs=[];
+    if(st.page==='site'){ const sArr=d.investor||[]; const sc=sArr[st.siteId]||sArr[0]||{}; detTitle=sc.name||''; detDesc=sc.desc||''; detCaption='Схема анализа генерального плана и ПЗЗ'; detBackLabel='Все площадки'; detImgs=Array.isArray(sc.imgs)?sc.imgs:[]; detDlObj={id:sc.id||'site',title:sc.name,subtitle:'',loc:sc.area||'',year:'',desc:sc.desc||''}; detBackPage='investor'; }
+    else { detTitle=cur.title||''; detDesc=cur.desc||''; detCaption=cur.subtitle||''; detBackLabel='Все работы'; detImgs=Array.isArray(cur.imgs)?cur.imgs:[]; detDlObj=cur; detBackPage='works'; }
+    if(!detImgs.length) detImgs=['ph-empty'];
+    const detSlides=detImgs.map((slot,k)=>({slot,op:k===st.slideIdx?1:0,thumbBorder:k===st.slideIdx?accentC:'transparent',onDot:()=>this.setState({slideIdx:k})}));
+    const fsCount = st.page==='newsitem'?NP:detImgs.length;
+    const fsSrcSlots = st.page==='newsitem'? newsPhotos.map(p=>p.slot) : detImgs;
+    const fsSlides = fsSrcSlots.map((slot,k)=>({slot,op:k===st.fsIdx?1:0,dot:k===st.fsIdx?'#fff':'rgba(255,255,255,.4)',onDot:()=>this.setState({fsIdx:k})}));
+
+    // ADMIN
+    const SECS=[['works','Работы'],['news','Новости'],['services','Услуги'],['team','Команда'],['manifest','Манифест'],['media','Медиа'],['docs','Документы'],['investor','Площадки'],['acts','Норм. акты'],['socials','Соцсети'],['settings','Настройки']];
+    const adminNav=SECS.map(s=>({label:s[1],color:st.adminSection===s[0]?'#fff':'#9a9a9a',bar:st.adminSection===s[0]?'#fff':'transparent',onClick:()=>this.setState({adminSection:s[0],editing:null})}));
+    const sec=st.adminSection;
+    const labelOf=(c,it)=>{ if(c==='works')return it.title; if(c==='services'||c==='manifest')return it.t; if(c==='team'||c==='investor')return it.name; if(c==='media'||c==='news')return it.title; if(c==='docs'||c==='acts')return it.name; if(c==='socials')return SOCIAL_LABELS[it.type]||it.type||''; return ''; };
+    const subOf=(c,it)=>{ if(c==='works')return (it.cat||'')+' · '+(it.year||'')+(it.featured?' · ★ на главной':''); if(c==='services')return it.d||''; if(c==='team')return it.role||''; if(c==='manifest')return (it.n?it.n+' · ':'')+(it.d||''); if(c==='media')return (it.source||'')+' · '+(it.date||''); if(c==='investor')return it.area||''; if(c==='news')return (it.date||'')+' · фото: '+(it.photos||'1'); if(c==='docs'||c==='acts'||c==='socials')return it.url||''; return ''; };
+    const adminRows=(sec!=='settings'?(d[sec]||[]):[]).map((it,idx)=>({label:labelOf(sec,it),sub:subOf(sec,it),
+      canFeature:sec==='works', featBg:it.featured?'var(--accent)':'#fff', featColor:it.featured?'#fff':'#888', featBorder:it.featured?'var(--accent)':'#ddd',
+      onFeature:()=>this.toggleFeatured(idx), onEdit:()=>this.openEditor(sec,it,idx), onDelete:()=>this.deleteAt(sec,idx), onDuplicate:()=>this.duplicateAt(sec,idx), onUp:()=>this.moveAt(sec,idx,-1), onDown:()=>this.moveAt(sec,idx,1)}));
+    const FIELDS={ works:[['title','Название','text'],['subtitle','Подзаголовок','text'],['cat','Категория','text'],['year','Год','text'],['loc','Локация','text'],['desc','Описание','textarea']],
+      services:[['t','Название','text'],['d','Описание','textarea']], team:[['name','Имя','text'],['role','Роль','text']],
+      manifest:[['n','Номер','text'],['t','Заголовок','text'],['d','Описание','textarea']],
+      media:[['title','Заголовок','text'],['source','Источник','text'],['date','Дата','text'],['url','Ссылка','text']],
+      investor:[['name','Название','text'],['area','Площадь','text'],['desc','Описание','textarea']],
+      news:[['title','Название','text'],['date','Дата','text'],['photos','Кол-во фото (1-6)','text'],['body','Текст новости','textarea']],
+      docs:[['name','Название документа','text'],['url','Ссылка на файл','text']],
+      acts:[['name','Название акта','text'],['url','Ссылка на файл','text']],
+      socials:[['type','Иконка','enum',SOCIAL_TYPES],['url','Ссылка','text']] };
+    let editing=null;
+    if(st.editing){ const e=st.editing; editing={isNew:e.isNew,title:e.isNew?'Добавить':'Изменить',onSave:()=>this.saveItem(),onCancel:()=>this.closeEditor(),
+      fields:(FIELDS[e.sec]||[]).map(c=>({label:c[1],value:e.draft[c[0]]!==undefined?e.draft[c[0]]:'',isText:c[2]==='text',isTextarea:c[2]==='textarea',isEnum:c[2]==='enum',options:(c[3]||[]).map(o=>({value:o[0],label:o[1]})),onChange:(ev)=>this.setField(c[0],ev.target.value)})),
+      hasImages:(e.sec==='works'||e.sec==='investor'||e.sec==='services'), imgAdd:()=>this.imgAdd(),
+      images:(e.draft.imgs||[]).map((slot,k)=>({slot,num:k+1,onUp:()=>this.imgMove(k,-1),onDown:()=>this.imgMove(k,1),onDel:()=>this.imgDel(k)}))}; }
+
+    return {
+      rootRef:this.rootRef, headerRef:this.headerRef, logoRef:this.logoRef, pageKey:st.pageKey, intro:st.intro,
+      headerBg:dark?'#0a0a0a':'#ededed', navColor:dark?'#fff':'#111', logoFilter:dark?'none':'invert(1)',
+      menuLeft, menuRight, goHome:()=>this.go('home'), goWorks:()=>this.go('works'), goAdmin:()=>this.go('admin'),
+      isHome:st.page==='home', isWorks:st.page==='works', isServices:st.page==='services', isAbout:st.page==='about',
+      isContacts:st.page==='contacts', isInvestor:st.page==='investor', isProject:st.page==='project', isAdmin:st.page==='admin',
+      featured, heroKey:'h'+ai, heroTitle:fa.title||'', heroSubtitle:fa.subtitle||'', openFeatured:()=>fa.id&&this.openWork(fa.id),
+      worksOnPage, worksPrev:()=>this.setState(s=>({worksPage:(s.worksPage-1+totalPages)%totalPages,hoveredId:''})), worksNext:()=>this.setState(s=>({worksPage:(s.worksPage+1)%totalPages,hoveredId:''})), leave:()=>this.setHover(''),
+      worksSearch:st.worksSearch, worksSetSearch:(e)=>this.setState({worksSearch:e.target.value,worksPage:0,hoveredId:''}), worksHasResults:worksFiltered.length>0, worksNoResults:worksFiltered.length===0,
+      serviceCols,
+      aboutTabs, aboutSub:st.aboutSub, aboutIsHistory:st.aboutSub==='history', aboutIsManifest:st.aboutSub==='manifest', aboutIsTeam:st.aboutSub==='team', aboutIsMedia:st.aboutSub==='media',
+      aboutBullets, team, manifest, media,
+      contactsHeading:S.contactsHeading, cAddress:S.address, cPhone:S.phone, cPhoneHref:(S.phone||'').replace(/[^+\d]/g,''), cEmail:S.email, socials, submitContact:(e)=>this.submitContact(e), contactBtnLabel:'Отправить',
+      investorHeading:S.investorHeading, investorIntro:S.investorIntro, investorInfo:S.investorInfo,
+      krtItems, districtChips, krtSearch:st.krtSearch, krtSetSearch:(e)=>this.setState({krtSearch:e.target.value,krtPage:0}),
+      krtPageLabel:(kp+1)+' / '+kTotalPages, krtPrev:()=>this.setState(s=>({krtPage:(s.krtPage-1+kTotalPages)%kTotalPages})), krtNext:()=>this.setState(s=>({krtPage:(s.krtPage+1)%kTotalPages})),
+      krtHasResults:filteredInv.length>0, krtNoResults:filteredInv.length===0,
+      invTabs, invSub:st.invSub, invIsMap:st.invSub==='map', invIsInfo:st.invSub==='info', invIsActs:st.invSub==='acts', invIsKrt:st.invSub==='krt', acts, mapCity:MAP_CITY, mapOffice:MAP_OFFICE,
+      aboutIsDocs:st.aboutSub==='docs', docs,
+      isNews:st.page==='news', isNewsItem:st.page==='newsitem', news, goNews:()=>this.go('news'),
+      newsTitle:curN.title||'', newsDate:curN.date||'', newsBody:curN.body||'', newsPhotos, newsPhotoNum:(st.slideIdx+1)+' / '+NP,
+      newsPrev:()=>this.setState(s=>({slideIdx:(s.slideIdx-1+NP)%NP})), newsNext:()=>this.setState(s=>({slideIdx:(s.slideIdx+1)%NP})),
+      isDetail:st.page==='project'||st.page==='site', detTitle, detDesc, detCaption, detBackLabel, detSlides, detBack:()=>this.go(detBackPage), detDownload:()=>this.downloadWork(detDlObj), openFsBtn:()=>this.setState({fsOpen:true,fsIdx:st.slideIdx}),
+      fsOpen:st.fsOpen, fsSlides, fsTitle:st.page==='newsitem'?(curN.title||''):detTitle, fsClose:()=>this.setState({fsOpen:false}), fsPrev:()=>this.setState(s=>({fsIdx:(s.fsIdx-1+fsCount)%fsCount})), fsNext:()=>this.setState(s=>({fsIdx:(s.fsIdx+1)%fsCount})),
+      newsOpenFs:()=>this.setState({fsOpen:true,fsIdx:st.slideIdx}), newsHasThumbs:NP>1,
+      showConsent:!st.consent, acceptConsent:()=>this.acceptConsent(), openAgreement:()=>this.openAgreement(), closeAgreement:()=>this.closeAgreement(), agreementOpen:st.agreementOpen,
+      isMobile:st.isMobile, isDesktop:!st.isMobile, menuOpen:st.menuOpen, toggleMenu:()=>this.setState(s=>({menuOpen:!s.menuOpen})), closeMenu:()=>this.setState({menuOpen:false}), mNav, mWorks, mServices, mKrt,
+      adminAuthed:st.adminAuthed, adminNotAuthed:!st.adminAuthed, adminLogin:(e)=>this.adminLogin(e), adminLogout:()=>this.adminLogout(), adminError:st.adminError,
+      adminNav, adminRows, adminSectionLabel:({works:'Работы',news:'Новости',services:'Услуги',team:'Команда',manifest:'Манифест',media:'Медиа',docs:'Документы',investor:'Площадки',acts:'Нормативные акты',socials:'Соцсети',settings:'Настройки'})[sec],
+      adminIsList:sec!=='settings', adminIsSettings:sec==='settings', adminIsWorks:sec==='works', featuredCount:d.works.filter(w=>w.featured).length,
+      addNew:()=>this.openEditor(sec,null), editing, isEditing:!!editing,
+      saveSettings:(e)=>this.saveSettings(e), resetData:()=>this.resetData(),
+      set_contactsHeading:S.contactsHeading, set_investorHeading:S.investorHeading, set_investorIntro:S.investorIntro, set_aboutText:S.aboutText, set_address:S.address, set_phone:S.phone, set_email:S.email,
+      toast:st.toast, hasToast:!!st.toast
+    };
+  }
+}
+</script>
+</body>
+</html>
