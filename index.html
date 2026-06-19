@@ -402,11 +402,15 @@
                   <image-slot id="{{ s.slot }}" shape="rect" radius="0" placeholder="Изображение проекта" style="display:block;width:100%;height:100%"></image-slot>
                 </div>
               </sc-for>
-              <button onClick="{{ openFsBtn }}" title="Полный экран" style="position:absolute;right:12px;top:12px;width:40px;height:40px;background:rgba(10,10,10,.78);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:background .3s" style-hover="background:#0a0a0a">⤢</button>
+              <sc-if value="{{ detHasMany }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ detPrev }}" title="Назад" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:46px;height:46px;background:rgba(10,10,10,.7);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:24px;line-height:1;z-index:3;transition:background .3s" style-hover="background:#0a0a0a">‹</button>
+                <button onClick="{{ detNext }}" title="Вперёд" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);width:46px;height:46px;background:rgba(10,10,10,.7);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:24px;line-height:1;z-index:3;transition:background .3s" style-hover="background:#0a0a0a">›</button>
+              </sc-if>
+              <button onClick="{{ openFsBtn }}" title="Полный экран" style="position:absolute;right:12px;top:12px;width:40px;height:40px;background:rgba(10,10,10,.78);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;z-index:3;transition:background .3s" style-hover="background:#0a0a0a">⤢</button>
             </div>
-            <div style="flex:none;display:flex;gap:clamp(7px,.7vw,11px);height:clamp(52px,8vh,80px)">
+            <div style="flex:none;display:flex;gap:clamp(7px,.7vw,11px);height:clamp(52px,8vh,80px);overflow-x:auto;overflow-y:hidden">
               <sc-for list="{{ detSlides }}" as="s" hint-placeholder-count="4">
-                <button onClick="{{ s.onDot }}" style="flex:1;min-width:0;height:100%;border:2px solid {{ s.thumbBorder }};background:#cfcfcf;cursor:pointer;padding:0;overflow:hidden">
+                <button onClick="{{ s.onDot }}" style="flex:1;min-width:clamp(78px,8vw,120px);height:100%;border:2px solid {{ s.thumbBorder }};background:#cfcfcf;cursor:pointer;padding:0;overflow:hidden">
                   <image-slot id="{{ s.slot }}" shape="rect" radius="0" placeholder="" style="display:block;width:100%;height:100%;pointer-events:none"></image-slot>
                 </button>
               </sc-for>
@@ -556,9 +560,13 @@
         <div style="font-size:11px;font-weight:600;color:#777">{{ detCaption }}</div>
         <div style="position:relative;aspect-ratio:4/3;overflow:hidden;background:#d6d6d6">
           <sc-for list="{{ detSlides }}" as="s" hint-placeholder-count="3"><div style="position:absolute;inset:0;opacity:{{ s.op }};transition:opacity .4s ease"><image-slot id="{{ s.slot }}" shape="rect" radius="0" placeholder="Изображение проекта" style="display:block;width:100%;height:100%"></image-slot></div></sc-for>
-          <button onClick="{{ openFsBtn }}" title="Полный экран" style="position:absolute;right:11px;top:11px;width:38px;height:38px;background:rgba(10,10,10,.78);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px">⤢</button>
+          <sc-if value="{{ detHasMany }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ detPrev }}" title="Назад" style="position:absolute;left:9px;top:50%;transform:translateY(-50%);width:40px;height:40px;background:rgba(10,10,10,.7);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;z-index:3">‹</button>
+            <button onClick="{{ detNext }}" title="Вперёд" style="position:absolute;right:9px;top:50%;transform:translateY(-50%);width:40px;height:40px;background:rgba(10,10,10,.7);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;z-index:3">›</button>
+          </sc-if>
+          <button onClick="{{ openFsBtn }}" title="Полный экран" style="position:absolute;right:11px;top:11px;width:38px;height:38px;background:rgba(10,10,10,.78);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;z-index:3">⤢</button>
         </div>
-        <div style="display:flex;gap:7px"><sc-for list="{{ detSlides }}" as="s" hint-placeholder-count="3"><button onClick="{{ s.onDot }}" style="flex:1;aspect-ratio:16/10;border:2px solid {{ s.thumbBorder }};background:#cfcfcf;cursor:pointer;padding:0;overflow:hidden"><image-slot id="{{ s.slot }}" shape="rect" radius="0" placeholder="" style="display:block;width:100%;height:100%;pointer-events:none"></image-slot></button></sc-for></div>
+        <div style="display:flex;gap:7px;overflow-x:auto;overflow-y:hidden"><sc-for list="{{ detSlides }}" as="s" hint-placeholder-count="3"><button onClick="{{ s.onDot }}" style="flex:1;min-width:72px;aspect-ratio:16/10;border:2px solid {{ s.thumbBorder }};background:#cfcfcf;cursor:pointer;padding:0;overflow:hidden"><image-slot id="{{ s.slot }}" shape="rect" radius="0" placeholder="" style="display:block;width:100%;height:100%;pointer-events:none"></image-slot></button></sc-for></div>
         <h1 style="margin:6px 0 0;font-size:22px;font-weight:700;line-height:1.12">{{ detTitle }}</h1>
         <p style="margin:0;font-size:14px;line-height:1.6;color:#555">{{ detDesc }}</p>
         <button onClick="{{ detDownload }}" style="align-self:flex-start;background:#0a0a0a;color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;padding:15px 38px">скачать</button>
@@ -985,7 +993,8 @@ class Component extends DCLogic {
     if(st.page==='site'){ const sArr=d.investor||[]; const sc=sArr[st.siteId]||sArr[0]||{}; detTitle=sc.name||''; detDesc=sc.desc||''; detCaption='Схема анализа генерального плана и ПЗЗ'; detBackLabel='Все площадки'; detImgs=Array.isArray(sc.imgs)?sc.imgs:[]; detDlObj={id:sc.id||'site',title:sc.name,subtitle:'',loc:sc.area||'',year:'',desc:sc.desc||''}; detBackPage='investor'; }
     else { detTitle=cur.title||''; detDesc=cur.desc||''; detCaption=cur.subtitle||''; detBackLabel='Все работы'; detImgs=Array.isArray(cur.imgs)?cur.imgs:[]; detDlObj=cur; detBackPage='works'; }
     if(!detImgs.length) detImgs=['ph-empty'];
-    const detSlides=detImgs.map((slot,k)=>({slot,op:k===st.slideIdx?1:0,thumbBorder:k===st.slideIdx?accentC:'transparent',onDot:()=>this.setState({slideIdx:k})}));
+    const DN=detImgs.length||1; const dIdx=((st.slideIdx%DN)+DN)%DN;
+    const detSlides=detImgs.map((slot,k)=>({slot,op:k===dIdx?1:0,thumbBorder:k===dIdx?accentC:'transparent',onDot:()=>this.setState({slideIdx:k})}));
     const fsCount = st.page==='newsitem'?NP:detImgs.length;
     const fsSrcSlots = st.page==='newsitem'? newsPhotos.map(p=>p.slot) : detImgs;
     const fsSlides = fsSrcSlots.map((slot,k)=>({slot,op:k===st.fsIdx?1:0,dot:k===st.fsIdx?'#fff':'rgba(255,255,255,.4)',onDot:()=>this.setState({fsIdx:k})}));
@@ -1036,7 +1045,8 @@ class Component extends DCLogic {
       isNews:st.page==='news', isNewsItem:st.page==='newsitem', news, goNews:()=>this.go('news'),
       newsTitle:curN.title||'', newsDate:curN.date||'', newsBody:curN.body||'', newsPhotos, newsPhotoNum:(st.slideIdx+1)+' / '+NP,
       newsPrev:()=>this.setState(s=>({slideIdx:(s.slideIdx-1+NP)%NP})), newsNext:()=>this.setState(s=>({slideIdx:(s.slideIdx+1)%NP})),
-      isDetail:st.page==='project'||st.page==='site', detTitle, detDesc, detCaption, detBackLabel, detSlides, detBack:()=>this.go(detBackPage), detDownload:()=>this.downloadWork(detDlObj), openFsBtn:()=>this.setState({fsOpen:true,fsIdx:st.slideIdx}),
+      isDetail:st.page==='project'||st.page==='site', detTitle, detDesc, detCaption, detBackLabel, detSlides, detBack:()=>this.go(detBackPage), detDownload:()=>this.downloadWork(detDlObj), openFsBtn:()=>this.setState({fsOpen:true,fsIdx:dIdx}),
+      detHasMany:DN>1, detPrev:()=>this.setState(s=>({slideIdx:(((s.slideIdx-1)%DN)+DN)%DN})), detNext:()=>this.setState(s=>({slideIdx:(((s.slideIdx+1)%DN)+DN)%DN})),
       fsOpen:st.fsOpen, fsSlides, fsTitle:st.page==='newsitem'?(curN.title||''):detTitle, fsClose:()=>this.setState({fsOpen:false}), fsPrev:()=>this.setState(s=>({fsIdx:(s.fsIdx-1+fsCount)%fsCount})), fsNext:()=>this.setState(s=>({fsIdx:(s.fsIdx+1)%fsCount})),
       newsOpenFs:()=>this.setState({fsOpen:true,fsIdx:st.slideIdx}), newsHasThumbs:NP>1,
       showConsent:!st.consent, acceptConsent:()=>this.acceptConsent(), openAgreement:()=>this.openAgreement(), closeAgreement:()=>this.closeAgreement(), agreementOpen:st.agreementOpen,
