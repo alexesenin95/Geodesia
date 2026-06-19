@@ -115,7 +115,15 @@ app.post('/api/images', auth, upload.array('files', 40), async (req, res) => {
       const url = `uploads/img/${name}`;
       out.push({ slot, url });
     }
-    await updateState((state) => { for (const o of out) state[o.slot] = { u: o.url, s: 1, x: 0, y: 0 }; });
+    await updateState((state) => {
+      for (const o of out) state[o.slot] = { u: o.url, s: 1, x: 0, y: 0 };
+      // Обложки (плитка/hero) — заполняем первым фото, если они ещё пустые.
+      if (out.length && req.query.cover) {
+        for (const c of String(req.query.cover).split(',').map(s => s.trim()).filter(Boolean)) {
+          if (!state[c]) state[c] = { u: out[0].url, s: 1, x: 0, y: 0 };
+        }
+      }
+    });
     res.json({ ok: true, images: out });
   } catch (e) {
     console.error('images error:', e);
@@ -152,7 +160,14 @@ app.post('/api/pdf', auth, upload.single('file'), async (req, res) => {
       pages.push({ slot, url: `uploads/img/${name}` });
     }
     const i = count;
-    await updateState((state) => { for (const p of pages) state[p.slot] = { u: p.url, s: 1, x: 0, y: 0 }; });
+    await updateState((state) => {
+      for (const p of pages) state[p.slot] = { u: p.url, s: 1, x: 0, y: 0 };
+      if (pages.length && req.query.cover) {
+        for (const c of String(req.query.cover).split(',').map(s => s.trim()).filter(Boolean)) {
+          if (!state[c]) state[c] = { u: pages[0].url, s: 1, x: 0, y: 0 };
+        }
+      }
+    });
 
     res.json({ ok: true, doc: { title, url: docUrl }, pages, pageCount: i });
   } catch (e) {

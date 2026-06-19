@@ -925,18 +925,18 @@ class Component extends DCLogic {
     const inp=document.createElement('input'); inp.type='file'; inp.accept='application/pdf'; inp.style.display='none';
     inp.onchange=()=>{ this.uploadPdf(inp.files&&inp.files[0]); if(inp.parentNode)inp.parentNode.removeChild(inp); }; document.body.appendChild(inp); inp.click(); }
   uploadImages(files){ if(!files||!files.length)return; if(!this._token){ this.flash('Нужен сервер (npm start)'); return; }
-    const id=(this.state.editing&&this.state.editing.draft.id)||'item'; const fd=new FormData(); for(let i=0;i<files.length;i++) fd.append('files',files[i]); this.flash('Загрузка фото: '+files.length+'…');
-    fetch('api/images?prefix='+encodeURIComponent(id),{method:'POST',headers:{'Authorization':'Bearer '+this._token},body:fd})
-      .then(r=>r.json()).then(j=>{ if(j&&j.images){ j.images.forEach(x=>{ if(window.__imgSlot) window.__imgSlot.set(x.slot,x.url); }); this._setImgs(imgs=>imgs.concat(j.images.map(x=>x.slot))); this.flash('Добавлено фото: '+j.images.length); } else this.flash('Ошибка загрузки'); }).catch(()=>this.flash('Ошибка загрузки')); }
+    const ed=this.state.editing; const id=(ed&&ed.draft.id)||'item'; const cover=(ed&&(ed.sec==='works'||ed.sec==='investor'))?('tile-'+id+',hero-'+id):''; const fd=new FormData(); for(let i=0;i<files.length;i++) fd.append('files',files[i]); this.flash('Загрузка фото: '+files.length+'…');
+    fetch('api/images?prefix='+encodeURIComponent(id)+(cover?'&cover='+encodeURIComponent(cover):''),{method:'POST',headers:{'Authorization':'Bearer '+this._token},body:fd})
+      .then(r=>r.ok?r.json():r.text().then(t=>Promise.reject(new Error('HTTP '+r.status+' '+t)))).then(j=>{ if(j&&j.images){ const first=j.images[0]; if(window.__imgSlot){ j.images.forEach(x=>window.__imgSlot.set(x.slot,x.url)); if(first&&cover) cover.split(',').forEach(c=>{ if(!window.__imgSlot.get(c)) window.__imgSlot.set(c,first.url); }); } this._setImgs(imgs=>imgs.concat(j.images.map(x=>x.slot))); this.flash('Добавлено фото: '+j.images.length+' — нажмите «Сохранить»'); } else this.flash('Ошибка загрузки'); }).catch((e)=>this.flash('Ошибка загрузки: '+(e&&e.message||e))); }
   uploadPdf(f){ if(!f)return; if(!this._token){ this.flash('Нужен сервер (npm start)'); return; }
-    const ed=this.state.editing; if(!ed)return; const id=ed.draft.id||'doc'; const nm=(f.name||'Документ').replace(/\.pdf$/i,''); const fd=new FormData(); fd.append('file',f); this.flash('Обработка PDF…');
-    fetch('api/pdf?prefix='+encodeURIComponent(id)+'&name='+encodeURIComponent(nm),{method:'POST',headers:{'Authorization':'Bearer '+this._token},body:fd})
-      .then(r=>r.json()).then(j=>{ if(j&&j.ok){ if(j.pages) j.pages.forEach(p=>{ if(window.__imgSlot) window.__imgSlot.set(p.slot,p.url); });
+    const ed=this.state.editing; if(!ed)return; const id=ed.draft.id||'doc'; const isProj=(ed.sec==='works'||ed.sec==='investor'); const cover=isProj?('tile-'+id+',hero-'+id):''; const nm=(f.name||'Документ').replace(/\.pdf$/i,''); const fd=new FormData(); fd.append('file',f); this.flash('Обработка PDF…');
+    fetch('api/pdf?prefix='+encodeURIComponent(id)+'&name='+encodeURIComponent(nm)+(cover?'&cover='+encodeURIComponent(cover):''),{method:'POST',headers:{'Authorization':'Bearer '+this._token},body:fd})
+      .then(r=>r.ok?r.json():r.text().then(t=>Promise.reject(new Error('HTTP '+r.status+' '+t)))).then(j=>{ if(j&&j.ok){ if(window.__imgSlot){ (j.pages||[]).forEach(p=>window.__imgSlot.set(p.slot,p.url)); const first=(j.pages||[])[0]; if(first&&cover) cover.split(',').forEach(c=>{ if(!window.__imgSlot.get(c)) window.__imgSlot.set(c,first.url); }); }
           this.setState(s=>{ const e=s.editing; if(!e)return{}; const draft=Object.assign({},e.draft);
             if(e.sec==='docs'||e.sec==='acts'){ draft.url=j.doc.url; if(!draft.name) draft.name=j.doc.title; }
             else { draft.docUrl=j.doc.url; draft.imgs=(draft.imgs||[]).concat((j.pages||[]).map(p=>p.slot)); }
             return {editing:Object.assign({},e,{draft})}; });
-          this.flash('PDF обработан, страниц: '+j.pageCount); } else this.flash('Ошибка обработки PDF'); }).catch(()=>this.flash('Ошибка обработки PDF')); }
+          this.flash('PDF обработан, страниц: '+j.pageCount+' — нажмите «Сохранить»'); } else this.flash('Ошибка обработки PDF'); }).catch((e)=>this.flash('Ошибка PDF: '+(e&&e.message||e))); }
   adminLogout(){ this.setState({adminAuthed:false,editing:null}); }
   toggleFeatured(idx){ const data=Object.assign({},this.state.data); const arr=data.works.slice(); const cur=arr[idx];
     if(!cur.featured && arr.filter(w=>w.featured).length>=5){ this.flash('Можно выбрать максимум 5'); return; }
