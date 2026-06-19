@@ -177,8 +177,16 @@ app.post('/api/pdf', auth, upload.single('file'), async (req, res) => {
 });
 
 // ── Статика сайта ──────────────────────────────────────────────────────────
-// Папка загрузок и сам сайт (index.html, support.js, image-slot.js, assets, state.json)
-app.use(express.static(ROOT, { extensions: ['html'] }));
+// Карта изображений — единственный dot-файл, который нужно отдавать
+// (express.static по умолчанию dot-файлы не отдаёт). Явный маршрут.
+app.get('/.image-slots.state.json', (req, res) => {
+  res.type('application/json');
+  // Читаем и отдаём содержимое напрямую: res.sendFile сам блокирует dot-файлы.
+  res.send(fs.existsSync(STATE_FILE) ? fs.readFileSync(STATE_FILE, 'utf-8') : '{}');
+});
+// Сам сайт (index.html, support.js, image-slot.js, assets, uploads/).
+// dotfiles:'deny' — прячем .git и прочие служебные dot-файлы/папки.
+app.use(express.static(ROOT, { extensions: ['html'], dotfiles: 'deny' }));
 
 app.listen(PORT, () => {
   console.log(`МБУ «ВЯЗ» — сервер запущен:  http://localhost:${PORT}`);
