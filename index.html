@@ -927,14 +927,14 @@ class Component extends DCLogic {
   uploadImages(files){ if(!files||!files.length)return; if(!this._token){ this.flash('Нужен сервер (npm start)'); return; }
     const ed=this.state.editing; const id=(ed&&ed.draft.id)||'item'; const cover=(ed&&(ed.sec==='works'||ed.sec==='investor'))?('tile-'+id+',hero-'+id):''; const fd=new FormData(); for(let i=0;i<files.length;i++) fd.append('files',files[i]); this.flash('Загрузка фото: '+files.length+'…');
     fetch('api/images?prefix='+encodeURIComponent(id)+(cover?'&cover='+encodeURIComponent(cover):''),{method:'POST',headers:{'Authorization':'Bearer '+this._token},body:fd})
-      .then(r=>r.ok?r.json():r.text().then(t=>Promise.reject(new Error('HTTP '+r.status+' '+t)))).then(j=>{ if(j&&j.images){ const first=j.images[0]; if(window.__imgSlot){ j.images.forEach(x=>window.__imgSlot.set(x.slot,x.url)); if(first&&cover) cover.split(',').forEach(c=>{ if(!window.__imgSlot.get(c)) window.__imgSlot.set(c,first.url); }); } this._setImgs(imgs=>imgs.concat(j.images.map(x=>x.slot))); this.flash('Добавлено фото: '+j.images.length+' — нажмите «Сохранить»'); } else this.flash('Ошибка загрузки'); }).catch((e)=>this.flash('Ошибка загрузки: '+(e&&e.message||e))); }
+      .then(r=>r.ok?r.json():r.text().then(t=>Promise.reject(new Error('HTTP '+r.status+' '+t)))).then(j=>{ if(j&&j.images){ const first=j.images[0]; if(window.__imgSlot){ j.images.forEach(x=>window.__imgSlot.set(x.slot,x.url)); if(first&&cover) cover.split(',').forEach(c=>{ if(!window.__imgSlot.get(c)) window.__imgSlot.set(c,first.url); }); } this._setImgs(imgs=>imgs.filter(s=>window.__imgSlot&&window.__imgSlot.get(s)).concat(j.images.map(x=>x.slot))); this.flash('Добавлено фото: '+j.images.length+' — нажмите «Сохранить»'); } else this.flash('Ошибка загрузки'); }).catch((e)=>this.flash('Ошибка загрузки: '+(e&&e.message||e))); }
   uploadPdf(f){ if(!f)return; if(!this._token){ this.flash('Нужен сервер (npm start)'); return; }
     const ed=this.state.editing; if(!ed)return; const id=ed.draft.id||'doc'; const isProj=(ed.sec==='works'||ed.sec==='investor'); const cover=isProj?('tile-'+id+',hero-'+id):''; const nm=(f.name||'Документ').replace(/\.pdf$/i,''); const fd=new FormData(); fd.append('file',f); this.flash('Обработка PDF…');
     fetch('api/pdf?prefix='+encodeURIComponent(id)+'&name='+encodeURIComponent(nm)+(cover?'&cover='+encodeURIComponent(cover):''),{method:'POST',headers:{'Authorization':'Bearer '+this._token},body:fd})
       .then(r=>r.ok?r.json():r.text().then(t=>Promise.reject(new Error('HTTP '+r.status+' '+t)))).then(j=>{ if(j&&j.ok){ if(window.__imgSlot){ (j.pages||[]).forEach(p=>window.__imgSlot.set(p.slot,p.url)); const first=(j.pages||[])[0]; if(first&&cover) cover.split(',').forEach(c=>{ if(!window.__imgSlot.get(c)) window.__imgSlot.set(c,first.url); }); }
           this.setState(s=>{ const e=s.editing; if(!e)return{}; const draft=Object.assign({},e.draft);
             if(e.sec==='docs'||e.sec==='acts'){ draft.url=j.doc.url; if(!draft.name) draft.name=j.doc.title; }
-            else { draft.docUrl=j.doc.url; draft.imgs=(draft.imgs||[]).concat((j.pages||[]).map(p=>p.slot)); }
+            else { draft.docUrl=j.doc.url; const kept=(draft.imgs||[]).filter(s=>window.__imgSlot&&window.__imgSlot.get(s)); draft.imgs=kept.concat((j.pages||[]).map(p=>p.slot)); }
             return {editing:Object.assign({},e,{draft})}; });
           this.flash('PDF обработан, страниц: '+j.pageCount+' — нажмите «Сохранить»'); } else this.flash('Ошибка обработки PDF'); }).catch((e)=>this.flash('Ошибка PDF: '+(e&&e.message||e))); }
   adminLogout(){ this.setState({adminAuthed:false,editing:null}); }
@@ -1019,9 +1019,10 @@ class Component extends DCLogic {
     const KPP=6; const allInv=d.investor||[];
     const kq=(st.krtSearch||'').toLowerCase().trim(); const kdist=st.krtDistrict||'all';
     const filteredInv=allInv.map((s,gi)=>({s,gi})).filter(o=>(kdist==='all'||o.s.district===kdist)&&(!kq||(o.s.name||'').toLowerCase().includes(kq)));
-    const mKrt=filteredInv.map(o=>Object.assign({},o.s,{slot:'inv-'+o.gi,open:()=>this.openSite(o.gi)}));
+    const krtSlot=(s,gi)=>('tile-'+(s.id||('krt'+gi)));
+    const mKrt=filteredInv.map(o=>Object.assign({},o.s,{slot:krtSlot(o.s,o.gi),open:()=>this.openSite(o.gi)}));
     const kTotalPages=Math.max(1,Math.ceil(filteredInv.length/KPP)); const kp=Math.min(st.krtPage,kTotalPages-1);
-    const krtItems=filteredInv.slice(kp*KPP,kp*KPP+KPP).map(o=>{ const gi=o.gi, s=o.s; const hov=st.hoveredId==='i:'+gi; return Object.assign({},s,{slot:'inv-'+gi,gray:hov?0:1,scale:hov?1.05:1,enter:()=>this.setHover('i:'+gi),open:()=>this.openSite(gi)}); });
+    const krtItems=filteredInv.slice(kp*KPP,kp*KPP+KPP).map(o=>{ const gi=o.gi, s=o.s; const hov=st.hoveredId==='i:'+gi; return Object.assign({},s,{slot:krtSlot(s,gi),gray:hov?0:1,scale:hov?1.05:1,enter:()=>this.setHover('i:'+gi),open:()=>this.openSite(gi)}); });
     const kDistricts=['all'].concat(Array.from(new Set(allInv.map(s=>s.district).filter(Boolean))));
     const districtChips=kDistricts.map(dd=>({label:dd==='all'?'Все районы':dd,bg:kdist===dd?'var(--accent)':'#fff',color:kdist===dd?'#fff':'#444',border:kdist===dd?'var(--accent)':'#c8c8c8',onClick:()=>this.setState({krtDistrict:dd,krtPage:0})}));
 
