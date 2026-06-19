@@ -24,7 +24,7 @@ server/                     бэкенд: загрузка фото и PDF, хр
 
 ```bash
 cd server
-npm install          # один раз: ставит express, sharp, pdf-to-img
+npm install          # один раз: ставит express, sharp, mupdf (всё без компиляции)
 npm start            # запускает сервер на http://localhost:8000
 ```
 

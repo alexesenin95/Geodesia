@@ -14,7 +14,7 @@
 import express from 'express';
 import multer from 'multer';
 import sharp from 'sharp';
-import { pdf } from 'pdf-to-img';
+import * as mupdf from 'mupdf';
 import fs from 'fs';
 import fsp from 'fs/promises';
 import path from 'path';
@@ -137,18 +137,21 @@ app.post('/api/pdf', auth, upload.single('file'), async (req, res) => {
     await fsp.writeFile(path.join(UP_DOC, pdfName), req.file.buffer);
     const docUrl = `uploads/docs/${pdfName}`;
 
-    // 2) Рендерим страницы в WebP
+    // 2) Рендерим страницы в WebP (mupdf — WASM, без нативной сборки)
     const pages = [];
-    const doc = await pdf(req.file.buffer, { scale: PDF_SCALE });
-    let i = 0;
-    for await (const page of doc) {
-      i++;
-      const webp = await toWebp(page, GALLERY_W);
+    const doc = mupdf.Document.openDocument(req.file.buffer, 'application/pdf');
+    const count = doc.countPages();
+    const matrix = mupdf.Matrix.scale(PDF_SCALE, PDF_SCALE);
+    for (let i = 1; i <= count; i++) {
+      const pix = doc.loadPage(i - 1).toPixmap(matrix, mupdf.ColorSpace.DeviceRGB, false, true);
+      const png = pix.asPNG();
+      const webp = await toWebp(Buffer.from(png), GALLERY_W);
       const slot = `${base}-p${i}`;
       const name = `${slot}.webp`;
       await fsp.writeFile(path.join(UP_IMG, name), webp);
       pages.push({ slot, url: `uploads/img/${name}` });
     }
+    const i = count;
     await updateState((state) => { for (const p of pages) state[p.slot] = { u: p.url, s: 1, x: 0, y: 0 }; });
 
     res.json({ ok: true, doc: { title, url: docUrl }, pages, pageCount: i });
