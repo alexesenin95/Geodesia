@@ -721,8 +721,8 @@
             <div style="display:flex;flex-direction:column;gap:10px">
               <span style="font-size:12px;letter-spacing:.04em;color:#999">Изображения — загрузите файлами (оптимизация в WebP автоматически) или перетащите в ячейку</span>
               <div style="display:flex;gap:10px;flex-wrap:wrap">
-                <label style="background:#0a0a0a;color:#fff;cursor:pointer;font-size:13px;font-weight:600;padding:11px 18px">📷 Загрузить фото (пакетом)<input type="file" accept="image/*" multiple onChange="{{ editing.onUploadImages }}" style="display:none"/></label>
-                <label style="background:none;border:1px solid #bbb;color:#333;cursor:pointer;font-size:13px;font-weight:600;padding:11px 18px" style-hover="border-color:#111">📄 PDF → страницы-фото<input type="file" accept="application/pdf" onChange="{{ editing.onUploadPdf }}" style="display:none"/></label>
+                <button onClick="{{ editing.onPickImages }}" style="background:#0a0a0a;color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;padding:11px 18px">📷 Загрузить фото (пакетом)</button>
+                <button onClick="{{ editing.onPickPdf }}" style="background:none;border:1px solid #bbb;color:#333;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;padding:11px 18px" style-hover="border-color:#111">📄 PDF → страницы-фото</button>
               </div>
               <sc-for list="{{ editing.images }}" as="im" hint-placeholder-count="3">
                 <div style="display:flex;align-items:center;gap:12px;border:1px solid #eee;padding:8px">
@@ -739,7 +739,7 @@
             <sc-if value="{{ editing.hasDoc }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex;flex-direction:column;gap:10px">
               <span style="font-size:12px;letter-spacing:.04em;color:#999">PDF-документ — загрузится файлом и появится кнопка «Скачать» на сайте</span>
-              <label style="align-self:flex-start;background:#0a0a0a;color:#fff;cursor:pointer;font-size:13px;font-weight:600;padding:11px 18px">📄 Загрузить PDF<input type="file" accept="application/pdf" onChange="{{ editing.onUploadPdf }}" style="display:none"/></label>
+              <button onClick="{{ editing.onPickPdf }}" style="align-self:flex-start;background:#0a0a0a;color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;padding:11px 18px">📄 Загрузить PDF</button>
               <span style="font-size:12px;color:#888">Файл: {{ editing.docName }}</span>
             </div>
             </sc-if>
@@ -918,11 +918,17 @@ class Component extends DCLogic {
     try{ fetch('api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:p})})
       .then(r=>r.ok?r.json():null).then(j=>{ if(j&&j.token){ this._token=j.token; this.setState({adminAuthed:true,adminError:''}); this.loadBackendData(); } else { localOk(); } })
       .catch(()=>localOk()); }catch(err){ localOk(); } }
-  uploadImages(ev){ const files=ev.target.files; ev.target.value=''; if(!files||!files.length)return; if(!this._token){ this.flash('Загрузка файлов доступна только с бэкендом (вход по паролю сервера)'); return; }
-    const id=(this.state.editing&&this.state.editing.draft.id)||'item'; const fd=new FormData(); for(let i=0;i<files.length;i++) fd.append('files',files[i]); this.flash('Загрузка фото…');
+  pickImages(){ if(!this._token){ this.flash('Загрузка доступна только с сервером (запустите npm start и войдите паролем сервера)'); return; }
+    const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.multiple=true; inp.style.display='none';
+    inp.onchange=()=>{ this.uploadImages(inp.files); if(inp.parentNode)inp.parentNode.removeChild(inp); }; document.body.appendChild(inp); inp.click(); }
+  pickPdf(){ if(!this._token){ this.flash('Загрузка доступна только с сервером (запустите npm start и войдите паролем сервера)'); return; }
+    const inp=document.createElement('input'); inp.type='file'; inp.accept='application/pdf'; inp.style.display='none';
+    inp.onchange=()=>{ this.uploadPdf(inp.files&&inp.files[0]); if(inp.parentNode)inp.parentNode.removeChild(inp); }; document.body.appendChild(inp); inp.click(); }
+  uploadImages(files){ if(!files||!files.length)return; if(!this._token){ this.flash('Нужен сервер (npm start)'); return; }
+    const id=(this.state.editing&&this.state.editing.draft.id)||'item'; const fd=new FormData(); for(let i=0;i<files.length;i++) fd.append('files',files[i]); this.flash('Загрузка фото: '+files.length+'…');
     fetch('api/images?prefix='+encodeURIComponent(id),{method:'POST',headers:{'Authorization':'Bearer '+this._token},body:fd})
       .then(r=>r.json()).then(j=>{ if(j&&j.images){ j.images.forEach(x=>{ if(window.__imgSlot) window.__imgSlot.set(x.slot,x.url); }); this._setImgs(imgs=>imgs.concat(j.images.map(x=>x.slot))); this.flash('Добавлено фото: '+j.images.length); } else this.flash('Ошибка загрузки'); }).catch(()=>this.flash('Ошибка загрузки')); }
-  uploadPdf(ev){ const f=ev.target.files&&ev.target.files[0]; ev.target.value=''; if(!f)return; if(!this._token){ this.flash('Загрузка файлов доступна только с бэкендом (вход по паролю сервера)'); return; }
+  uploadPdf(f){ if(!f)return; if(!this._token){ this.flash('Нужен сервер (npm start)'); return; }
     const ed=this.state.editing; if(!ed)return; const id=ed.draft.id||'doc'; const nm=(f.name||'Документ').replace(/\.pdf$/i,''); const fd=new FormData(); fd.append('file',f); this.flash('Обработка PDF…');
     fetch('api/pdf?prefix='+encodeURIComponent(id)+'&name='+encodeURIComponent(nm),{method:'POST',headers:{'Authorization':'Bearer '+this._token},body:fd})
       .then(r=>r.json()).then(j=>{ if(j&&j.ok){ if(j.pages) j.pages.forEach(p=>{ if(window.__imgSlot) window.__imgSlot.set(p.slot,p.url); });
@@ -1056,7 +1062,7 @@ class Component extends DCLogic {
       fields:(FIELDS[e.sec]||[]).map(c=>({label:c[1],value:e.draft[c[0]]!==undefined?e.draft[c[0]]:'',isText:c[2]==='text',isTextarea:c[2]==='textarea',isEnum:c[2]==='enum',options:(c[3]||[]).map(o=>({value:o[0],label:o[1]})),onChange:(ev)=>this.setField(c[0],ev.target.value)})),
       hasImages:(e.sec==='works'||e.sec==='investor'||e.sec==='services'), imgAdd:()=>this.imgAdd(),
       hasDoc:(e.sec==='docs'||e.sec==='acts'), docName:(e.draft.url&&!/^#/.test(e.draft.url))?String(e.draft.url).split('/').pop():'',
-      onUploadImages:(ev)=>this.uploadImages(ev), onUploadPdf:(ev)=>this.uploadPdf(ev),
+      onPickImages:()=>this.pickImages(), onPickPdf:()=>this.pickPdf(),
       images:(e.draft.imgs||[]).map((slot,k)=>({slot,num:k+1,onUp:()=>this.imgMove(k,-1),onDown:()=>this.imgMove(k,1),onDel:()=>this.imgDel(k)}))}; }
 
     return {
