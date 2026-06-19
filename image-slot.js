@@ -602,7 +602,9 @@
       // data:image/ URLs from it. The `src` attribute is author-controlled
       // (Claude wrote it into the HTML) so it passes through unchanged.
       let stored = this.id ? getSlot(this.id) : this._local;
-      if (stored && stored.u && !/^data:image\//i.test(stored.u)) stored = null;
+      // Accept canvas data URLs and same-origin files served from uploads/
+      // (the backend writes optimized .webp there and stores their URL).
+      if (stored && stored.u && !/^data:image\//i.test(stored.u) && !/^(?:\.?\/)?uploads\//i.test(stored.u)) stored = null;
       const srcAttr = this.getAttribute('src') || '';
       this._userUrl = (stored && stored.u) || null;
       const url = this._userUrl || srcAttr;
@@ -636,6 +638,13 @@
       }
     }
   }
+
+  // Bridge for the admin panel: inject a backend-uploaded image URL into a
+  // slot so it previews immediately, without a page reload.
+  window.__imgSlot = {
+    set: (id, url) => setSlot(id, { u: url, s: 1, x: 0, y: 0 }),
+    get: getSlot,
+  };
 
   if (!customElements.get('image-slot')) {
     customElements.define('image-slot', ImageSlot);

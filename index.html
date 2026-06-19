@@ -719,7 +719,11 @@
             </sc-for>
             <sc-if value="{{ editing.hasImages }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex;flex-direction:column;gap:10px">
-              <span style="font-size:12px;letter-spacing:.04em;color:#999">Изображения — перетащите фото в ячейку, меняйте порядок стрелками</span>
+              <span style="font-size:12px;letter-spacing:.04em;color:#999">Изображения — загрузите файлами (оптимизация в WebP автоматически) или перетащите в ячейку</span>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <label style="background:#0a0a0a;color:#fff;cursor:pointer;font-size:13px;font-weight:600;padding:11px 18px">📷 Загрузить фото (пакетом)<input type="file" accept="image/*" multiple onChange="{{ editing.onUploadImages }}" style="display:none"/></label>
+                <label style="background:none;border:1px solid #bbb;color:#333;cursor:pointer;font-size:13px;font-weight:600;padding:11px 18px" style-hover="border-color:#111">📄 PDF → страницы-фото<input type="file" accept="application/pdf" onChange="{{ editing.onUploadPdf }}" style="display:none"/></label>
+              </div>
               <sc-for list="{{ editing.images }}" as="im" hint-placeholder-count="3">
                 <div style="display:flex;align-items:center;gap:12px;border:1px solid #eee;padding:8px">
                   <div style="flex:none;width:88px;height:56px;overflow:hidden;background:#ededed;border:1px solid #e0e0e0"><image-slot id="{{ im.slot }}" shape="rect" radius="0" placeholder="фото" style="display:block;width:100%;height:100%"></image-slot></div>
@@ -729,7 +733,14 @@
                   <button onClick="{{ im.onDel }}" style="width:30px;height:30px;border:1px solid #e3c4bc;background:none;cursor:pointer;color:#b0573f" style-hover="background:#faeee9">✕</button>
                 </div>
               </sc-for>
-              <button onClick="{{ editing.imgAdd }}" style="align-self:flex-start;background:none;border:1px dashed #bbb;cursor:pointer;font-family:inherit;font-size:13px;padding:10px 18px;color:#555" style-hover="border-color:#111;color:#111">+ Добавить фото</button>
+              <button onClick="{{ editing.imgAdd }}" style="align-self:flex-start;background:none;border:1px dashed #bbb;cursor:pointer;font-family:inherit;font-size:13px;padding:10px 18px;color:#555" style-hover="border-color:#111;color:#111">+ Добавить пустую ячейку</button>
+            </div>
+            </sc-if>
+            <sc-if value="{{ editing.hasDoc }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <span style="font-size:12px;letter-spacing:.04em;color:#999">PDF-документ — загрузится файлом и появится кнопка «Скачать» на сайте</span>
+              <label style="align-self:flex-start;background:#0a0a0a;color:#fff;cursor:pointer;font-size:13px;font-weight:600;padding:11px 18px">📄 Загрузить PDF<input type="file" accept="application/pdf" onChange="{{ editing.onUploadPdf }}" style="display:none"/></label>
+              <span style="font-size:12px;color:#888">Файл: {{ editing.docName }}</span>
             </div>
             </sc-if>
           </div>
@@ -862,8 +873,12 @@ class Component extends DCLogic {
       consent, agreementOpen:false, isMobile:(typeof window!=='undefined'&&window.innerWidth<760), menuOpen:false,
       data, adminAuthed:false, adminSection:'works', editing:null, adminError:'', toast:'' };
     this.rootRef=React.createRef(); this.headerRef=React.createRef(); this.logoRef=React.createRef();
+    this._token=null;
   }
+  _ensureData(d){ ['works','services','team','manifest','media','investor','news','docs','acts','socials'].forEach(k=>{ if(!Array.isArray(d[k])) d[k]=JSON.parse(JSON.stringify(this._SEED[k])); }); if(!d.settings) d.settings=JSON.parse(JSON.stringify(this._SEED.settings)); Object.keys(this._SEED.settings).forEach(k=>{ if(d.settings[k]===undefined) d.settings[k]=this._SEED.settings[k]; }); const E=(arr,p)=>{(arr||[]).forEach((it,i)=>{ if(!it.id) it.id=p+i; if(!Array.isArray(it.imgs)||!it.imgs.length) it.imgs=[it.id+'-1',it.id+'-2',it.id+'-3']; });}; E(d.works,'w'); E(d.investor,'krt'); E(d.services,'svc'); return d; }
+  loadBackendData(){ try{ fetch('api/data').then(r=>(r.ok&&r.status!==204)?r.json():null).then(d=>{ if(d&&typeof d==='object'){ this.setState({data:this._ensureData(d)}); } }).catch(()=>{}); }catch(e){} }
   componentDidMount(){
+    this.loadBackendData();
     const acc=this.props.accent||'#111'; const r=this.rootRef.current; if(r) r.style.setProperty('--accent',acc);
     if(this.state.intro){ this._introT=setTimeout(()=>{ this.setState({intro:false}); try{ sessionStorage.setItem('vyaz_intro2','1'); }catch(e){} },2400); }
     if(this.props.heroAutoplay!==false){ this._auto=setInterval(()=>{ if(this.state.page==='home'){ const n=this.featuredList().length||1; this.setState(s=>({activeIdx:(s.activeIdx+1)%n})); } },6000); }
@@ -881,7 +896,8 @@ class Component extends DCLogic {
   openNews(id){ this.setState({page:'newsitem',newsId:id,slideIdx:0,pageKey:this.state.pageKey+1}); }
   openSite(id){ this.setState({page:'site',siteId:id,slideIdx:0,fsOpen:false,fsIdx:0,pageKey:this.state.pageKey+1}); }
   setHover(k){ this.setState({hoveredId:k}); }
-  downloadWork(w){ try{ const txt='ВЯЗ — '+w.title+'\n'+(w.subtitle||'')+'\n'+(w.loc||'')+' · '+(w.year||'')+'\n\n'+(w.desc||'')+'\n\nМБУ «ВЯЗ», Волгоград';
+  downloadWork(w){ try{ if(w&&w.docUrl){ const a=document.createElement('a'); a.href=w.docUrl; a.target='_blank'; a.rel='noopener'; document.body.appendChild(a); a.click(); a.remove(); return; }
+    const txt='ВЯЗ — '+w.title+'\n'+(w.subtitle||'')+'\n'+(w.loc||'')+' · '+(w.year||'')+'\n\n'+(w.desc||'')+'\n\nМБУ «ВЯЗ», Волгоград';
     const blob=new Blob([txt],{type:'text/plain;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(w.id||'project')+'-vyaz.txt'; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},100);}catch(e){} }
   submitContact(e){ if(e&&e.preventDefault)e.preventDefault(); if(e&&e.target&&e.target.reset)e.target.reset(); this.flash('Заявка отправлена'); }
   acceptConsent(){ try{ localStorage.setItem('vyaz_consent','1'); }catch(e){} this.setState({consent:true,agreementOpen:false}); }
@@ -893,10 +909,28 @@ class Component extends DCLogic {
     if(sec==='works') copy.featured=false;
     if(copy.title!==undefined) copy.title=(copy.title||'')+' (копия)'; else if(copy.name!==undefined) copy.name=(copy.name||'')+' (копия)'; else if(copy.t!==undefined) copy.t=(copy.t||'')+' (копия)';
     arr.splice(idx+1,0,copy); data[sec]=arr; this.setState({data},()=>{ this.persist(); this.flash('Дублировано'); }); }
-  persist(){ try{ localStorage.setItem('vyaz_cms3', JSON.stringify(this.state.data)); }catch(e){} }
+  persist(){ try{ localStorage.setItem('vyaz_cms3', JSON.stringify(this.state.data)); }catch(e){}
+    if(this._token){ try{ fetch('api/data',{method:'PUT',headers:{'Content-Type':'application/json','Authorization':'Bearer '+this._token},body:JSON.stringify(this.state.data)}); }catch(e){} } }
   flash(msg){ this.setState({toast:msg}); clearTimeout(this._toastT); this._toastT=setTimeout(()=>this.setState({toast:''}),2000); }
   adminLogin(e){ if(e&&e.preventDefault)e.preventDefault(); const fd=e&&e.target?new FormData(e.target):null; const u=(fd&&fd.get('u')||'').trim(),p=(fd&&fd.get('p')||'').trim();
-    if(u==='admin'&&p==='vyaz'){ this.setState({adminAuthed:true,adminError:''}); } else { this.setState({adminError:'Неверный логин или пароль. Демо: admin / vyaz'}); } }
+    const localOk=()=>{ if(u==='admin'&&p==='vyaz'){ this.setState({adminAuthed:true,adminError:''}); } else { this.setState({adminError:'Неверный логин или пароль. Демо: admin / vyaz'}); } };
+    // Сначала пробуем бэкенд (тогда доступна загрузка файлов); без него — локальный вход.
+    try{ fetch('api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:p})})
+      .then(r=>r.ok?r.json():null).then(j=>{ if(j&&j.token){ this._token=j.token; this.setState({adminAuthed:true,adminError:''}); this.loadBackendData(); } else { localOk(); } })
+      .catch(()=>localOk()); }catch(err){ localOk(); } }
+  uploadImages(ev){ const files=ev.target.files; ev.target.value=''; if(!files||!files.length)return; if(!this._token){ this.flash('Загрузка файлов доступна только с бэкендом (вход по паролю сервера)'); return; }
+    const id=(this.state.editing&&this.state.editing.draft.id)||'item'; const fd=new FormData(); for(let i=0;i<files.length;i++) fd.append('files',files[i]); this.flash('Загрузка фото…');
+    fetch('api/images?prefix='+encodeURIComponent(id),{method:'POST',headers:{'Authorization':'Bearer '+this._token},body:fd})
+      .then(r=>r.json()).then(j=>{ if(j&&j.images){ j.images.forEach(x=>{ if(window.__imgSlot) window.__imgSlot.set(x.slot,x.url); }); this._setImgs(imgs=>imgs.concat(j.images.map(x=>x.slot))); this.flash('Добавлено фото: '+j.images.length); } else this.flash('Ошибка загрузки'); }).catch(()=>this.flash('Ошибка загрузки')); }
+  uploadPdf(ev){ const f=ev.target.files&&ev.target.files[0]; ev.target.value=''; if(!f)return; if(!this._token){ this.flash('Загрузка файлов доступна только с бэкендом (вход по паролю сервера)'); return; }
+    const ed=this.state.editing; if(!ed)return; const id=ed.draft.id||'doc'; const nm=(f.name||'Документ').replace(/\.pdf$/i,''); const fd=new FormData(); fd.append('file',f); this.flash('Обработка PDF…');
+    fetch('api/pdf?prefix='+encodeURIComponent(id)+'&name='+encodeURIComponent(nm),{method:'POST',headers:{'Authorization':'Bearer '+this._token},body:fd})
+      .then(r=>r.json()).then(j=>{ if(j&&j.ok){ if(j.pages) j.pages.forEach(p=>{ if(window.__imgSlot) window.__imgSlot.set(p.slot,p.url); });
+          this.setState(s=>{ const e=s.editing; if(!e)return{}; const draft=Object.assign({},e.draft);
+            if(e.sec==='docs'||e.sec==='acts'){ draft.url=j.doc.url; if(!draft.name) draft.name=j.doc.title; }
+            else { draft.docUrl=j.doc.url; draft.imgs=(draft.imgs||[]).concat((j.pages||[]).map(p=>p.slot)); }
+            return {editing:Object.assign({},e,{draft})}; });
+          this.flash('PDF обработан, страниц: '+j.pageCount); } else this.flash('Ошибка обработки PDF'); }).catch(()=>this.flash('Ошибка обработки PDF')); }
   adminLogout(){ this.setState({adminAuthed:false,editing:null}); }
   toggleFeatured(idx){ const data=Object.assign({},this.state.data); const arr=data.works.slice(); const cur=arr[idx];
     if(!cur.featured && arr.filter(w=>w.featured).length>=5){ this.flash('Можно выбрать максимум 5'); return; }
@@ -990,7 +1024,7 @@ class Component extends DCLogic {
     let cur=d.works.find(w=>w.id===st.projectId)||d.works[0]||{};
     const accentC=this.props.accent||'#111';
     let detTitle='',detDesc='',detCaption='',detBackLabel='',detDlObj=cur,detBackPage='works',detImgs=[];
-    if(st.page==='site'){ const sArr=d.investor||[]; const sc=sArr[st.siteId]||sArr[0]||{}; detTitle=sc.name||''; detDesc=sc.desc||''; detCaption='Схема анализа генерального плана и ПЗЗ'; detBackLabel='Все площадки'; detImgs=Array.isArray(sc.imgs)?sc.imgs:[]; detDlObj={id:sc.id||'site',title:sc.name,subtitle:'',loc:sc.area||'',year:'',desc:sc.desc||''}; detBackPage='investor'; }
+    if(st.page==='site'){ const sArr=d.investor||[]; const sc=sArr[st.siteId]||sArr[0]||{}; detTitle=sc.name||''; detDesc=sc.desc||''; detCaption='Схема анализа генерального плана и ПЗЗ'; detBackLabel='Все площадки'; detImgs=Array.isArray(sc.imgs)?sc.imgs:[]; detDlObj={id:sc.id||'site',title:sc.name,subtitle:'',loc:sc.area||'',year:'',desc:sc.desc||'',docUrl:sc.docUrl}; detBackPage='investor'; }
     else { detTitle=cur.title||''; detDesc=cur.desc||''; detCaption=cur.subtitle||''; detBackLabel='Все работы'; detImgs=Array.isArray(cur.imgs)?cur.imgs:[]; detDlObj=cur; detBackPage='works'; }
     if(!detImgs.length) detImgs=['ph-empty'];
     const DN=detImgs.length||1; const dIdx=((st.slideIdx%DN)+DN)%DN;
@@ -1021,6 +1055,8 @@ class Component extends DCLogic {
     if(st.editing){ const e=st.editing; editing={isNew:e.isNew,title:e.isNew?'Добавить':'Изменить',onSave:()=>this.saveItem(),onCancel:()=>this.closeEditor(),
       fields:(FIELDS[e.sec]||[]).map(c=>({label:c[1],value:e.draft[c[0]]!==undefined?e.draft[c[0]]:'',isText:c[2]==='text',isTextarea:c[2]==='textarea',isEnum:c[2]==='enum',options:(c[3]||[]).map(o=>({value:o[0],label:o[1]})),onChange:(ev)=>this.setField(c[0],ev.target.value)})),
       hasImages:(e.sec==='works'||e.sec==='investor'||e.sec==='services'), imgAdd:()=>this.imgAdd(),
+      hasDoc:(e.sec==='docs'||e.sec==='acts'), docName:(e.draft.url&&!/^#/.test(e.draft.url))?String(e.draft.url).split('/').pop():'',
+      onUploadImages:(ev)=>this.uploadImages(ev), onUploadPdf:(ev)=>this.uploadPdf(ev),
       images:(e.draft.imgs||[]).map((slot,k)=>({slot,num:k+1,onUp:()=>this.imgMove(k,-1),onDown:()=>this.imgMove(k,1),onDel:()=>this.imgDel(k)}))}; }
 
     return {

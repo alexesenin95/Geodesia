@@ -1,0 +1,16 @@
+{
+  "name": "vyaz-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Бэкенд сайта МБУ «ВЯЗ»: загрузка фото (WebP) и PDF (страницы→картинки + документ).",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "sharp": "^0.33.4",
+    "pdf-to-img": "^4.2.0"
+  }
+}

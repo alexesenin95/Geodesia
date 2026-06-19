@@ -1,0 +1,13 @@
+# Зависимости бэкенда
+server/node_modules/
+
+# Загруженный через админку контент (хранится на сервере, не в репозитории)
+server/data/content.json
+uploads/img/*
+uploads/docs/*
+!uploads/img/.gitkeep
+!uploads/docs/.gitkeep
+
+# Системное
+.DS_Store
+*.log
