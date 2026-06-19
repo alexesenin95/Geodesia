@@ -41,6 +41,9 @@ for (const d of [DATA_DIR, UP_IMG, UP_DOC]) fs.mkdirSync(d, { recursive: true })
 
 const app = express();
 app.use(express.json({ limit: '4mb' }));
+// Локальная CMS: отключаем кэш, чтобы правки сайта и загруженные картинки
+// всегда подхватывались без «жёсткого» обновления браузера.
+app.use((req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
 
 // ── Вспомогательное ────────────────────────────────────────────────────────
 const rid = () => crypto.randomBytes(5).toString('hex');
